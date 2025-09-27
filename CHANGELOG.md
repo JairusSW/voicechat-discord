@@ -2,6 +2,10 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.12
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.11...3.0.12
+
 ## 3.0.11
 
 - The supported Minecraft versions have been drastically narrowed down.
@@ -20,58 +24,58 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 - The Fabric Permissions API has been upgraded to version 0.3.3 in order to fix compatibility issues with recent Minecraft versions.
 - Due to recent GitHub deprecations, Linux natives will now be built on Ubuntu 22.04. This means that there may be errors on hosting providers using old glibc versions. If you encounter this issue, please see [this StackOverflow post](https://stackoverflow.com/questions/72513993/how-to-install-glibc-2-29-or-higher-in-ubuntu-18-04).
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.10...3.0.11
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.10...3.0.11
 
 ## 3.0.10
 
 - Fix a crash that could occur when initializing the Tokio runtime with only one core
 - Prevent initializing and then immediately shutting down the Tokio runtime on shutdown
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.9...3.0.10
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.9...3.0.10
 
 ## 3.0.9
 
 - (Paper) Hopefully fix all broken versions (so 1.19-1.21.3), for real this time
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.8...3.0.9
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.8...3.0.9
 
 ## 3.0.8
 
 - (Paper) Fix 1.21.4
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.7...3.0.8
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.7...3.0.8
 
 ## 3.0.7
 
 - (Paper) Attempt to fix <1.21.3
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.6...3.0.7
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.6...3.0.7
 
 ## 3.0.6
 
 - Update to support 1.12.3+; thanks to AlexDerProGamer for their initial PR
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.5...3.0.6
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.5...3.0.6
 
 ## 3.0.5
 
 - Add thread names to make future debugging easier
 - Try to reduce tokio runtime overhead while idle
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.4...3.0.5
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.4...3.0.5
 
 ## 3.0.4
 
 - Adjust error message for when an audio sender can't be registered to hopefully make it less confusing
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.3...3.0.4
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.3...3.0.4
 
 ## 3.0.3
 
 - Fix crash when running /dvc start by forcing ring to be used for cryptography instead of
   aws-lc ([#59](https://github.com/amsam0/voicechat-discord/issues/59))
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.2...3.0.3
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.2...3.0.3
 
 ## 3.0.2
 
@@ -82,7 +86,7 @@ Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.2...3.0.3
 - (Fabric) Fix the addon's shutdown process blocking the server from shutting down
 - Add failsafe if an error occurs during the bot stop process
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.1...3.0.2
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.1...3.0.2
 
 ## 3.0.1
 
@@ -90,7 +94,7 @@ Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.1...3.0.2
   versions ([#54](https://github.com/amsam0/voicechat-discord/issues/54))
 - (Paper) Fix getEntityPosition failing ([#56](https://github.com/amsam0/voicechat-discord/issues/56))
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.0...3.0.1
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.0...3.0.1
 
 ## 3.0.0
 
@@ -108,7 +112,7 @@ Code changes: https://github.com/amsam0/voicechat-discord/compare/3.0.0...3.0.1
       places due to Paperweight's new mapping behavior breaking stuff
 - Require Java 21 (the addon still supports 1.19.4)
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/2.1.1...3.0.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/2.1.1...3.0.0
 
 ## 2.1.1
 
@@ -117,7 +121,7 @@ Code changes: https://github.com/amsam0/voicechat-discord/compare/2.1.1...3.0.0
 - Fixed a minor punctuation issue with the message about Simple Voice Chat not being new enough
 - Increased minimum Minecraft version to 1.19.4 from 1.19.2
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/2.1.0...2.1.1
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/2.1.0...2.1.1
 
 ## 2.1.0
 
@@ -129,7 +133,7 @@ This update has some new features and bugfixes. The minimum Simple Voice Chat ve
 - Switch to using adventure and minimessage for messages. This means that we no longer use the legacy formatting codes,
   and some messages will have colors in the console!
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/2.0.1...2.1.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/2.0.1...2.1.0
 
 ## 2.0.1
 
@@ -144,7 +148,7 @@ should still update because of the other fixes and improvements.
 - Improve reset watcher to be slower, this may fix some audio related issues
 - Make NMS usage and reflection on Paper safer and hopefully future proof it more
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/2.0.0...2.0.1
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/2.0.0...2.0.1
 
 ## 2.0.0
 
@@ -183,7 +187,7 @@ the main reason I started working on it again.
 - Optional debug logging to hopefully help with debugging issues
 - Major refactors and command handling improvements
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/1.4.0...2.0.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/1.4.0...2.0.0
 
 ## 1.4.0
 
@@ -191,14 +195,14 @@ This release should be functionally identical to 1.3.0 on fabric, but it fixed t
 bug: [(#4)](https://github.com/amsam0/voicechat-discord/issues/4) On paper, the plugin
 configuration folder is not created
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/1.3.0...1.4.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/1.3.0...1.4.0
 
 ## 1.3.0
 
 - Fixed [#2](https://github.com/amsam0/voicechat-discord/issues/2)
 - Dropped Bukkit and Spigot support
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/1.2.0...1.3.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/1.2.0...1.3.0
 
 ## 1.2.0
 
@@ -211,16 +215,16 @@ Code changes: https://github.com/amsam0/voicechat-discord/compare/1.2.0...1.3.0
 - Fixed some issues with multiple bots ([#1](https://github.com/amsam0/voicechat-discord/issues/1))
 - Fixed 2 users being able to start a voice chat with the same bot
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/1.1.0...1.2.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/1.1.0...1.2.0
 
 ## 1.1.0
 
 - Internal changes to support Bukkit and Fabric with the same codebase
 
-Code changes: https://github.com/amsam0/voicechat-discord/compare/1.0.0-build4...1.1.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/1.0.0-build4...1.1.0
 
 ## 1.0.0
 
 - Initial release
 
-Code: https://github.com/amsam0/voicechat-discord/tree/1.0.0-build4
+Code: https://gitlab.com/amsam0/voicechat-discord/-/tree/1.0.0-build4

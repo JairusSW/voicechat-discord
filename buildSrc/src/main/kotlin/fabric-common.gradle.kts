@@ -119,7 +119,7 @@ dependencies {
     shadow(project(":core"))
 
     // Runtime dependencies for testing only
-    modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${minecraftVersion}-2.5.35")
+    modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${minecraftVersion}-2.6.4")
 }
 
 repositories {

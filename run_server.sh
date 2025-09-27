@@ -2,8 +2,8 @@
 
 set -e
 
-pluginVersion="3.0.11"
-fabricLoaderVersion="0.16.13"
+pluginVersion="3.0.12"
+fabricLoaderVersion="0.17.0"
 
 minecraftVersion="$2"
 platform="$1"
