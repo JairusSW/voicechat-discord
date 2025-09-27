@@ -46,12 +46,13 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: Upload repository
+      - name: Upload source
         uses: actions/upload-artifact@v4
         with:
           name: source-${{ matrix.arch }}-${{ matrix.triple }}
           path: .
           if-no-files-found: error
+          include-hidden-files: true
 
       - name: Pre-package installation
         if: ${{ matrix.pre-install }}
@@ -97,12 +98,13 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: Upload repository
+      - name: Upload source
         uses: actions/upload-artifact@v4
         with:
           name: source-build
           path: .
           if-no-files-found: error
+          include-hidden-files: true
 
       - name: Download linux-aarch64
         uses: actions/download-artifact@v4
