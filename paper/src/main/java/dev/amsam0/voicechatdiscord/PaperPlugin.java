@@ -34,7 +34,7 @@ public final class PaperPlugin extends JavaPlugin {
         }
 
         try {
-            var parsed = Version.parse(getServer().getMinecraftVersion(), false);
+            var parsed = Version.parse(getServer().getMinecraftVersion().split(" ")[0], false);
 
             var wantedCommandHelper = Version.of(1, 20, 6);
             if (parsed.isHigherThanOrEquivalentTo(wantedCommandHelper)) {
