@@ -9,6 +9,9 @@ on:
 
 jobs:
   natives:
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
     strategy:
       matrix:
         os: [ubuntu-22.04, macos-latest, windows-latest]
