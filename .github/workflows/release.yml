@@ -42,7 +42,7 @@ jobs:
     #  image: ${{ matrix.container }}
     steps:
       - name: Checkout GitLab repository
-        run: git clone -v https://gitlab.com/amsam0/voicechat-discord.git .
+        run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
       - name: Log source hash (Unix)
         if: runner.os != 'Windows'
@@ -103,7 +103,7 @@ jobs:
     needs: [natives]
     steps:
       - name: Checkout GitLab repository
-        run: git clone -v https://gitlab.com/amsam0/voicechat-discord.git .
+        run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
       - name: Log source hash (Unix)
         if: runner.os != 'Windows'
