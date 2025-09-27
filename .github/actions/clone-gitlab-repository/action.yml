@@ -1,0 +1,26 @@
+name: "Checkout GitLab repository"
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout GitLab repository
+      run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
+
+    - name: Log source hash (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        find . -type f -exec sha256sum {} \;
+        git log
+
+    - name: Log source hash (Windows)
+      if: runner.os == 'Windows'
+      # for some reason this fails with permission denied
+      #run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
+      run: git log
+
+    - name: Upload source
+      uses: actions/upload-artifact@v4
+      with:
+        name: source-build
+        path: .
+        if-no-files-found: error
+        include-hidden-files: true
