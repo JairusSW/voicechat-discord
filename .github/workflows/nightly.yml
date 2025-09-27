@@ -46,8 +46,13 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: Log source hash
+      - name: Log source hash (Unix)
+        if: runner.os != "Windows"
         run: find . -type f -exec sha256sum {} \;
+
+      - name: Log source hash (Windows)
+        if: runner.os == "Windows"
+        run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
 
       - name: Upload source
         uses: actions/upload-artifact@v4
@@ -101,8 +106,13 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: Log source hash
+      - name: Log source hash (Unix)
+        if: runner.os != "Windows"
         run: find . -type f -exec sha256sum {} \;
+
+      - name: Log source hash (Windows)
+        if: runner.os == "Windows"
+        run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
 
       - name: Upload source
         uses: actions/upload-artifact@v4
