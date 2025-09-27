@@ -44,6 +44,9 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
+      - name: Log source hash
+        run: find . -type f -exec sha256sum {} \;
+
       - name: Upload source
         uses: actions/upload-artifact@v4
         with:
@@ -92,6 +95,9 @@ jobs:
     steps:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
+
+      - name: Log source hash
+        run: find . -type f -exec sha256sum {} \;
 
       - name: Upload source
         uses: actions/upload-artifact@v4
