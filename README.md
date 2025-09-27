@@ -171,16 +171,3 @@ Allows you to whisper.
 
 If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/dvc reloadconfig` subcommand to reload
 the config without have to reload/restart the server. **Using this subcommand will stop all running bots.**
-
-## Roadmap
-
-### Future
-
-Disclaimer: The items in this list are purely ideas and there is no guarantee of them being implemented.
-
--   Catch config errors such as not in config when getting bots
--   An option to lock the voice channels when they are not in use.
--   Reduce volume of crouching players in the audio that goes to discord. This is currently possible but not yet implemented
--   Action bar HUD for groups showing players in your group
--   Notifications for groups (a message is sent to you when someone joins/leaves the group you're in)
--   Inventory GUI for groups (this would need an abstraction between Bukkit's API and Fabric's sgui library, and would also make supporting 1.19.2+ on Fabric impossible)
