@@ -1,0 +1,11 @@
+name: Question
+description: Have a question? Use this template!
+labels: 'question'
+assignees: 'amsam0'
+body:
+- type: textarea
+  attributes:
+    label: What is your question?
+    description: Please be clear and concise. Include any necessary context and screenshots, if applicable.
+  validations:
+    required: true
