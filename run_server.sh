@@ -109,7 +109,7 @@ elif [ "$platform" == "fabric" ]; then
   echo -e "${green}Copied config from $from to $to${clear}"
 
   # Copy mod
-  from="fabric/build/libs/voicechat-discord-fabric-$pluginVersion.jar"
+  from="fabric/$minecraftVersion/build/libs/voicechat-discord-fabric-$minecraftVersion-$pluginVersion.jar"
   to="fabric/run/$minecraftVersion/mods/voicechat-discord-fabric.jar"
   cp $from $to
   echo -e "${green}Copied mod $from to $to${clear}"
