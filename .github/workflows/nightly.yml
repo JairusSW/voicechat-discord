@@ -189,8 +189,7 @@ jobs:
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Build paper
-        run: ../gradlew build
-        working-directory: ./paper
+        run: ./gradlew :paper:build
 
       - name: Upload paper artifact
         uses: actions/upload-artifact@v4
@@ -198,12 +197,50 @@ jobs:
           name: voicechat-discord-paper-nightly.jar
           path: paper/build/libs/voicechat-discord-paper-${{ steps.version.outputs.version }}.jar
 
-      - name: Build fabric
-        run: ../gradlew build
-        working-directory: ./fabric
-
-      - name: Upload fabric artifact
+      - name: Build fabric 1.19.2
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.19.2",/' -i settings.gradle.kts && ./gradlew :fabric:1.19.2:build
+      - name: Upload fabric 1.19.2 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: voicechat-discord-fabric-nightly.jar
-          path: fabric/build/libs/voicechat-discord-fabric-${{ steps.version.outputs.version }}.jar
+          name: voicechat-discord-fabric-1.19.2-nightly.jar
+          path: fabric/1.19.2/build/libs/voicechat-discord-fabric-1.19.2-${{ steps.version.outputs.version }}.jar
+
+      - name: Build fabric 1.20.1
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.20.1",/' -i settings.gradle.kts && ./gradlew :fabric:1.20.1:build
+      - name: Upload fabric 1.20.1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicechat-discord-fabric-1.20.1-nightly.jar
+          path: fabric/1.20.1/build/libs/voicechat-discord-fabric-1.20.1-${{ steps.version.outputs.version }}.jar
+
+      - name: Build fabric 1.21.1
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.21.1",/' -i settings.gradle.kts && ./gradlew :fabric:1.21.1:build
+      - name: Upload fabric 1.21.1 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicechat-discord-fabric-1.21.1-nightly.jar
+          path: fabric/1.21.1/build/libs/voicechat-discord-fabric-1.21.1-${{ steps.version.outputs.version }}.jar
+
+      - name: Build fabric 1.21.4
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.21.4",/' -i settings.gradle.kts && ./gradlew :fabric:1.21.4:build
+      - name: Upload fabric 1.21.4 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicechat-discord-fabric-1.21.4-nightly.jar
+          path: fabric/1.21.4/build/libs/voicechat-discord-fabric-1.21.4-${{ steps.version.outputs.version }}.jar
+
+      - name: Build fabric 1.21.5
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.21.5",/' -i settings.gradle.kts && ./gradlew :fabric:1.21.5:build
+      - name: Upload fabric 1.21.5 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicechat-discord-fabric-1.21.5-nightly.jar
+          path: fabric/1.21.5/build/libs/voicechat-discord-fabric-1.21.5-${{ steps.version.outputs.version }}.jar
+
+      - name: Build fabric 1.21.8
+        run: sed -E -e '/"fabric:/s/[^:]*",$/1.21.8",/' -i settings.gradle.kts && ./gradlew :fabric:1.21.8:build
+      - name: Upload fabric 1.21.8 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: voicechat-discord-fabric-1.21.8-nightly.jar
+          path: fabric/1.21.8/build/libs/voicechat-discord-fabric-1.21.8-${{ steps.version.outputs.version }}.jar
