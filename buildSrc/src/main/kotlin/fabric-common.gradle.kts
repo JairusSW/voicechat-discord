@@ -21,8 +21,8 @@ project.group = Properties.mavenGroup
 sourceSets {
     main {
         // Include common fabric code
-        java.srcDirs(layout.projectDirectory.file("src/common/java"))
-        resources.srcDirs(layout.projectDirectory.file("src/common/resources"))
+        java.srcDirs(layout.projectDirectory.file("../src/common/java"))
+        resources.srcDirs(layout.projectDirectory.file("../src/common/resources"))
     }
 }
 
