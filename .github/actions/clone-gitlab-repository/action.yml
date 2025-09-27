@@ -7,12 +7,14 @@ runs:
 
     - name: Log source hash (Unix)
       if: runner.os != 'Windows'
+      shell: bash
       run: |
         find . -type f -exec sha256sum {} \;
         git log
 
     - name: Log source hash (Windows)
       if: runner.os == 'Windows'
+      shell: pwsh
       # for some reason this fails with permission denied
       #run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
       run: git log
