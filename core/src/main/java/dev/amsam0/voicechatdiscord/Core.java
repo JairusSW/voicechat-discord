@@ -34,6 +34,8 @@ public final class Core {
     private static native void shutdownNatives();
 
     public static void enable() {
+        platform.info("Enabling " + Constants.PLUGIN_ID + " " + Constants.VERSION);
+
         // This should happen first
         checkSimpleVoiceChatVersion(platform.getSimpleVoiceChatVersion());
 
@@ -48,9 +50,13 @@ public final class Core {
         loadConfig();
 
         platform.setOnPlayerLeaveHandler(Core::onPlayerLeave);
+
+        platform.info("Enabled " + Constants.PLUGIN_ID + " " + Constants.VERSION);
     }
 
     public static void disable() {
+        platform.info("Disabling " + Constants.PLUGIN_ID + " " + Constants.VERSION);
+
         int toShutdown = bots.size();
         platform.info("Shutting down " + toShutdown + " bot" + (toShutdown != 1 ? "s" : ""));
 
@@ -64,6 +70,8 @@ public final class Core {
         } catch (Throwable e) {
             platform.error("Failed to shutdown native runtime", e);
         }
+
+        platform.info("Disabled " + Constants.PLUGIN_ID + " " + Constants.VERSION);
     }
 
     @SuppressWarnings({"DataFlowIssue", "unchecked", "ResultOfMethodCallIgnored"})
