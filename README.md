@@ -22,7 +22,7 @@ Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md
 
 # Project Infrastructure
 
-Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord. However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues. GitHub Actions are also used to build and release the addon because I couldn't be bothered to migrate to GitLab CI.
+Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord. However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues. GitHub Actions are also used to build and release the addon because I couldn't be bothered to migrate to GitLab CI. (While using GitHub Actions to clone the GitLab repository arguably reduces security, the GitHub Actions workflows upload the Git repository used to build the release as an artifact to allow for independent analysis. The sha256 hashes of all files and the output of `git log` is also logged.)
 
 # Installation and Usage
 
