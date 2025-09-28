@@ -33,6 +33,7 @@ public final class Constants {
             "- 2: Most debug logging (will spam the console but excludes logging that is extremely verbose and usually not helpful)",
             "- 3 (or higher): All debug logging (will spam the console)",
             "",
-            "For more information on getting everything setup: https://github.com/amsam0/voicechat-discord#readme"
+            "For more information on getting everything setup: https://modrinth.com/plugin/simple-voice-chat-discord-bridge",
+            "If you have trouble accessing that page, you can also try: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/README.md"
     );
 }
