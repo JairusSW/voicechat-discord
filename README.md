@@ -49,11 +49,11 @@ Make sure to run your server once with Simple Voice Chat and Simple Voice Chat D
 
 First, create an application at [discord.com/developers/applications](https://discord.com/developers/applications) by clicking `New Application` at the top right. Choose the name that you want your bot to be called.
 
-![](images/new-application.jpg)
+![](https://gitlab.com/amsam0/voicechat-discord/-/raw/main/images/new-application.jpg)
 
 On the left, click `Bot`. Copy the token by clicking `Reset Token`. After resetting the token, there should be a `Copy` button.
 
-![](images/reset-token.jpg)
+![](https://gitlab.com/amsam0/voicechat-discord/-/raw/main/images/reset-token.jpg)
 
 Now, open [the configuration file](#finding-the-configuration-file) with a text editor. Replace `DISCORD_BOT_TOKEN_HERE` with the token you copied. It should look something like this:
 
@@ -65,15 +65,15 @@ bots:
 
 Next, click `Installation` on the left. Change `Install Link` from `Discord Provided Link` to `None`.
 
-![](images/remove-install-link.jpg)
+![](https://gitlab.com/amsam0/voicechat-discord/-/raw/main/images/remove-install-link.jpg)
 
 Next, click `Bot` on the left. Scroll down and disable disable `Public Bot`.
 
-![](images/disable-public-bot.jpg)
+![](https://gitlab.com/amsam0/voicechat-discord/-/raw/main/images/disable-public-bot.jpg)
 
 Finally, click `General Information` on the left and copy the Application ID.
 
-![](images/copy-application-id.jpg)
+![](https://gitlab.com/amsam0/voicechat-discord/-/raw/main/images/copy-application-id.jpg)
 
 In your browser, go to `discord.com/api/oauth2/authorize?client_id=YOUR_APPLICATION_ID_HERE&permissions=36700160&scope=bot` but replace `YOUR_APPLICATION_ID_HERE` with the application ID you just copied. Choose the server you want to invite your bot to. **Make sure not to disable any of its permissions.**
 
