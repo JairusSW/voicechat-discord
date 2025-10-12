@@ -21,6 +21,10 @@ Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md
 
 # Project Infrastructure
 
+> ℹ️ **Note**
+>
+> If you just want to use the addon and don't care about where the source code and other infrastructure is hosted, you can skip this section.
+
 Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord.
 
 However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues.
