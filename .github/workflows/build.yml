@@ -243,13 +243,8 @@ jobs:
       - name: git log
         run: git log
 
-      - name: Log source hash (Unix)
-        if: runner.os != 'Windows'
+      - name: Log source hash
         run: find . -type f -exec sha256sum {} \;
-
-      - name: Log source hash (Windows)
-        if: runner.os == 'Windows'
-        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
       - name: Upload source
         uses: actions/upload-artifact@v4
