@@ -18,7 +18,7 @@ object Properties {
         "1.21.4",
         "1.21.5",
         "1.21.8",
-        "1.21.9-rc1",
+        "1.21.9",
     )
     val paperDevBundleVersion = "${paperSupportedMinecraftVersions.last()}-R0.1-SNAPSHOT"
 
