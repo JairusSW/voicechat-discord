@@ -231,8 +231,6 @@ jobs:
         if: ${{ matrix.version }}
         run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
 
-      - run: cat settings.gradle.kts
-
       - name: '[nightly] Build project'
         if: ${{ inputs.type == 'nightly' }}
         run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:build
