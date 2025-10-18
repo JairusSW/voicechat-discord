@@ -13,6 +13,25 @@ val modrinthVersionNumber = "${platformName}-${Properties.pluginVersion}"
 project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
+Properties.paperSupportedMinecraftVersions.forEach { ver ->
+    val verForTask = ver.replace(".", "_")
+
+    val setupServer = tasks.register<Exec>("setupServer_${verForTask}") {
+        commandLine = listOf("./setup_server.sh", "paper", ver)
+        workingDir = project.rootDir
+
+        dependsOn(tasks.build)
+    }
+
+    tasks.register<Exec>("runServer_${verForTask}") {
+        commandLine = listOf("java", "-Xmx1G", "-jar", "server.jar", "--nogui")
+        workingDir = project.projectDir.resolve("run/$ver")
+        standardInput = System.`in` // necessary for console to work
+
+        dependsOn(setupServer)
+    }
+}
+
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }

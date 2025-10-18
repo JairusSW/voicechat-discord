@@ -19,6 +19,17 @@ val modrinthVersionNumber = "${platformName}-${projectVersion}"
 project.version = projectVersion
 project.group = Properties.mavenGroup
 
+val setupServer = tasks.register<Exec>("setupServer") {
+    commandLine = listOf("./setup_server.sh", "fabric", minecraftVersion)
+    workingDir = project.rootDir
+
+    dependsOn(tasks.build)
+}
+
+tasks.runServer {
+    dependsOn(setupServer)
+}
+
 sourceSets {
     main {
         // Include common fabric code
@@ -118,19 +129,10 @@ dependencies {
 
     implementation(project(":core"))
     shadow(project(":core"))
-
-    // Runtime dependencies for testing only
-    modRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-${minecraftVersion}-2.6.4")
 }
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://api.modrinth.com/maven")
-        content {
-            includeGroup("maven.modrinth")
-        }
-    }
     maven { url = uri("https://jitpack.io") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/releases") }
     maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
