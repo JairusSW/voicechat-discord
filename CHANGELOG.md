@@ -4,6 +4,14 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 ## 3.0.12
 
+- Minecraft versions 1.21.9 and 1.21.10 are now supported.
+- There is now a separate Fabric jar for each Minecraft version.
+- Adventure usage has been removed. This allows us to remove the messy code used to convert Adventure messages to Minecraft messages on Fabric, and generally just reduces code complexity and increases performance.
+- The update checker has been completely removed.
+- Opus has been updated to 1.5.2.
+- The bot setup guide has been updated. Previously broken images have been fixed.
+- Miscellaneous internal improvements.
+
 Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.11...3.0.12
 
 ## 3.0.11
