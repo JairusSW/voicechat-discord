@@ -1,4 +1,4 @@
-name: Build and upload addon
+name: Build
 run-name: ${{ inputs.type }} build by ${{ github.actor }}
 
 on:
