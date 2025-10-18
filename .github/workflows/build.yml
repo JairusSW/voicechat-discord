@@ -79,6 +79,7 @@ jobs:
           include-hidden-files: true
 
       - name: Cargo cache
+        if: ${{ inputs.type == 'nightly' }}
         uses: actions/cache@v4
         with:
           path: |
