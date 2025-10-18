@@ -26,7 +26,7 @@ object Properties {
 
     /* Fabric (https://fabricmc.net/develop) */
     data class FabricMetadata(val yarnMappingsVersion: String, val fabricApiVersion: String, val permissionsApiVersion: String)
-    const val fabricLoaderVersion = "0.17.0" // Make sure to sync with run_server.sh
+    const val fabricLoaderVersion = "0.17.2" // Make sure to sync with run_server.sh
     val fabricVersions = mapOf(
         // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
         // See https://github.com/lucko/fabric-permissions-api/releases for permissions API

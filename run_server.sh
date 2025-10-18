@@ -3,7 +3,7 @@
 set -e
 
 pluginVersion="3.0.12"
-fabricLoaderVersion="0.17.0"
+fabricLoaderVersion="0.17.2"
 
 minecraftVersion="$2"
 platform="$1"
