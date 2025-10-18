@@ -48,6 +48,17 @@ if [ "$platform" == "paper" ]; then
     echo -e "${green}voicechat already downloaded${clear}"
   fi
 
+  # Copy eula.txt
+  from="paper/run/*/eula.txt"
+  from=$(echo $from | cut -d " " -f 1 -)
+  if [ -f $from ]; then
+    to="paper/run/$minecraftVersion/eula.txt"
+    cp $from $to
+    echo -e "${green}Copied eula.txt from $from to $to${clear}"
+  else
+    echo -e "${yellow}No eula.txt could be found${clear}"
+  fi
+
   # Copy config
   from="config.yml"
   to="paper/run/$minecraftVersion/plugins/voicechat-discord/config.yml"
@@ -100,6 +111,17 @@ elif [ "$platform" == "fabric" ]; then
     echo -e "downloaded${clear}"
   else
     echo -e "${green}voicechat already downloaded${clear}"
+  fi
+
+  # Copy eula.txt
+  from="fabric/run/*/eula.txt"
+  from=$(echo $from | cut -d " " -f 1 -)
+  if [ -f $from ]; then
+    to="fabric/run/$minecraftVersion/eula.txt"
+    cp $from $to
+    echo -e "${green}Copied eula.txt from $from to $to${clear}"
+  else
+    echo -e "${yellow}No eula.txt could be found${clear}"
   fi
 
   # Copy config
