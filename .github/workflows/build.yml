@@ -252,6 +252,8 @@ jobs:
       - name: '[release] Build and publish project to Modrinth'
         if: ${{ inputs.type == 'release' }}
         run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:modrinth
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
       - name: '[nightly] Stop Gradle daemon before creating cache'
         if: ${{ inputs.type == 'nightly' }}
