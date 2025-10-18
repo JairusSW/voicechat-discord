@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -e
+set -euxo pipefail
 
 OS=""
 FILENAME=""

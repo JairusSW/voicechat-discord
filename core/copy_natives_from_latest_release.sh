@@ -1,12 +1,10 @@
 #!/usr/bin/env bash
-
-set -e
+set -euo pipefail
 
 yellow="\033[0;33m"
 green="\033[0;32m"
 red="\033[0;31m"
 clear="\033[0m"
-
 
 # Download voicechat-discord
 file="src/main/resources/voicechat-discord.jar"

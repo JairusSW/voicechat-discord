@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-set -e
+set -euo pipefail
 
 pluginVersion="3.0.12"
 fabricLoaderVersion="0.17.2"
