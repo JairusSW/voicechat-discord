@@ -1,5 +1,5 @@
 name: Build
-run-name: ${{ inputs.type }} build by ${{ github.actor }}
+run-name: ${{ inputs.type }} build
 
 on:
   workflow_dispatch:
