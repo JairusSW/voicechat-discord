@@ -12,5 +12,5 @@ include(
     "paper",
     "fabric",
 
-    "fabric:1.21.9-rc1",
+    "fabric:1.21.9",
 )
