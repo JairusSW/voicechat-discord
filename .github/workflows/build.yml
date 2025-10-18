@@ -217,10 +217,17 @@ jobs:
           name: natives-x86_64-pc-windows-gnu
           path: core/src/main/resources/natives/windows-x64/
 
-      - name: Add nightly suffix to version
-        run: sed -e '/pluginVersion = .*/s/"$/-nightly+${{ github.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
+      - name: '[nightly] Get git SHA'
+        if: ${{ inputs.type == 'nightly' }}
+        id: sha
+        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Get version
+      - name: '[nightly] Add suffix to version'
+        if: ${{ inputs.type == 'nightly' }}
+        run: sed -e '/pluginVersion = .*/s/"$/-nightly+${{ steps.sha.outputs.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
+
+      - name: '[nightly] Get version'
+        if: ${{ inputs.type == 'nightly' }}
         id: version
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
