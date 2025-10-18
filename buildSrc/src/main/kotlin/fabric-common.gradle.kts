@@ -144,6 +144,7 @@ modrinth {
     versionNumber.set(modrinthVersionName)
     uploadFile.set(tasks.remapJar)
     gameVersions.set(listOf(minecraftVersion))
+    versionType.set(Properties.modrinthVersionType)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
     dependencies {
         required.project("simple-voice-chat")

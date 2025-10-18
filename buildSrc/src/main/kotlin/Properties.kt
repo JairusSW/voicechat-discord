@@ -7,6 +7,7 @@ object Properties {
     const val mavenGroup = "dev.amsam0.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"
+    const val modrinthVersionType = "release" // Can be release, beta, or alpha
 
     /* Paper */
     const val paperApiVersion = "1.19"
