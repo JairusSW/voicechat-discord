@@ -106,7 +106,7 @@ public class FabricPlatform implements Platform {
 
     @Override
     public void setOnPlayerLeaveHandler(Consumer<UUID> handler) {
-        ServerPlayConnectionEvents.DISCONNECT.register((minecraft_handler, server) -> handler.accept(minecraft_handler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((minecraftHandler, server) -> handler.accept(minecraftHandler.player.getUuid()));
     }
 
     @Override
