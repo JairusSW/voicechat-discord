@@ -1,4 +1,5 @@
 name: Build and upload addon
+run-name: ${{ inputs.type }} build by ${{ github.actor }}
 
 on:
   workflow_dispatch:
