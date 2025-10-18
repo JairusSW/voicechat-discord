@@ -62,11 +62,11 @@ jobs:
       - name: git log
         run: git log
 
-      - name: Log source hash (Unix)
+      - name: '[unix] Log source hash'
         if: runner.os != 'Windows'
         run: find . -type f -exec sha256sum {} \;
 
-      - name: Log source hash (Windows)
+      - name: '[windows] Log source hash'
         if: runner.os == 'Windows'
         run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
@@ -78,7 +78,7 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
-      - name: Cargo cache
+      - name: '[nightly] Cargo cache'
         if: ${{ inputs.type == 'nightly' }}
         uses: actions/cache@v4
         with:
@@ -98,7 +98,7 @@ jobs:
         if: ${{ matrix.install }}
         run: ${{ matrix.install }}
 
-      - name: Setup Xcode
+      - name: '[macos] Setup Xcode'
         uses: maxim-lobanov/setup-xcode@v1
         if: ${{ contains(matrix.os, 'macos') }}
         with:
@@ -142,11 +142,11 @@ jobs:
       - name: git log
         run: git log
 
-      - name: Log source hash (Unix)
+      - name: '[unix] Log source hash'
         if: runner.os != 'Windows'
         run: find . -type f -exec sha256sum {} \;
 
-      - name: Log source hash (Windows)
+      - name: '[windows] Log source hash'
         if: runner.os == 'Windows'
         run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
@@ -158,7 +158,7 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
-      - name: Gradle cache
+      - name: '[nightly] Gradle cache'
         uses: actions/cache@v4
         if: ${{ inputs.type == 'nightly' }}
         with:
@@ -224,7 +224,7 @@ jobs:
         id: version
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
-      - name: Switch to version subproject
+      - name: '[versions] Switch to version subproject'
         if: ${{ matrix.version }}
         run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
 
