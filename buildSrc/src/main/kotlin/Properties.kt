@@ -19,6 +19,7 @@ object Properties {
         "1.21.5",
         "1.21.8",
         "1.21.9",
+        "1.21.10",
     )
     val paperDevBundleVersion = "${paperSupportedMinecraftVersions.last()}-R0.1-SNAPSHOT"
 
@@ -37,6 +38,7 @@ object Properties {
         "1.21.5" to FabricMetadata(yarnMappingsVersion = "1.21.5+build.1", fabricApiVersion = "0.128.1+1.21.5", permissionsApiVersion = "0.3.3"),
         "1.21.8" to FabricMetadata(yarnMappingsVersion = "1.21.8+build.1", fabricApiVersion = "0.130.0+1.21.8", permissionsApiVersion = "0.4.1"),
         "1.21.9" to FabricMetadata(yarnMappingsVersion = "1.21.9+build.1", fabricApiVersion = "0.134.0+1.21.9", permissionsApiVersion = "0.5.0"),
+        "1.21.10" to FabricMetadata(yarnMappingsVersion = "1.21.10+build.2", fabricApiVersion = "0.135.0+1.21.10", permissionsApiVersion = "0.5.0"),
     )
 
     /* Dependencies */
