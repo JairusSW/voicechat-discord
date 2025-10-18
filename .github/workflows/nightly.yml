@@ -103,11 +103,7 @@ jobs:
     concurrency:
       group: ${{ github.ref }}
       cancel-in-progress: true
-    strategy:
-      matrix:
-        java: [21]
-        os: [ubuntu-22.04]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     needs: [natives]
     steps:
       - name: Checkout GitLab repository
@@ -172,10 +168,10 @@ jobs:
       - name: Validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v3
 
-      - name: Setup JDK ${{ matrix.java }}
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 21
           distribution: adopt
 
       - name: Make gradle wrapper executable
