@@ -12,9 +12,10 @@ jobs:
     concurrency:
       group: ${{ github.ref }}-${{ matrix.os }}-${{ matrix.arch }}
       cancel-in-progress: true
+
     strategy:
       matrix:
-        os: [windows-latest] #[ubuntu-22.04, macos-latest, windows-latest]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
         arch: [aarch64, x86_64, i686]
         exclude:
           - os: macos-latest
@@ -24,6 +25,7 @@ jobs:
           - os: windows-latest
             arch: i686
         include:
+          # OS specific keys
           - os: ubuntu-22.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
@@ -36,12 +38,14 @@ jobs:
             triple: pc-windows-gnu
             filename: voicechat_discord.dll
 
+          # OS and arch specific keys
           - os: ubuntu-22.04
             arch: aarch64
             install: sudo apt-get install -y gcc-aarch64-linux-gnu
           - os: ubuntu-22.04
             arch: i686
             install: sudo apt-get install -y gcc-i686-linux-gnu
+
     runs-on: ${{ matrix.os }}
     #container:
     #  image: ${{ matrix.container }}
@@ -49,25 +53,16 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
+      - name: git log
+        run: git log
+
       - name: Log source hash (Unix)
         if: runner.os != 'Windows'
-        run: |
-          find . -type f -exec sha256sum {} \;
-          git log
-
-      - run: pwd
-      - run: ls
-      - run: Get-FileHash build.gradle.kts
+        run: find . -type f -exec sha256sum {} \;
 
       - name: Log source hash (Windows)
         if: runner.os == 'Windows'
-        run: |
-          pwd
-          type build.gradle.kts
-          Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
-          git log
-
-      - run: exit 1
+        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
       - name: Upload source
         uses: actions/upload-artifact@v4
