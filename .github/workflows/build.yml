@@ -1,11 +1,16 @@
-name: Build and upload nightly
+name: Build and upload addon
 
 on:
-  push:
-    branches:
-      - '*'
-    tags-ignore:
-      - '*'
+  workflow_dispatch:
+    inputs:
+      type:
+        description: Type
+        required: true
+        type: choice
+        options:
+        - nightly
+        - release
+        default: nightly
 
 jobs:
   natives:
@@ -220,3 +225,52 @@ jobs:
         with:
           name: voicechat-discord-${{ matrix.platform }}-nightly.jar
           path: ${{ matrix.platform }}/build/libs/voicechat-discord-${{ matrix.platform }}-${{ steps.version.outputs.version }}.jar
+
+  sync-body:
+    if: ${{ inputs.type == 'release' }}
+
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+
+    runs-on: ubuntu-22.04
+    #needs: [build]
+    steps:
+      - name: Checkout GitLab repository
+        run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
+
+      - name: git log
+        run: git log
+
+      - name: Log source hash (Unix)
+        if: runner.os != 'Windows'
+        run: find . -type f -exec sha256sum {} \;
+
+      - name: Log source hash (Windows)
+        if: runner.os == 'Windows'
+        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
+
+      - name: Upload source
+        uses: actions/upload-artifact@v4
+        with:
+          name: source-sync-body
+          path: .
+          if-no-files-found: error
+          include-hidden-files: true
+
+      - name: Validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: adopt
+
+      - name: Make gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Sync body to modrinth
+        run: ./gradlew :core:modrinthSyncBody
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
