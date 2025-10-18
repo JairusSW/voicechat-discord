@@ -158,6 +158,17 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
+      - name: Gradle cache
+        uses: actions/cache@v4
+        if: ${{ inputs.type == 'nightly' }}
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-
+
       - name: Validate gradle wrapper
         uses: gradle/actions/wrapper-validation@v4
 
