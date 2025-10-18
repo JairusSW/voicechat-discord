@@ -145,6 +145,7 @@ modrinth {
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
+    changelog.set("")
     uploadFile.set(tasks.remapJar)
     gameVersions.set(listOf(minecraftVersion))
     versionType.set(Properties.modrinthVersionType)

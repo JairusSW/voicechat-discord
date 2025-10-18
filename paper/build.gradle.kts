@@ -119,6 +119,7 @@ modrinth {
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
+    changelog.set("")
     uploadFile.set(tasks.reobfJar.get().outputJar.get())
     gameVersions.set(Properties.paperSupportedMinecraftVersions)
     loaders.set(listOf("paper", "purpur"))
