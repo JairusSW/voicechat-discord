@@ -6,6 +6,18 @@ plugins {
 project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
 
+tasks.register<Exec>("buildAndCopyNatives") {
+    commandLine = listOf("./build_and_copy_natives.sh")
+}
+
+tasks.register<Exec>("copyNatives") {
+    commandLine = listOf("./copy_natives.sh")
+}
+
+tasks.register<Exec>("copyNativesFromLatestRelease") {
+    commandLine = listOf("./copy_natives_from_latest_release.sh")
+}
+
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }
