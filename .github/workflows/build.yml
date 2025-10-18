@@ -224,9 +224,14 @@ jobs:
         id: version
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
+      - name: Remove unnecessary platform subprojects
+        run: sed -E -e '/(${{ matrix.platform }})|(core)/! s/.*",$//' -i settings.gradle.kts
+
       - name: '[versions] Switch to version subproject'
         if: ${{ matrix.version }}
         run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
+
+      - run: cat settings.gradle.kts
 
       - name: '[nightly] Build project'
         if: ${{ inputs.type == 'nightly' }}
