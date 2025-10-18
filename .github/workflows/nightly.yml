@@ -121,22 +121,21 @@ jobs:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
+      - name: git log
+        run: git log
+
       - name: Log source hash (Unix)
         if: runner.os != 'Windows'
-        run: |
-          find . -type f -exec sha256sum {} \;
-          git log
+        run: find . -type f -exec sha256sum {} \;
 
       - name: Log source hash (Windows)
         if: runner.os == 'Windows'
-        # for some reason this fails with permission denied
-        #run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
-        run: git log
+        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
       - name: Upload source
         uses: actions/upload-artifact@v4
         with:
-          name: source-build
+          name: source-${{ matrix.platform }}-${{ matrix.version }}
           path: .
           if-no-files-found: error
           include-hidden-files: true
