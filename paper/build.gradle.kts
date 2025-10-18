@@ -7,7 +7,8 @@ plugins {
 val platformName = project.name
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
-val modrinthVersionName = "${platformName}-${Properties.pluginVersion}"
+val modrinthVersionName = "Simple Voice Chat Discord Bridge ${Properties.pluginVersion}"
+val modrinthVersionNumber = "${platformName}-${Properties.pluginVersion}"
 
 project.version = Properties.pluginVersion
 project.group = Properties.mavenGroup
@@ -98,7 +99,7 @@ modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
-    versionNumber.set(modrinthVersionName)
+    versionNumber.set(modrinthVersionNumber)
     uploadFile.set(tasks.reobfJar.get().outputJar.get())
     gameVersions.set(Properties.paperSupportedMinecraftVersions)
     loaders.set(listOf("paper", "purpur"))

@@ -13,7 +13,8 @@ val fabricMetadata = Properties.fabricVersions[minecraftVersion]!!
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
 val projectVersion = "${minecraftVersion}-${Properties.pluginVersion}"
-val modrinthVersionName = "${platformName}-${projectVersion}"
+val modrinthVersionName = "Simple Voice Chat Discord Bridge $projectVersion"
+val modrinthVersionNumber = "${platformName}-${projectVersion}"
 
 project.version = projectVersion
 project.group = Properties.mavenGroup
@@ -141,7 +142,7 @@ modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
-    versionNumber.set(modrinthVersionName)
+    versionNumber.set(modrinthVersionNumber)
     uploadFile.set(tasks.remapJar)
     gameVersions.set(listOf(minecraftVersion))
     versionType.set(Properties.modrinthVersionType)
