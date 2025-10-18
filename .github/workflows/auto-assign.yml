@@ -10,7 +10,7 @@ jobs:
     auto-assign:
         runs-on: ubuntu-latest
         steps:
-            - name: "Auto-assign issue/PR"
+            - name: Auto-assign issue/PR
               uses: pozil/auto-assign-issue@v1
               with:
                   assignees: amsam0
