@@ -197,26 +197,26 @@ jobs:
         run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
       - name: Switch to version subproject
-        if: matrix.version
+        if: ${{ matrix.version }}
         run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
 
       - name: Build subproject
-        if: matrix.version
+        if: ${{ matrix.version }}
         run: ./gradlew :${{ matrix.platform }}:${{ matrix.version }}:build
 
       - name: Upload subproject artifact
-        if: matrix.version
+        if: ${{ matrix.version }}
         uses: actions/upload-artifact@v4
         with:
           name: voicechat-discord-${{ matrix.platform }}-${{ matrix.version }}-nightly.jar
           path: ${{ matrix.platform }}/${{ matrix.version }}/build/libs/voicechat-discord-${{ matrix.platform }}-${{ matrix.version }}-${{ steps.version.outputs.version }}.jar
 
       - name: Build project
-        if: !matrix.version
+        if: ${{ !matrix.version }}
         run: ./gradlew :${{ matrix.platform }}:build
 
       - name: Upload project artifact
-        if: !matrix.version
+        if: ${{ !matrix.version }}
         uses: actions/upload-artifact@v4
         with:
           name: voicechat-discord-${{ matrix.platform }}-nightly.jar
