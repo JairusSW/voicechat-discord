@@ -59,6 +59,17 @@ if [ "$platform" == "paper" ]; then
     echo -e "${yellow}No eula.txt could be found${clear}"
   fi
 
+  # Copy server.properties
+  from="paper/run/*/server.properties"
+  from=$(echo $from | cut -d " " -f 1 -)
+  if [ -f $from ]; then
+    to="paper/run/$minecraftVersion/server.properties"
+    cp $from $to
+    echo -e "${green}Copied server.properties from $from to $to${clear}"
+  else
+    echo -e "${yellow}No server.properties could be found${clear}"
+  fi
+
   # Copy config
   from="config.yml"
   to="paper/run/$minecraftVersion/plugins/voicechat-discord/config.yml"
@@ -122,6 +133,17 @@ elif [ "$platform" == "fabric" ]; then
     echo -e "${green}Copied eula.txt from $from to $to${clear}"
   else
     echo -e "${yellow}No eula.txt could be found${clear}"
+  fi
+
+  # Copy server.properties
+  from="fabric/run/*/server.properties"
+  from=$(echo $from | cut -d " " -f 1 -)
+  if [ -f $from ]; then
+    to="fabric/run/$minecraftVersion/server.properties"
+    cp $from $to
+    echo -e "${green}Copied server.properties from $from to $to${clear}"
+  else
+    echo -e "${yellow}No server.properties could be found${clear}"
   fi
 
   # Copy config
