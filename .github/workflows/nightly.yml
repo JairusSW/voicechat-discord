@@ -64,7 +64,7 @@ jobs:
         run: |
           pwd
           type build.gradle.kts
-          Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
+          Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
           git log
 
       - run: exit 1
