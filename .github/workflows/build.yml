@@ -243,6 +243,10 @@ jobs:
         if: ${{ inputs.type == 'release' }}
         run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:modrinth
 
+      - name: '[nightly] Stop Gradle daemon before creating cache'
+        if: ${{ inputs.type == 'nightly' }}
+        run: ./gradlew --stop
+
   sync-body:
     if: ${{ inputs.type == 'release' }}
 
