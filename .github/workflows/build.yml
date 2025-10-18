@@ -78,6 +78,17 @@ jobs:
           if-no-files-found: error
           include-hidden-files: true
 
+      - name: Cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: cargo-${{ matrix.arch }}-${{ matrix.triple }}-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Pre-package installation
         if: ${{ matrix.pre-install }}
         run: ${{ matrix.pre-install }}
