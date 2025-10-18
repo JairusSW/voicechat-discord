@@ -228,14 +228,20 @@ jobs:
         if: ${{ matrix.version }}
         run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
 
-      - name: Build project
+      - name: '[nightly] Build project'
+        if: ${{ inputs.type == 'nightly' }}
         run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:build
 
-      - name: Upload project artifact
+      - name: '[nightly] Upload project artifact'
+        if: ${{ inputs.type == 'nightly' }}
         uses: actions/upload-artifact@v4
         with:
           name: voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-nightly.jar
           path: ${{ matrix.platform }}${{ matrix.version && '/' || '' }}${{ matrix.version }}/build/libs/voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ steps.version.outputs.version }}.jar
+
+      - name: '[release] Build and publish project to Modrinth'
+        if: ${{ inputs.type == 'release' }}
+        run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:modrinth
 
   sync-body:
     if: ${{ inputs.type == 'release' }}
