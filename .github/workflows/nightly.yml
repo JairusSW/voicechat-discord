@@ -57,9 +57,11 @@ jobs:
 
       - name: Log source hash (Windows)
         if: runner.os == 'Windows'
-        # for some reason this fails with permission denied
-        #run: Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
-        run: git log
+        run: |
+          Get-ChildItem -Recurse | %{ Get-FileHash $_.FullName }
+          git log
+
+      - run: exit 1
 
       - name: Upload source
         uses: actions/upload-artifact@v4
