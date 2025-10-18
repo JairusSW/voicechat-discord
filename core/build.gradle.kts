@@ -71,5 +71,6 @@ modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set(Properties.modrinthProjectId)
     syncBodyFrom.set(rootProject.file("README.md").inputStream().bufferedReader().use { it.readText() })
+    detectLoaders.set(false)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
 }
