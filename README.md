@@ -17,19 +17,9 @@
 
 Simple Voice Chat Discord Bridge is a Simple Voice Chat addon for Fabric and Paper/Purpur that makes a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **For example, this addon allows Bedrock edition players connected through Geyser to use voice chat!**
 
-Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md
-
-# Project Infrastructure
-
-> ℹ️ **Note**
->
-> If you just want to use the addon and don't care about where the source code and other infrastructure is hosted, you can skip this section.
-
-Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord.
-
-However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues.
-
-In addition, GitHub Actions is used to build and release the addon because I can't be bothered to migrate to GitLab CI. The workflow files are in the GitHub repository at https://github.com/amsam0/voicechat-discord, and you can view workflow run results at https://github.com/amsam0/voicechat-discord/actions. (While using GitHub Actions to clone the GitLab repository arguably reduces security, the GitHub Actions workflows upload the Git repository used to build the release as an artifact to allow for independent analysis. The sha256 hashes of all files and the output of `git log` is also logged.)
+- Bug reports, feature requests, and general support: https://github.com/amsam0/voicechat-discord/issues
+- Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md
+- Source code: https://gitlab.com/amsam0/voicechat-discord
 
 # Installation and Usage
 
@@ -174,3 +164,11 @@ Allows you to whisper.
 ### `/dvc reloadconfig`
 
 If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/dvc reloadconfig` subcommand to reload the config without have to reload/restart the server. **Using this subcommand will stop all running bots.**
+
+# Project Infrastructure
+
+Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord.
+
+However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues.
+
+In addition, GitHub Actions is used to build and release the addon because I can't be bothered to migrate to GitLab CI. The workflow files are in the GitHub repository at https://github.com/amsam0/voicechat-discord, and you can view workflow run results at https://github.com/amsam0/voicechat-discord/actions. (While using GitHub Actions to clone the GitLab repository arguably reduces security, the GitHub Actions workflows upload the Git repository used to build the release as an artifact to allow for independent analysis. The sha256 hashes of all files and the output of `git log` is also logged.)
