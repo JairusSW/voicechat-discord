@@ -33,29 +33,31 @@ public final class PaperPlugin extends JavaPlugin {
             platform = new PaperPlatform();
         }
 
+        String rawVersion = getServer().getMinecraftVersion().split(" ")[0];
         try {
-            var parsed = Version.parse(getServer().getMinecraftVersion().split(" ")[0], false);
+            var parsed = Version.parse(rawVersion, false);
 
             var wantedCommandHelper = Version.of(1, 20, 6);
             if (parsed.isHigherThanOrEquivalentTo(wantedCommandHelper)) {
-                platform.info("Server is >=1.20.6");
+                platform.info("Server is >=1.20.6 (" + rawVersion + ")");
                 commandHelper = new Post_1_20_6_CommandHelper();
             } else {
-                platform.info("Server is <1.20.6");
+                platform.info("Server is <1.20.6 (" + rawVersion + ")");
                 commandHelper = new Pre_1_20_6_CommandHelper();
             }
         } catch (IllegalArgumentException | ParseException e) {
-            var v = getServer().getMinecraftVersion();
-            platform.error("Unable to parse server version (" + v + ")", e);
+            platform.error("Unable to parse server version (" + rawVersion + ")", e);
 
-            if (v.equals("1.19.4") ||
-                    v.equals("1.20") ||
-                    v.equals("1.20.0") ||
-                    v.equals("1.20.1") ||
-                    v.equals("1.20.2") ||
-                    v.equals("1.20.3") ||
-                    v.equals("1.20.4") ||
-                    v.equals("1.20.5")
+            if (rawVersion.equals("1.19.2") ||
+                    rawVersion.equals("1.19.3") ||
+                    rawVersion.equals("1.19.4") ||
+                    rawVersion.equals("1.20") ||
+                    rawVersion.equals("1.20.0") ||
+                    rawVersion.equals("1.20.1") ||
+                    rawVersion.equals("1.20.2") ||
+                    rawVersion.equals("1.20.3") ||
+                    rawVersion.equals("1.20.4") ||
+                    rawVersion.equals("1.20.5")
             ) {
                 platform.info("Server is most likely <1.20.6");
                 commandHelper = new Pre_1_20_6_CommandHelper();
