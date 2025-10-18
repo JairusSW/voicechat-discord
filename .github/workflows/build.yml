@@ -235,7 +235,7 @@ jobs:
       cancel-in-progress: true
 
     runs-on: ubuntu-22.04
-    #needs: [build]
+    needs: [build]
     steps:
       - name: Checkout GitLab repository
         run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
