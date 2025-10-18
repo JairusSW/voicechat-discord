@@ -2,10 +2,6 @@
 >
 > I am looking for feedback on what Minecraft version and server platforms/loaders to support. **Please fill out this short, anonymous Google Form**: https://docs.google.com/forms/d/e/1FAIpQLSfhQhD9tSZK__N1GYHki1t2Zezd6WOd1IuKVqtAxlTQkZf4CA/viewform
 
-> ℹ️ **Note**
->
-> This project is in **Maintenance Mode**. This means that I currently do not plan to implement any more features into the addon (PRs are welcome though!). I will try my best to make bug fixes and support the latest Minecraft versions, but I cannot guarantee these fixes will be made in a timely manner, if they are made at all.
-
 # Simple Voice Chat Discord Bridge
 
 [<img alt="Modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
