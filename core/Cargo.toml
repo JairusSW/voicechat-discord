@@ -15,7 +15,7 @@ panic = "abort"
 strip = "symbols"
 
 [dependencies]
-dashmap = "5.5.3"
+dashmap = "6.1.0"
 discortp = "0.6.0"
 eyre = "0.6.12"
 flume = "0.11.0"
@@ -39,7 +39,7 @@ default-features = false
 features = ["rustls_backend", "chrono", "client", "http", "model"]
 
 [dependencies.songbird]
-version = "0.4.1"
+version = "0.5.0"
 features = ["receive"]
 
 [dependencies.symphonia]
