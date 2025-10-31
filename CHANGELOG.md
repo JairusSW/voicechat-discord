@@ -4,7 +4,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 ## 3.0.13
 
-- Rust dependencies were updated. This should fix issues related to connecting to Discord's servers.
+- Rust dependencies were updated. This should fix issues related to connecting to Discord's servers. ([#136](https://github.com/amsam0/voicechat-discord/issues/136))
 
 Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.12...3.0.13
 
