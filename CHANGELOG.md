@@ -2,6 +2,12 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.0.13
+
+- Rust dependencies were updated. This should fix issues related to connecting to Discord's servers.
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.12...3.0.13
+
 ## 3.0.12
 
 - Minecraft versions 1.21.9 and 1.21.10 are now supported.
