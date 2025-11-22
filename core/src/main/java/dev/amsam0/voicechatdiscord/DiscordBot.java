@@ -331,12 +331,14 @@ public final class DiscordBot {
     public void handlePacket(SoundPacket packet) {
         UUID senderId = packet.getSender();
 
+        boolean shouldHavePosition = false;
         @Nullable Position position = null;
         double maxDistance = 0.0;
         boolean whispering = false;
 
         platform.debugExtremelyVerbose("packet is a " + packet.getClass().getSimpleName());
         if (packet instanceof EntitySoundPacket sound) {
+            shouldHavePosition = true;
             position = platform.getEntityPosition(player.getServerLevel(), sound.getEntityUuid());
             maxDistance = sound.getDistance();
             whispering = sound.isWhispering();
@@ -345,6 +347,11 @@ public final class DiscordBot {
             maxDistance = sound.getDistance();
         } else if (!(packet instanceof StaticSoundPacket)) {
             platform.warn("packet is not LocationalSoundPacket, StaticSoundPacket or EntitySoundPacket, it is " + packet.getClass().getSimpleName() + ". Please report this on GitHub Issues!");
+        }
+
+        if (shouldHavePosition && position == null) {
+            platform.debug("Position is null when non-null expected for " + senderId);
+            return;
         }
 
         if (whispering) {
