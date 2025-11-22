@@ -22,6 +22,7 @@ object Properties {
         "1.21.9",
         "1.21.10",
     )
+    // https://repo.papermc.io/ui/packages/gav:%2F%2Fio.papermc.paper:dev-bundle?name=dev-bundle&type=packages
     val paperDevBundleVersion = "${paperSupportedMinecraftVersions.last()}-R0.1-SNAPSHOT"
 
     /* Fabric (https://fabricmc.net/develop) */
