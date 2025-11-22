@@ -92,5 +92,7 @@ public final class PaperPlugin extends JavaPlugin {
             getServer().getServicesManager().unregister(voicechatPlugin);
             LOGGER.info("Successfully unregistered voicechat discord plugin");
         }
+
+        EntityTracker.stopCleanupThread();
     }
 }
