@@ -35,9 +35,7 @@ public class EntityTracker {
                     ) {
                         platform.debug("Removing entity " + entry.getKey());
                         trackedEntityLocations.remove(entry.getKey());
-                        if (lastNeededMillis != null) {
-                            lastNeededTrackedEntityMillis.remove(entry.getKey());
-                        }
+                        lastNeededTrackedEntityMillis.remove(entry.getKey());
                     }
                 }
 
