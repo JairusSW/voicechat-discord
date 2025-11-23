@@ -81,9 +81,9 @@ public final class PaperPlugin extends JavaPlugin {
         if (service != null) {
             voicechatPlugin = new PaperVoicechatPlugin();
             service.registerPlugin(voicechatPlugin);
-            LOGGER.info("Successfully registered voicechat discord plugin");
+            platform.info("Successfully registered voicechat discord plugin");
         } else {
-            LOGGER.error("Failed to register voicechat discord plugin");
+            platform.error("Failed to register voicechat discord plugin");
             throw new RuntimeException("Failed to register voicechat discord plugin");
         }
 
@@ -100,7 +100,7 @@ public final class PaperPlugin extends JavaPlugin {
 
         if (voicechatPlugin != null) {
             getServer().getServicesManager().unregister(voicechatPlugin);
-            LOGGER.info("Successfully unregistered voicechat discord plugin");
+            platform.info("Successfully unregistered voicechat discord plugin");
         }
 
         EntityTracker.stopCleanupThread();
