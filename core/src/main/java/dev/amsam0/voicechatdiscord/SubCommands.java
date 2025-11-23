@@ -360,7 +360,11 @@ public final class SubCommands {
             }
             var botForPlayer = getBotForPlayer(platform.commandContextToPlayer(sender).getUuid());
             if (!connection.isInstalled() && (botForPlayer == null || !botForPlayer.isStarted())) {
-                platform.sendMessage(sender, Component.red("You must have the mod installed or start a voice chat before you can use this command!"));
+                platform.sendMessage(sender,
+                        Component.red("You must have the Simple Voice Chat mod installed on your client or use "),
+                        Component.white("/dvc start"),
+                        Component.red(" before you can use this command!")
+                );
                 return;
             }
             connection.setGroup(group);
