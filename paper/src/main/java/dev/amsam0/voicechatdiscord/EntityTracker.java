@@ -84,17 +84,20 @@ public class EntityTracker {
     public static void requestTracking(UUID uuid) {
         platform.debug("Tracking " + uuid);
 
-        Bukkit.getScheduler().runTask(PaperPlugin.get(), () -> {
-            Entity bukkitEntity = Bukkit.getServer().getEntity(uuid);
-            if (bukkitEntity == null) {
+        Bukkit.getGlobalRegionScheduler().execute(PaperPlugin.get(), () -> {
+            Entity entity = Bukkit.getServer().getEntity(uuid);
+            if (entity == null) {
                 return;
             }
 
-            Location location = bukkitEntity.getLocation();
-            if (!trackedEntityLocations.containsKey(uuid)) {
-                platform.debug("Got initial location for " + uuid);
-                trackedEntityLocations.put(uuid, location);
-            }
+            entity.getScheduler().execute(PaperPlugin.get(), () -> {
+                if (!trackedEntityLocations.containsKey(uuid)) {
+                    platform.debug("Got initial location for " + uuid);
+                    trackedEntityLocations.put(uuid, entity.getLocation());
+                } else {
+                    platform.debug("Already had location for " + uuid);
+                }
+            }, null, 0);
         });
 
         startCleanupThread();
