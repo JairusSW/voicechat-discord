@@ -23,8 +23,11 @@ Properties.paperSupportedMinecraftVersions.forEach { ver ->
         dependsOn(tasks.build)
     }
 
-    tasks.register<Exec>("runServer_${verForTask}") {
-        commandLine = listOf("java", "-Xmx1G", "-jar", "server.jar", "--nogui")
+    tasks.register<JavaExec>("runServer_${verForTask}") {
+        classpath = files("run/$ver/server.jar")
+        maxHeapSize = "1G"
+        systemProperties["Paper.IgnoreJavaVersion"] = "true"
+        args = listOf("--nogui")
         workingDir = project.projectDir.resolve("run/$ver")
         standardInput = System.`in` // necessary for console to work
 
