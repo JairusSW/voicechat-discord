@@ -33,7 +33,19 @@ public final class PaperPlugin extends JavaPlugin {
             platform = new PaperPlatform();
         }
 
-        String rawVersion = getServer().getMinecraftVersion().split(" ")[0];
+        String originalVersion = getServer().getMinecraftVersion();
+        platform.info("Original Minecraft version: " + originalVersion);
+
+        String rawVersion = "";
+        for (char c : originalVersion.toCharArray()) {
+            if (Character.isDigit(c) || c == '.') {
+                rawVersion += c;
+            } else {
+                break;
+            }
+        }
+        platform.info("Simplified Minecraft version: " + rawVersion);
+
         try {
             var parsed = Version.parse(rawVersion, false);
 
