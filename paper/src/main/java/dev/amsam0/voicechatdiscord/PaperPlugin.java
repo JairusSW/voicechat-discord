@@ -61,6 +61,7 @@ public final class PaperPlugin extends JavaPlugin {
                     originalVersion.equals("1.17") || originalVersion.startsWith("1.17.") ||
                     originalVersion.equals("1.18") || originalVersion.startsWith("1.18.") ||
                     originalVersion.equals("1.19") || originalVersion.startsWith("1.19.") ||
+
                     originalVersion.equals("1.20") ||
                     originalVersion.equals("1.20.0") ||
                     originalVersion.equals("1.20.1") ||
