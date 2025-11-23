@@ -32,12 +32,12 @@ public class FabricPlatform implements Platform {
 
     @Override
     public boolean isValidPlayer(CommandContext<?> sender) {
-        return ((ServerCommandSource) sender.getSource()).getPlayer() != null;
+        return FabricVersionSpecific.getPlayerFromCommandSource((ServerCommandSource) sender.getSource()) != null;
     }
 
     @Override
     public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        return api.fromServerPlayer(((ServerCommandSource) context.getSource()).getPlayer());
+        return api.fromServerPlayer(FabricVersionSpecific.getPlayerFromCommandSource((ServerCommandSource) context.getSource()));
     }
 
     @Override
@@ -66,20 +66,19 @@ public class FabricPlatform implements Platform {
 
     @Override
     public void sendMessage(CommandContext<?> sender, Component... message) {
-        ((ServerCommandSource) sender.getSource()).sendMessage(toNative(message));
+        FabricVersionSpecific.sendMessage((ServerCommandSource) sender.getSource(), toNative(message));
     }
 
     @Override
     public void sendMessage(Player player, Component... message) {
-        ((ServerPlayerEntity) player.getPlayer()).sendMessage(toNative(message));
+        FabricVersionSpecific.sendMessage((ServerPlayerEntity) player.getPlayer(), toNative(message));
     }
 
     private Text toNative(Component... message) {
         MutableText nativeText = null;
 
         for (var component : message) {
-            MutableText mapped = Text
-                    .literal(component.text())
+            MutableText mapped = ((MutableText) Text.of(component.text()))
                     .formatted(switch (component.color()) {
                         case WHITE -> Formatting.WHITE;
                         case RED -> Formatting.RED;
@@ -94,7 +93,9 @@ public class FabricPlatform implements Platform {
         }
 
         if (nativeText == null) {
-            return Text.empty();
+            // Cast is needed on newer versions
+            //noinspection RedundantCast
+            return Text.of((String) null);
         }
         return nativeText;
     }
