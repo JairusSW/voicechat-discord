@@ -355,7 +355,12 @@ public final class DiscordBot {
 
         if (whispering) {
             platform.debugExtremelyVerbose("player is whispering, original max distance is " + maxDistance);
-            maxDistance *= api.getServerConfig().getDouble("whisper_distance_multiplier", 1);
+            if (api.getServerConfig().hasKey("whisper_distance")) {
+                maxDistance = api.getServerConfig().getDouble("whisper_distance", maxDistance);
+            } else {
+                maxDistance *= api.getServerConfig().getDouble("whisper_distance_multiplier", 1);
+            }
+            platform.debugExtremelyVerbose("adjusted max distance is " + maxDistance);
         }
 
         double distance = position != null
