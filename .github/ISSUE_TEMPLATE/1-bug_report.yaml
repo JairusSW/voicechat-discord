@@ -39,7 +39,9 @@ body:
       2. Restart your server or use `/dvc reloadconfig`
       3. **Reproduce the issue**
       4. Upload the server logs here (they can be found in `logs/latest.txt`; make sure they don't include any sensitive info such as IP addresses)
-      
+
+      **Please also upload the logs found in `logs/voicechat-discord.log`.**
+
       We recommend using pastebin services such as https://mclo.gs/.
   validations:
     required: true
@@ -84,7 +86,7 @@ body:
 - type: dropdown
   attributes:
     label: Are you using offline mode?
-    options: 
+    options:
       - -- PLEASE SELECT --
       - "Yes"
       - "No"
