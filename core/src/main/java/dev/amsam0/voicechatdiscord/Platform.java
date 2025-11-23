@@ -63,13 +63,8 @@ public interface Platform {
     }
 
     enum Loader {
-        PAPER("paper"),
-        FABRIC("fabric");
-
-        public final String modrinthName;
-
-        Loader(String modrinthName) {
-            this.modrinthName = modrinthName;
-        }
+        PAPER,
+        FABRIC,
+        ;
     }
 }
