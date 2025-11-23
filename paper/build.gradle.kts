@@ -121,7 +121,7 @@ modrinth {
     changelog.set("")
     uploadFile.set(tasks.reobfJar.get().outputJar.get())
     gameVersions.set(Properties.paperSupportedMinecraftVersions)
-    loaders.set(listOf("paper", "purpur"))
+    loaders.set(listOf("paper", "purpur", "folia"))
     versionType.set(Properties.modrinthVersionType)
     detectLoaders.set(false)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
