@@ -2,7 +2,7 @@ use jni::{objects::JClass, sys::jint, JNIEnv};
 use parking_lot::Mutex;
 use tracing::{info, level_filters::LevelFilter, subscriber::Interest, Level, Metadata};
 use tracing_subscriber::{
-    fmt,
+    fmt::{self, writer::MakeWriterExt},
     layer::{Context, Filter, SubscriberExt},
     reload::{self, Handle},
     util::SubscriberInitExt,
@@ -76,7 +76,7 @@ pub fn ensure_init() {
     let (filter, reload_handle) = reload::Layer::new(CustomFilter::new(Level::WARN));
     if tracing_subscriber::registry()
         .with(filter)
-        .with(fmt::layer())
+        .with(fmt::layer().with_writer(std::io::stdout.and(tracing_appender::rolling::never("logs", "voicechat-discord.log"))))
         .try_init()
         .is_err()
     {
