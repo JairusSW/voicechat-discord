@@ -17,6 +17,8 @@ Simple Voice Chat Discord Bridge is a Simple Voice Chat addon for Fabric and Pap
 - Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md
 - Source code: https://gitlab.com/amsam0/voicechat-discord
 
+(For more information on the infrastructure of this project, such as the use of both GitHub and GitLab, scroll down to the last section.)
+
 # Installation and Usage
 
 First, ensure that you have [Simple Voice Chat](https://modrinth.com/mod/simple-voice-chat) installed and correctly configured. Please refer to [the Simple Voice Chat wiki](https://modrepo.de/minecraft/voicechat/wiki) for more info.
