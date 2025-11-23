@@ -71,7 +71,11 @@ impl super::DiscordBot {
 
         if adjust_based_on_distance {
             // Hopefully this is a similar volume curve to what Minecraft/OpenAL uses
-            let volume = ((distance / max_distance) * (PI / 2.0)).cos();
+            let volume = if distance > max_distance {
+                0.0
+            } else {
+                ((distance / max_distance) * (PI / 2.0)).cos()
+            }
             if volume <= 0.0 {
                 return Err(eyre!("Skipping packet since volume is {volume}"));
             }
