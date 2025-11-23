@@ -11,7 +11,7 @@
 >
 > This is not an official addon. **Please don't go to the Simple Voice Chat discord server for support! Instead, please use [GitHub issues](https://github.com/amsam0/voicechat-discord/issues) for support.** I'll try to provide support as soon as possible but there is no guarantee for how long it will take.
 
-Simple Voice Chat Discord Bridge is a Simple Voice Chat addon for Fabric and Paper/Purpur that makes a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak. **For example, this addon allows Bedrock edition players connected through Geyser to use voice chat!**
+Simple Voice Chat Discord Bridge is a Simple Voice Chat addon for Fabric and Paper/Purpur that makes a bridge between Simple Voice Chat and Discord to allow for players without Simple Voice Chat installed on their client to hear and speak. For example, this addon allows Bedrock edition players connected through Geyser to use voice chat!
 
 - Bug reports, feature requests, and general support: https://github.com/amsam0/voicechat-discord/issues
 - Changelog: https://gitlab.com/amsam0/voicechat-discord/-/blob/main/CHANGELOG.md

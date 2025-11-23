@@ -3,7 +3,7 @@
   "id": "voicechat-discord",
   "version": "${version}",
   "name": "Simple Voice Chat Discord Bridge",
-  "description": "A mod to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.",
+  "description": "A mod to make a bridge between Simple Voice Chat and Discord to allow for players without Simple Voice Chat installed on their client to hear and speak.",
   "authors": [
     "amsam0",
     "Totobird"

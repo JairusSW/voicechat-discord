@@ -4,6 +4,6 @@ main: dev.amsam0.voicechatdiscord.PaperPlugin
 api-version: ${paperApiVersion}
 prefix: voicechat-discord
 authors: [ "amsam0", "Totobird" ]
-description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without the mod to hear and speak.
+description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without Simple Voice Chat installed on their client to hear and speak.
 website: https://github.com/amsam0/voicechat-discord
 depend: [ voicechat ]
