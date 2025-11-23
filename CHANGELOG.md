@@ -4,7 +4,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 ## 3.1.0
 
-- Minecraft versions 1.16.5, 1.18.2, 1.20.x, and 1.21.x are now supported.
+- Minecraft versions 1.16.5, 1.18.2, 1.19.2, 1.20.x, and 1.21.x are now supported.
 - On Paper, reflection is no longer used to get entity positions when calculating distance. This was mainly done to make it easier to support the aforementioned wide range of Minecraft versions with a single jar.
 - Folia is now supported.
 - Some dependencies were removed in order to reduce jar size.
