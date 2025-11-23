@@ -65,7 +65,6 @@ dependencies {
 
     compileOnly("org.bspfsystems:yamlconfiguration:${Properties.yamlConfigurationVersion}")
     compileOnly("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
-    compileOnly("com.google.code.gson:gson:${Properties.gsonVersion}")
     compileOnly("com.mojang:brigadier:1.0.18")
     compileOnly("org.jetbrains:annotations:26.0.2")
 }

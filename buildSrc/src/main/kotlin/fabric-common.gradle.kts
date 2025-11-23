@@ -76,7 +76,6 @@ tasks.shadowJar {
     relocate("org.bspfsystems.yamlconfiguration", "dev.amsam0.voicechatdiscord.shadow.yamlconfiguration")
     relocate("org.yaml.snakeyaml", "dev.amsam0.voicechatdiscord.shadow.snakeyaml")
     relocate("com.github.zafarkhaja.semver", "dev.amsam0.voicechatdiscord.shadow.semver")
-    relocate("com.google.gson", "dev.amsam0.voicechatdiscord.shadow.gson")
 
     archiveBaseName.set(archivesBaseName)
     archiveClassifier.set("")
@@ -123,9 +122,6 @@ dependencies {
 
     implementation("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
     shadow("com.github.zafarkhaja:java-semver:${Properties.javaSemverVersion}")
-
-    implementation("com.google.code.gson:gson:${Properties.gsonVersion}")
-    shadow("com.google.code.gson:gson:${Properties.gsonVersion}")
 
     implementation(project(":core"))
     shadow(project(":core"))
