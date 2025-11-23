@@ -75,7 +75,7 @@ impl super::DiscordBot {
                 0.0
             } else {
                 ((distance / max_distance) * (PI / 2.0)).cos()
-            }
+            };
             if volume <= 0.0 {
                 return Err(eyre!("Skipping packet since volume is {volume}"));
             }
