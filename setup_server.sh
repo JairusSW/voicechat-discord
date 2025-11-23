@@ -89,8 +89,7 @@ fi
 eula=$(echo $eula | cut -d " " -f 1 -)
 if [ -f $eula ]; then
   to="$runDir/eula.txt"
-  cp $eula $to
-  echo -e "${green}Copied eula.txt from $eula to $to${clear}"
+  cp $eula $to && echo -e "${green}Copied eula.txt from $eula to $to${clear}"
 else
   echo -e "${yellow}No eula.txt could be found${clear}"
 fi
@@ -99,8 +98,7 @@ fi
 serverProperties=$(echo $serverProperties | cut -d " " -f 1 -)
 if [ -f $serverProperties ]; then
   to="$runDir/server.properties"
-  cp $serverProperties $to
-  echo -e "${green}Copied server.properties from $serverProperties to $to${clear}"
+  cp $serverProperties $to && echo -e "${green}Copied server.properties from $serverProperties to $to${clear}"
 else
   echo -e "${yellow}No server.properties could be found${clear}"
 fi
@@ -109,8 +107,7 @@ fi
 opsJson=$(echo $opsJson | cut -d " " -f 1 -)
 if [ -f $opsJson ]; then
   to="$runDir/ops.json"
-  cp $opsJson $to
-  echo -e "${green}Copied ops.json from $opsJson to $to${clear}"
+  cp $opsJson $to && echo -e "${green}Copied ops.json from $opsJson to $to${clear}"
 else
   echo -e "${yellow}No ops.json could be found${clear}"
 fi
