@@ -6,6 +6,18 @@ body:
 - type: textarea
   attributes:
     label: What is your question?
-    description: Please be clear and concise. Include any necessary context and screenshots, if applicable.
+    description: |
+      Please be clear and concise. Include any necessary context and screenshots, if applicable.
+
+      If you are encountering an issue, **DO NOT fill out this template.** Use the bug report template instead.
+  validations:
+    required: true
+- type: dropdown
+  attributes:
+    label: Does your question describe an issue you are having?
+    options:
+      - -- PLEASE SELECT --
+      - "Yes"
+      - "No"
   validations:
     required: true
