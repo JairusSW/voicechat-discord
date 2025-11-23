@@ -163,7 +163,7 @@ Allows you to whisper.
 
 If you are a operator (specifically permission level 2 or higher on fabric) or if you have the `voicechat-discord.reload-config` permission, you can use the `/dvc reloadconfig` subcommand to reload the config without have to reload/restart the server. **Using this subcommand will stop all running bots.**
 
-# Project Infrastructure
+## Project Infrastructure
 
 Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord.
 
