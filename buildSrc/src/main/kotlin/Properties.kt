@@ -3,7 +3,7 @@ object Properties {
     const val javaVersion = 21
 
     /* Project */
-    const val pluginVersion = "3.0.13" // Make sure to sync with run_server.sh
+    const val pluginVersion = "3.1.0" // Make sure to sync with setup_server.sh
     const val mavenGroup = "dev.amsam0.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"
@@ -40,7 +40,7 @@ object Properties {
 
     /* Fabric (https://fabricmc.net/develop) */
     data class FabricMetadata(val yarnMappingsVersion: String, val fabricApiVersion: String, val permissionsApiVersion: String)
-    const val fabricLoaderVersion = "0.17.2" // Make sure to sync with run_server.sh
+    const val fabricLoaderVersion = "0.17.2" // Make sure to sync with setup_server.sh
     val fabricVersions = mapOf(
         // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
         // See https://github.com/lucko/fabric-permissions-api/releases for permissions API

@@ -2,6 +2,23 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.1.0
+
+- Minecraft versions 1.16.5, 1.18.2, 1.20.x, and 1.21.x are now supported.
+- On Paper, reflection is no longer used to get entity positions when calculating distance. This was mainly done to make it easier to support the aforementioned wide range of Minecraft versions with a single jar.
+- Folia is now supported.
+- Some dependencies were removed in order to reduce jar size.
+  - The SemVer dependency we were using was replaced by a simple version parser.
+  - The gson dependency we were using was removed because it was not being used.
+- Fixed a bug with opus decoder resets that caused them to never occur.
+- Edge cases when logging in to a Discord bot that used to cause crashes are now handled cleanly. ([#126](https://github.com/amsam0/voicechat-discord/issues/126))
+- The `whisper_distance` SVC config option is now properly supported. ([#140](https://github.com/amsam0/voicechat-discord/issues/140))
+- Rust logs are now added to `logs/voicechat-discord.log`.
+- Some error messages were improved.
+- A few other internal improvements.
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.13...3.1.0
+
 ## 3.0.13
 
 - Rust dependencies were updated. This should fix issues related to connecting to Discord's servers. ([#136](https://github.com/amsam0/voicechat-discord/issues/136))
