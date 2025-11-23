@@ -1,7 +1,5 @@
 package dev.amsam0.voicechatdiscord;
 
-import com.github.zafarkhaja.semver.ParseException;
-import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import dev.amsam0.voicechatdiscord.post_1_20_6.Post_1_20_6_CommandHelper;
 import dev.amsam0.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
@@ -36,40 +34,40 @@ public final class PaperPlugin extends JavaPlugin {
         String originalVersion = getServer().getMinecraftVersion();
         platform.info("Original Minecraft version: " + originalVersion);
 
-        String rawVersion = "";
-        for (char c : originalVersion.toCharArray()) {
-            if (Character.isDigit(c) || c == '.') {
-                rawVersion += c;
-            } else {
-                break;
-            }
-        }
-        platform.info("Simplified Minecraft version: " + rawVersion);
-
         try {
-            var parsed = Version.parse(rawVersion, false);
+            Version parsedVersion = Version.parseChecked(originalVersion);
+            platform.info("Parsed Minecraft version: " + parsedVersion);
 
-            var wantedCommandHelper = Version.of(1, 20, 6);
-            if (parsed.isHigherThanOrEquivalentTo(wantedCommandHelper)) {
-                platform.info("Server is >=1.20.6 (" + rawVersion + ")");
+            var wantedCommandHelper = new Version(1, 20, 6);
+            if (parsedVersion.isHigherThanOrEquivalentTo(wantedCommandHelper)) {
+                platform.info("Server is >=1.20.6");
                 commandHelper = new Post_1_20_6_CommandHelper();
             } else {
-                platform.info("Server is <1.20.6 (" + rawVersion + ")");
+                platform.info("Server is <1.20.6");
                 commandHelper = new Pre_1_20_6_CommandHelper();
             }
-        } catch (IllegalArgumentException | ParseException e) {
-            platform.error("Unable to parse server version (" + rawVersion + ")", e);
+        } catch (NumberFormatException e) {
+            platform.error("Unable to parse server version", e);
 
-            if (rawVersion.equals("1.19.2") ||
-                    rawVersion.equals("1.19.3") ||
-                    rawVersion.equals("1.19.4") ||
-                    rawVersion.equals("1.20") ||
-                    rawVersion.equals("1.20.0") ||
-                    rawVersion.equals("1.20.1") ||
-                    rawVersion.equals("1.20.2") ||
-                    rawVersion.equals("1.20.3") ||
-                    rawVersion.equals("1.20.4") ||
-                    rawVersion.equals("1.20.5")
+            if (originalVersion.equals("1.8") || originalVersion.startsWith("1.8.") ||
+                    originalVersion.equals("1.9") || originalVersion.startsWith("1.9.") ||
+                    originalVersion.equals("1.10") || originalVersion.startsWith("1.10.") ||
+                    originalVersion.equals("1.11") || originalVersion.startsWith("1.11.") ||
+                    originalVersion.equals("1.12") || originalVersion.startsWith("1.12.") ||
+                    originalVersion.equals("1.13") || originalVersion.startsWith("1.13.") ||
+                    originalVersion.equals("1.14") || originalVersion.startsWith("1.14.") ||
+                    originalVersion.equals("1.15") || originalVersion.startsWith("1.15.") ||
+                    originalVersion.equals("1.16") || originalVersion.startsWith("1.16.") ||
+                    originalVersion.equals("1.17") || originalVersion.startsWith("1.17.") ||
+                    originalVersion.equals("1.18") || originalVersion.startsWith("1.18.") ||
+                    originalVersion.equals("1.19") || originalVersion.startsWith("1.19.") ||
+                    originalVersion.equals("1.20") ||
+                    originalVersion.equals("1.20.0") ||
+                    originalVersion.equals("1.20.1") ||
+                    originalVersion.equals("1.20.2") ||
+                    originalVersion.equals("1.20.3") ||
+                    originalVersion.equals("1.20.4") ||
+                    originalVersion.equals("1.20.5")
             ) {
                 platform.info("Server is most likely <1.20.6");
                 commandHelper = new Pre_1_20_6_CommandHelper();

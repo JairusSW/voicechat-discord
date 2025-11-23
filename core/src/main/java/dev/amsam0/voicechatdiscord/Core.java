@@ -1,7 +1,5 @@
 package dev.amsam0.voicechatdiscord;
 
-import com.github.zafarkhaja.semver.ParseException;
-import com.github.zafarkhaja.semver.Version;
 import de.maxhenkel.voicechat.api.VoicechatServerApi;
 import org.bspfsystems.yamlconfiguration.configuration.InvalidConfigurationException;
 import org.bspfsystems.yamlconfiguration.file.YamlConfiguration;
@@ -200,7 +198,7 @@ public final class Core {
         }
 
         try {
-            if (version == null || Version.parse(version).isLowerThan(Version.parse(VOICECHAT_MIN_VERSION))) {
+            if (version == null || Version.parseChecked(version).isLowerThan(VOICECHAT_MIN_VERSION)) {
                 String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
                 if (version != null) {
                     message += " You have version " + version + ".";
@@ -208,7 +206,7 @@ public final class Core {
                 platform.error(message);
                 throw new RuntimeException(message);
             }
-        } catch (IllegalArgumentException | ParseException e) {
+        } catch (NumberFormatException e) {
             platform.error("Failed to parse SVC version", e);
             platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
         }
