@@ -27,6 +27,7 @@ public class EntityTracker {
         cleanupThread = new Thread(() -> {
             platform.debug("EntityTracker cleanup thread starting");
             while (cleanupThreadRunning) {
+                platform.debug("Checking for entities to remove - currently tracking " + trackedEntityLocations.size());
                 for (var entry : trackedEntityLocations.entrySet()) {
                     var lastNeededMillis = lastNeededTrackedEntityMillis.get(entry.getKey());
                     if (
@@ -92,8 +93,8 @@ public class EntityTracker {
 
             entity.getScheduler().execute(PaperPlugin.get(), () -> {
                 if (!trackedEntityLocations.containsKey(uuid)) {
-                    platform.debug("Got initial location for " + uuid);
                     trackedEntityLocations.put(uuid, entity.getLocation());
+                    platform.debug("Got initial location for " + uuid);
                 } else {
                     platform.debug("Already had location for " + uuid);
                 }
@@ -105,8 +106,8 @@ public class EntityTracker {
 
     public static void updateEntityLocation(UUID uuid, Location location) {
         if (trackedEntityLocations.containsKey(uuid)) {
-            platform.debugVerbose("Updating location of entity " + uuid);
             trackedEntityLocations.put(uuid, location);
+            platform.debugVerbose("Updating location of entity " + uuid);
         }
     }
 }
