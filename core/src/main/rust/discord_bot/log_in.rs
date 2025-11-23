@@ -4,14 +4,14 @@ use std::{
     time::{Duration, Instant},
 };
 
-use eyre::Report;
+use eyre::{eyre, Report};
 use serenity::{
     all::{Context, EventHandler, GatewayIntents, Http, Ready},
     Client,
 };
 use songbird::SerenityInit;
 use tokio::sync::mpsc;
-use tracing::{info, warn};
+use tracing::{debug, info, warn};
 
 use crate::runtime::RUNTIME;
 
@@ -64,17 +64,19 @@ impl super::DiscordBot {
                     {
                         Ok(c) => c,
                         Err(e) => {
-                            tx.send(Err(Report::new(e)))
-                                .await
-                                .expect("log_in rx dropped - please file a GitHub issue");
+                            warn!(?e);
+                            if let Err(e) = tx.send(Err(Report::new(e))).await {
+                                debug!(?e, "log_in rx dropped");
+                            }
                             return;
                         }
                     };
 
                     if let Err(e) = client.start().await {
-                        tx.send(Err(Report::new(e)))
-                            .await
-                            .expect("log_in rx dropped - please file a GitHub issue");
+                        warn!(?e);
+                        if let Err(e) = tx.send(Err(Report::new(e))).await {
+                            debug!(?e, "log_in rx dropped");
+                        }
                     } else {
                         info!("Bot finished");
                     }
@@ -82,17 +84,18 @@ impl super::DiscordBot {
                 .abort_handle(),
         );
 
-        match rx
-            .blocking_recv()
-            .expect("log_in tx dropped - please file a GitHub issue")
-        {
-            Ok(http) => {
+        match rx.blocking_recv() {
+            Some(Ok(http)) => {
                 *state_lock = State::LoggedIn { http };
                 Ok(())
             }
-            Err(e) => {
+            Some(Err(e)) => {
                 *state_lock = State::NotLoggedIn;
                 Err(e)
+            }
+            None => {
+                *state_lock = State::NotLoggedIn;
+                Err(eyre!("log_in tx dropped"))
             }
         }
     }
@@ -105,9 +108,8 @@ struct Handler {
 #[serenity::async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, _ready: Ready) {
-        self.log_in_tx
-            .send(Ok(ctx.http))
-            .await
-            .expect("log_in rx dropped - please file a GitHub issue");
+        if let Err(e) = self.log_in_tx.send(Ok(ctx.http)).await {
+            debug!(?e, "log_in rx dropped");
+        }
     }
 }
