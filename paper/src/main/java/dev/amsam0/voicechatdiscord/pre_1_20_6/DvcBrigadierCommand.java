@@ -21,8 +21,10 @@ import org.checkerframework.framework.qual.DefaultQualifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static dev.amsam0.voicechatdiscord.BukkitHelper.getCraftServer;
@@ -53,8 +55,8 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
                         return method.getReturnType() == Commands.class;
                     } catch (NoClassDefFoundError ignored) {
                         platform.debugVerbose("method returns " + method.getReturnType().getName());
-                        return method.getReturnType().getName().equals("net.minecraft.commands.CommandDispatcher") ||
-                                method.getReturnType().getName().equals("net.minecraft.commands.Commands");
+                        return method.getReturnType().getName().endsWith(".CommandDispatcher") ||
+                                method.getReturnType().getName().endsWith(".Commands");
                     }
                 })
                 .findFirst()
@@ -71,8 +73,7 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
         try {
             Object commands = getCommands();
 
-            // Run Commands#performPrefixedCommand
-            Arrays.stream(commands.getClass().getMethods())
+            Optional<Method> performPrefixedCommand = Arrays.stream(commands.getClass().getMethods())
                     .filter(method -> method.getParameterCount() == 3)
                     .filter(method -> {
                         try {
@@ -81,14 +82,34 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
                             var types = method.getParameterTypes();
                             platform.debugVerbose("method parameter types: " + Arrays.toString(types));
                             return (
-                                    types[0].getName().equals("net.minecraft.commands.CommandListenerWrapper") ||
-                                            types[0].getName().equals("net.minecraft.commands.CommandSourceStack")
+                                    types[0].getName().endsWith(".CommandListenerWrapper") ||
+                                            types[0].getName().endsWith(".CommandSourceStack")
                             ) && types[1] == String.class && types[2] == String.class;
                         }
                     })
-                    .findFirst()
-                    .get()
-                    .invoke(commands, getListener(sender), commandLabel + argsString, commandLabel);
+                    .findFirst();
+            if (performPrefixedCommand.isPresent()) {
+                performPrefixedCommand.get().invoke(commands, getListener(sender), commandLabel + argsString, commandLabel);
+            } else {
+                // Try to find old method with only 2 parameters
+                Arrays.stream(commands.getClass().getMethods())
+                        .filter(method -> method.getParameterCount() == 2)
+                        .filter(method -> {
+                            try {
+                                return Arrays.equals(method.getParameterTypes(), new Class[]{CommandSourceStack.class, String.class});
+                            } catch (NoClassDefFoundError ignored) {
+                                var types = method.getParameterTypes();
+                                platform.debugVerbose("method parameter types: " + Arrays.toString(types));
+                                return (
+                                        types[0].getName().endsWith(".CommandListenerWrapper") ||
+                                                types[0].getName().endsWith(".CommandSourceStack")
+                                ) && types[1] == String.class;
+                            }
+                        })
+                        .findFirst()
+                        .get()
+                        .invoke(commands, getListener(sender), commandLabel + argsString);
+            }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                  ClassNotFoundException e) {
             platform.error("Unable to run brigadier command", e);
@@ -140,7 +161,7 @@ public final class DvcBrigadierCommand extends Command implements PluginIdentifi
     }
 
     @Override
-    public @NotNull Plugin getPlugin() {
+    public Plugin getPlugin() {
         return get();
     }
 }
