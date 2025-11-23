@@ -149,10 +149,11 @@ impl DiscordBot {
 
         let now = Instant::now();
         for sender in senders.deref() {
+            let id = sender.key();
             let sender = sender.value();
             let mut lock = sender.last_audio_received.lock();
-            if let Some(time) = *lock {
-                if time.duration_since(now) > DURATION_UNTIL_RESET {
+            if let Some(last_audio_received) = *lock {
+                if now.duration_since(last_audio_received) > DURATION_UNTIL_RESET {
                     *lock = None;
                     drop(lock); // drop it before reset in case reset takes a while
                     if let Err(error) = sender.decoder.lock().reset_state() {
@@ -160,6 +161,8 @@ impl DiscordBot {
                         // it does we don't want to skip other resets so
                         // just debug log the error
                         info!(?error, "error when resetting decoder: {error}");
+                    } else {
+                        debug!(id, "Reset");
                     }
                 }
             }
