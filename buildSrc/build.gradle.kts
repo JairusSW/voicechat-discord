@@ -9,7 +9,7 @@ repositories {
 }
 
 dependencies {
-    implementation("fabric-loom:fabric-loom.gradle.plugin:1.11-SNAPSHOT") // https://fabricmc.net/develop
+    implementation("fabric-loom:fabric-loom.gradle.plugin:1.13-SNAPSHOT") // https://fabricmc.net/develop
     implementation("com.modrinth.minotaur:com.modrinth.minotaur.gradle.plugin:2.+")
     implementation("com.github.johnrengelman.shadow:com.github.johnrengelman.shadow.gradle.plugin:8.1.1")
 }
