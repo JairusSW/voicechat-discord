@@ -2,7 +2,7 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
-## 3.1.0
+## 3.1.1
 
 - Minecraft versions 1.16.5, 1.18.2, 1.19.2, 1.20.x, and 1.21.x are now supported.
 - On Paper, reflection is no longer used to get entity positions when calculating distance. This was mainly done to make it easier to support the aforementioned wide range of Minecraft versions with a single jar.
@@ -17,7 +17,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 - Some error messages were improved.
 - A few other internal improvements.
 
-Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.13...3.1.0
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.0.13...3.1.1
 
 ## 3.0.13
 
