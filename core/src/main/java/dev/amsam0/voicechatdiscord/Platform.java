@@ -65,6 +65,5 @@ public interface Platform {
     enum Loader {
         PAPER,
         FABRIC,
-        ;
     }
 }

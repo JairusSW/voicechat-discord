@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -19,12 +20,19 @@ import static com.mojang.brigadier.builder.RequiredArgumentBuilder.argument;
 import static dev.amsam0.voicechatdiscord.Constants.RELOAD_CONFIG_PERMISSION;
 import static dev.amsam0.voicechatdiscord.Core.*;
 import static dev.amsam0.voicechatdiscord.GroupManager.*;
-import static dev.amsam0.voicechatdiscord.util.Util.getArgumentOr;
 
 /**
  * Subcommands for /dvc
  */
 public final class SubCommands {
+    private static @Nullable <V> V getArgumentOr(CommandContext<?> context, final String name, final Class<V> clazz, @Nullable V or) {
+        try {
+            return context.getArgument(name, clazz);
+        } catch (IllegalArgumentException ignored) {
+            return or;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     public static <S> LiteralArgumentBuilder<S> build(LiteralArgumentBuilder<S> builder) {
         return (LiteralArgumentBuilder<S>) ((LiteralArgumentBuilder<Object>) builder)

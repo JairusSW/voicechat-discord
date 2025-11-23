@@ -8,7 +8,6 @@ import de.maxhenkel.voicechat.api.packets.EntitySoundPacket;
 import de.maxhenkel.voicechat.api.packets.LocationalSoundPacket;
 import de.maxhenkel.voicechat.api.packets.SoundPacket;
 import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
-import dev.amsam0.voicechatdiscord.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -360,12 +359,19 @@ public final class DiscordBot {
         }
 
         double distance = position != null
-                ? Util.distance(position, player.getPosition())
+                ? distance(position, player.getPosition())
                 : 0.0;
 
         platform.debugExtremelyVerbose("adding audio for " + senderId);
 
         _addAudioToHearingBuffer(ptr, senderId.hashCode(), packet.getOpusEncodedData(), position != null, distance, maxDistance);
+    }
+
+    private static double distance(Position pos1, Position pos2) {
+        double dx = pos1.getX() - pos2.getX();
+        double dy = pos1.getY() - pos2.getY();
+        double dz = pos1.getZ() - pos2.getZ();
+        return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     private native byte[] _blockForSpeakingBufferOpusData(long ptr);
