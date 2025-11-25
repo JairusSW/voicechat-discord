@@ -35,22 +35,25 @@ jobs:
           - os: ubuntu-22.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
-            pre-install: sudo apt-get update -y #&& apt-get install -y curl
+            build-command: zigbuild
+            target-extra: .2.26
             #container: debian:buster
           - os: macos-latest
             triple: apple-darwin
             filename: libvoicechat_discord.dylib
+            build-command: build
           - os: windows-latest
             triple: pc-windows-gnu
             filename: voicechat_discord.dll
+            build-command: build
 
           # OS and arch specific keys
           - os: ubuntu-22.04
             arch: aarch64
-            install: sudo apt-get install -y gcc-aarch64-linux-gnu
+            install: sudo apt-get update -y && sudo apt-get install -y gcc-aarch64-linux-gnu
           - os: ubuntu-22.04
             arch: i686
-            install: sudo apt-get install -y gcc-i686-linux-gnu
+            install: sudo apt-get update -y && sudo apt-get install -y gcc-i686-linux-gnu
 
     runs-on: ${{ matrix.os }}
     #container:
@@ -90,17 +93,13 @@ jobs:
             **/target/
           key: cargo-${{ matrix.arch }}-${{ matrix.triple }}-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Pre-package installation
-        if: ${{ matrix.pre-install }}
-        run: ${{ matrix.pre-install }}
-
       - name: Install packages
         if: ${{ matrix.install }}
         run: ${{ matrix.install }}
 
       - name: '[macos] Setup Xcode'
         uses: maxim-lobanov/setup-xcode@v1
-        if: ${{ contains(matrix.os, 'macos') }}
+        if: runner.os == 'macOS'
         with:
           xcode-version: latest-stable
 
@@ -109,8 +108,16 @@ jobs:
         with:
           targets: ${{ matrix.arch }}-${{ matrix.triple }}
 
-      - name: Build ${{ matrix.arch }}-${{ matrix.triple }}
-        run: cargo build --target ${{ matrix.arch }}-${{ matrix.triple }} --release
+      - name: '[linux] Install zig'
+        uses: mlugg/setup-zig@v2
+        if: runner.os == 'Linux'
+
+      - name: '[linux] Install cargo-zigbuild'
+        run: cargo install --locked cargo-zigbuild
+        if: runner.os == 'Linux'
+
+      - name: Build ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }}
+        run: cargo ${{ matrix.build-command }} --target ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }} --release
         working-directory: core
 
       - name: Upload ${{ matrix.filename }}
