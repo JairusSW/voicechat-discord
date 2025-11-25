@@ -127,185 +127,185 @@ jobs:
           path: core/target/${{ matrix.arch }}-${{ matrix.triple }}/release/${{ matrix.filename }}
           if-no-files-found: error
 
-  build:
-    concurrency:
-      group: ${{ github.ref }}-${{ matrix.platform }}-${{ matrix.version }}
-      cancel-in-progress: true
+  # build:
+  #   concurrency:
+  #     group: ${{ github.ref }}-${{ matrix.platform }}-${{ matrix.version }}
+  #     cancel-in-progress: true
 
-    strategy:
-      matrix:
-        platform: [fabric]
-        version: ["1.16.5", "1.18.2", "1.19.2", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10"]
-        include:
-          # We don't want paper to map to all the versions
-          - platform: paper
+  #   strategy:
+  #     matrix:
+  #       platform: [fabric]
+  #       version: ["1.16.5", "1.18.2", "1.19.2", "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6", "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10"]
+  #       include:
+  #         # We don't want paper to map to all the versions
+  #         - platform: paper
 
-    runs-on: ubuntu-22.04
-    needs: [natives]
-    steps:
-      - name: Checkout GitLab repository
-        run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
+  #   runs-on: ubuntu-22.04
+  #   needs: [natives]
+  #   steps:
+  #     - name: Checkout GitLab repository
+  #       run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: git log
-        run: git log
+  #     - name: git log
+  #       run: git log
 
-      - name: '[unix] Log source hash'
-        if: runner.os != 'Windows'
-        run: find . -type f -exec sha256sum {} \;
+  #     - name: '[unix] Log source hash'
+  #       if: runner.os != 'Windows'
+  #       run: find . -type f -exec sha256sum {} \;
 
-      - name: '[windows] Log source hash'
-        if: runner.os == 'Windows'
-        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
+  #     - name: '[windows] Log source hash'
+  #       if: runner.os == 'Windows'
+  #       run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName }
 
-      - name: Upload source
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}
-          path: .
-          if-no-files-found: error
-          include-hidden-files: true
+  #     - name: Upload source
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: source-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}
+  #         path: .
+  #         if-no-files-found: error
+  #         include-hidden-files: true
 
-      - name: '[nightly] Gradle cache'
-        uses: actions/cache@v4
-        if: ${{ inputs.type == 'nightly' }}
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-
+  #     - name: '[nightly] Gradle cache'
+  #       uses: actions/cache@v4
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       with:
+  #         path: |
+  #           ~/.gradle/caches
+  #           ~/.gradle/wrapper
+  #         key: gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+  #         restore-keys: |
+  #           gradle-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-
 
-      - name: Validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
+  #     - name: Validate gradle wrapper
+  #       uses: gradle/actions/wrapper-validation@v4
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: adopt
+  #     - name: Setup JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: 21
+  #         distribution: adopt
 
-      - name: Make gradle wrapper executable
-        run: chmod +x ./gradlew
+  #     - name: Make gradle wrapper executable
+  #       run: chmod +x ./gradlew
 
-      - name: Download linux-aarch64
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-aarch64-unknown-linux-gnu
-          path: core/src/main/resources/natives/linux-aarch64/
+  #     - name: Download linux-aarch64
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-aarch64-unknown-linux-gnu
+  #         path: core/src/main/resources/natives/linux-aarch64/
 
-      - name: Download linux-x64
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-x86_64-unknown-linux-gnu
-          path: core/src/main/resources/natives/linux-x64/
+  #     - name: Download linux-x64
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-x86_64-unknown-linux-gnu
+  #         path: core/src/main/resources/natives/linux-x64/
 
-      - name: Download linux-x86
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-i686-unknown-linux-gnu
-          path: core/src/main/resources/natives/linux-x86/
+  #     - name: Download linux-x86
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-i686-unknown-linux-gnu
+  #         path: core/src/main/resources/natives/linux-x86/
 
-      - name: Download mac-aarch64
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-aarch64-apple-darwin
-          path: core/src/main/resources/natives/mac-aarch64/
+  #     - name: Download mac-aarch64
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-aarch64-apple-darwin
+  #         path: core/src/main/resources/natives/mac-aarch64/
 
-      - name: Download mac-x64
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-x86_64-apple-darwin
-          path: core/src/main/resources/natives/mac-x64/
+  #     - name: Download mac-x64
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-x86_64-apple-darwin
+  #         path: core/src/main/resources/natives/mac-x64/
 
-      - name: Download windows-x64
-        uses: actions/download-artifact@v4
-        with:
-          name: natives-x86_64-pc-windows-gnu
-          path: core/src/main/resources/natives/windows-x64/
+  #     - name: Download windows-x64
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: natives-x86_64-pc-windows-gnu
+  #         path: core/src/main/resources/natives/windows-x64/
 
-      - name: '[nightly] Get git SHA'
-        if: ${{ inputs.type == 'nightly' }}
-        id: sha
-        run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+  #     - name: '[nightly] Get git SHA'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       id: sha
+  #       run: echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
-      - name: '[nightly] Add suffix to version'
-        if: ${{ inputs.type == 'nightly' }}
-        run: sed -e '/pluginVersion = .*/s/"$/-nightly+${{ steps.sha.outputs.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
+  #     - name: '[nightly] Add suffix to version'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       run: sed -e '/pluginVersion = .*/s/"$/-nightly+${{ steps.sha.outputs.sha }}"/' -i buildSrc/src/main/kotlin/Properties.kt
 
-      - name: '[nightly] Get version'
-        if: ${{ inputs.type == 'nightly' }}
-        id: version
-        run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
+  #     - name: '[nightly] Get version'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       id: version
+  #       run: echo "version=$(grep pluginVersion buildSrc/src/main/kotlin/Properties.kt | awk -F '"' '{print $2}')" >> $GITHUB_OUTPUT
 
-      - name: Remove unnecessary platform subprojects
-        run: sed -E -e '/(${{ matrix.platform }})|(core)/! s/.*",$//' -i settings.gradle.kts
+  #     - name: Remove unnecessary platform subprojects
+  #       run: sed -E -e '/(${{ matrix.platform }})|(core)/! s/.*",$//' -i settings.gradle.kts
 
-      - name: '[versions] Switch to version subproject'
-        if: ${{ matrix.version }}
-        run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
+  #     - name: '[versions] Switch to version subproject'
+  #       if: ${{ matrix.version }}
+  #       run: sed -E -e '/"${{ matrix.platform }}:/s/[^:]*",$/${{ matrix.version }}",/' -i settings.gradle.kts
 
-      - name: '[nightly] Build project'
-        if: ${{ inputs.type == 'nightly' }}
-        run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:build
+  #     - name: '[nightly] Build project'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:build
 
-      - name: '[nightly] Upload project artifact'
-        if: ${{ inputs.type == 'nightly' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-nightly.jar
-          path: ${{ matrix.platform }}${{ matrix.version && '/' || '' }}${{ matrix.version }}/build/libs/voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ steps.version.outputs.version }}.jar
+  #     - name: '[nightly] Upload project artifact'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-nightly.jar
+  #         path: ${{ matrix.platform }}${{ matrix.version && '/' || '' }}${{ matrix.version }}/build/libs/voicechat-discord-${{ matrix.platform }}${{ matrix.version && '-' || '' }}${{ matrix.version }}-${{ steps.version.outputs.version }}.jar
 
-      - name: '[release] Build and publish project to Modrinth'
-        if: ${{ inputs.type == 'release' }}
-        run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:modrinth
-        env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+  #     - name: '[release] Build and publish project to Modrinth'
+  #       if: ${{ inputs.type == 'release' }}
+  #       run: ./gradlew :${{ matrix.platform }}${{ matrix.version && ':' || '' }}${{ matrix.version }}:modrinth
+  #       env:
+  #         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
-      - name: '[nightly] Stop Gradle daemon before creating cache'
-        if: ${{ inputs.type == 'nightly' }}
-        run: ./gradlew --stop
+  #     - name: '[nightly] Stop Gradle daemon before creating cache'
+  #       if: ${{ inputs.type == 'nightly' }}
+  #       run: ./gradlew --stop
 
-  sync-body:
-    if: ${{ inputs.type == 'release' }}
+  # sync-body:
+  #   if: ${{ inputs.type == 'release' }}
 
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
+  #   concurrency:
+  #     group: ${{ github.ref }}
+  #     cancel-in-progress: true
 
-    runs-on: ubuntu-22.04
-    needs: [build]
-    steps:
-      - name: Checkout GitLab repository
-        run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
+  #   runs-on: ubuntu-22.04
+  #   needs: [build]
+  #   steps:
+  #     - name: Checkout GitLab repository
+  #       run: git clone https://gitlab.com/amsam0/voicechat-discord.git .
 
-      - name: git log
-        run: git log
+  #     - name: git log
+  #       run: git log
 
-      - name: Log source hash
-        run: find . -type f -exec sha256sum {} \;
+  #     - name: Log source hash
+  #       run: find . -type f -exec sha256sum {} \;
 
-      - name: Upload source
-        uses: actions/upload-artifact@v4
-        with:
-          name: source-sync-body
-          path: .
-          if-no-files-found: error
-          include-hidden-files: true
+  #     - name: Upload source
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: source-sync-body
+  #         path: .
+  #         if-no-files-found: error
+  #         include-hidden-files: true
 
-      - name: Validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v4
+  #     - name: Validate gradle wrapper
+  #       uses: gradle/actions/wrapper-validation@v4
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: adopt
+  #     - name: Setup JDK
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: 21
+  #         distribution: adopt
 
-      - name: Make gradle wrapper executable
-        run: chmod +x ./gradlew
+  #     - name: Make gradle wrapper executable
+  #       run: chmod +x ./gradlew
 
-      - name: Sync body to modrinth
-        run: ./gradlew :core:modrinthSyncBody
-        env:
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+  #     - name: Sync body to modrinth
+  #       run: ./gradlew :core:modrinthSyncBody
+  #       env:
+  #         MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
