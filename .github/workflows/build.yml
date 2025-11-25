@@ -38,22 +38,22 @@ jobs:
             build-command: zigbuild
             target-extra: .2.26
             #container: debian:buster
-          - os: macos-latest
-            triple: apple-darwin
-            filename: libvoicechat_discord.dylib
-            build-command: build
-          - os: windows-latest
-            triple: pc-windows-gnu
-            filename: voicechat_discord.dll
-            build-command: build
+          # - os: macos-latest
+          #   triple: apple-darwin
+          #   filename: libvoicechat_discord.dylib
+          #   build-command: build
+          # - os: windows-latest
+          #   triple: pc-windows-gnu
+          #   filename: voicechat_discord.dll
+          #   build-command: build
 
-          # OS and arch specific keys
-          - os: ubuntu-22.04
-            arch: aarch64
-            install: sudo apt-get update -y && sudo apt-get install -y gcc-aarch64-linux-gnu
-          - os: ubuntu-22.04
-            arch: i686
-            install: sudo apt-get update -y && sudo apt-get install -y gcc-i686-linux-gnu
+          # # OS and arch specific keys
+          # - os: ubuntu-22.04
+          #   arch: aarch64
+          #   install: sudo apt-get update -y && sudo apt-get install -y gcc-aarch64-linux-gnu
+          # - os: ubuntu-22.04
+          #   arch: i686
+          #   install: sudo apt-get update -y && sudo apt-get install -y gcc-i686-linux-gnu
 
     runs-on: ${{ matrix.os }}
     #container:
