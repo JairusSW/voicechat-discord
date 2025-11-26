@@ -6,6 +6,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 
 - Fixed the infamous issue of needing a newer glibc than is available on old LTS Linux distributions ([#144](https://github.com/amsam0/voicechat-discord/issues/144), [#63](https://github.com/amsam0/voicechat-discord/issues/63), [#106](https://github.com/amsam0/voicechat-discord/issues/106))
   - The minimum glibc version is now 2.26; if anyone needs lower than this, just make a GitHub issue. However, note that glibc 2.26 was released in *2017*...
+- Renamed the Rust log file (previously `logs/voicechat-discord.log`) to `voicechat-discord.txt`.
 
 Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.1...3.1.2
 GitHub Actions workflow changes: https://github.com/amsam0/voicechat-discord/compare/3.1.1...3.1.2

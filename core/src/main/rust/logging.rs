@@ -76,7 +76,7 @@ pub fn ensure_init() {
     let (filter, reload_handle) = reload::Layer::new(CustomFilter::new(Level::WARN));
     if tracing_subscriber::registry()
         .with(filter)
-        .with(fmt::layer().with_writer(std::io::stdout.and(tracing_appender::rolling::never("logs", "voicechat-discord.log"))))
+        .with(fmt::layer().with_writer(std::io::stdout.and(tracing_appender::rolling::never("logs", "voicechat-discord.txt"))))
         .try_init()
         .is_err()
     {
