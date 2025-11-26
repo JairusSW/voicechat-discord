@@ -35,17 +35,17 @@ jobs:
           - os: ubuntu-22.04
             triple: unknown-linux-gnu
             filename: libvoicechat_discord.so
-            build-command: zigbuild
+            build-command: LIBOPUS_STATIC=1 cargo zigbuild
             target-extra: .2.26
             #container: debian:buster
           # - os: macos-latest
           #   triple: apple-darwin
           #   filename: libvoicechat_discord.dylib
-          #   build-command: build
+          #   build-command: cargo build
           # - os: windows-latest
           #   triple: pc-windows-gnu
           #   filename: voicechat_discord.dll
-          #   build-command: build
+          #   build-command: cargo build
 
           # # OS and arch specific keys
           # - os: ubuntu-22.04
@@ -117,7 +117,7 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }}
-        run: cargo ${{ matrix.build-command }} --target ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }} --release
+        run: ${{ matrix.build-command }} --target ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }} --release
         working-directory: core
 
       - run: tree target/x86_64-unknown-linux-gnu/release/build
