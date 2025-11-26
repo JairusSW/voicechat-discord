@@ -10,7 +10,7 @@
   ],
   "contact": {
     "homepage": "https://modrinth.com/mod/simple-voice-chat-discord-bridge",
-    "sources": "https://github.com/amsam0/voicechat-discord"
+    "sources": "https://gitlab.com/amsam0/voicechat-discord"
   },
   "license": "MIT",
   "icon": "assets/voicechat-discord/icon.png",

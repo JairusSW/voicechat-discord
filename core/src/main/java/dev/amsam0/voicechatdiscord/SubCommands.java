@@ -230,7 +230,7 @@ public final class SubCommands {
                     Component.red("- `"), Component.white("/dvc group info"), Component.red("`: Get info about your current group\n"),
                     Component.red("- `"), Component.white("/dvc group leave"), Component.red("`: Leave your current group\n"),
                     Component.red("- `"), Component.white("/dvc group remove <ID>"), Component.red("`: Removes a persistent group if there is no one in it\n"),
-                    Component.red("See "), Component.white("https://github.com/amsam0/voicechat-discord#dvc-group"), Component.red(" for more info on how to use these commands.")
+                    Component.red("See "), Component.white("https://gitlab.com/amsam0/voicechat-discord#dvc-group"), Component.red(" for more info on how to use these commands.")
             );
             return 1;
         }

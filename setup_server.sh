@@ -29,7 +29,7 @@ if [ "$platform" == "paper" ]; then
   file="$runDir/server.jar"
   if [ ! -f $file ]; then
     echo -e "${yellow}Getting server jar URL...${clear}"
-    url=$(curl -s -H "User-Agent: voicechat-discord/0.0.0 (https://github.com/amsam0/voicechat-discord)" "https://fill.papermc.io/v3/projects/paper/versions/$minecraftVersion/builds" | jq -r '.[0].downloads."server:default".url')
+    url=$(curl -s -H "User-Agent: voicechat-discord/0.0.0 (https://gitlab.com/amsam0/voicechat-discord)" "https://fill.papermc.io/v3/projects/paper/versions/$minecraftVersion/builds" | jq -r '.[0].downloads."server:default".url')
 
     echo -n -e "${yellow}Downloading server jar from ${clear}$url${yellow} to ${clear}$file${yellow}..."
     curl -s -o $file $url
