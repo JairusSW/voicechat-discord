@@ -2,6 +2,14 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.1.2
+
+- Fixed the infamous issue of needing a newer glibc than is available on old LTS Linux distributions ([#144](https://github.com/amsam0/voicechat-discord/issues/144), [#63](https://github.com/amsam0/voicechat-discord/issues/63), [#106](https://github.com/amsam0/voicechat-discord/issues/106))
+  - The minimum glibc version is now 2.26; if anyone needs lower than this, just make a GitHub issue. However, note that glibc 2.26 was released in *2017*...
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.1...3.1.2
+GitHub Actions workflow changes: https://github.com/amsam0/voicechat-discord/compare/3.1.1...3.1.2
+
 ## 3.1.1
 
 - Minecraft versions 1.16.5, 1.18.2, 1.19.2, 1.20.x, and 1.21.x are now supported.
