@@ -75,6 +75,7 @@ tasks.shadowJar {
     configurations = listOf(project.configurations.getByName("shadow"))
     relocate("org.bspfsystems.yamlconfiguration", "dev.amsam0.voicechatdiscord.shadow.yamlconfiguration")
     relocate("org.yaml.snakeyaml", "dev.amsam0.voicechatdiscord.shadow.snakeyaml")
+    exclude("org/slf4j/**") // added by yamlconfiguration
 
     archiveBaseName.set(archivesBaseName)
     archiveClassifier.set("")
