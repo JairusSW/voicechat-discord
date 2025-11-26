@@ -110,7 +110,7 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: '[linux] Install cargo-zigbuild if needed'
-        run: cargo zigbuild || cargo install --locked cargo-zigbuild
+        run: which cargo-zigbuild || cargo install --locked cargo-zigbuild
         if: runner.os == 'Linux'
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }}
