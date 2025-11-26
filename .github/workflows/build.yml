@@ -114,8 +114,10 @@ jobs:
         if: runner.os == 'Linux'
 
       - name: Build ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }}
-        run: OPUS_STATIC=1 cargo ${{ matrix.build-command }} --target ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }} --release
+        run: cargo ${{ matrix.build-command }} --target ${{ matrix.arch }}-${{ matrix.triple }}${{ matrix.target-extra }} --release
         working-directory: core
+        env:
+          OPUS_STATIC: 1
 
       - name: Upload ${{ matrix.filename }}
         uses: actions/upload-artifact@v4
