@@ -9,7 +9,7 @@ val parent = project.parent!!
 val platformName = parent.name
 val minecraftVersion = project.name
 val fabricMetadata = Properties.fabricVersions[minecraftVersion]!!
-val supportedVersions = fabricVersionRanges[minecraftVersion] ?: listOf()
+val supportedVersions = fabricVersionRanges[minecraftVersion] ?: listOf(minecraftVersion)
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
 val projectVersion = "${minecraftVersion}-${Properties.pluginVersion}"
