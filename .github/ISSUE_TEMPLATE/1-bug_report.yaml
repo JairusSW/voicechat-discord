@@ -52,8 +52,11 @@ body:
     required: true
 - type: input
   attributes:
-    label: Operating system and version
-    description: If on linux, please include linux distro
+    label: Operating system and version of server
+    description: |
+      If on linux, please include linux distro
+
+      Do NOT include your own operating system. Please specify the operating system of the computer running your server.
   validations:
     required: true
 - type: input
@@ -64,7 +67,7 @@ body:
 - type: dropdown
   attributes:
     label: Loader/server software
-    options: 
+    options:
       - -- PLEASE SELECT --
       - Paper
       - Purpur
