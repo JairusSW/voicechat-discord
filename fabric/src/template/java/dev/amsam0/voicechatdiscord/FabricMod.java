@@ -15,7 +15,7 @@ public class FabricMod implements DedicatedServerModInitializer {
 
         enable();
 
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> dispatcher.register(SubCommands.build(literal("dvc"))));
         //# {% else %}
         net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(SubCommands.build(literal("dvc"))));

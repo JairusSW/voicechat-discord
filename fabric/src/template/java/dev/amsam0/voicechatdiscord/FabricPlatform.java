@@ -30,13 +30,13 @@ public class FabricPlatform implements Platform {
 
     @Override
     public boolean isValidPlayer(CommandContext<?> sender) {
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# try {
         //# {% endif %}
 
         return ((ServerCommandSource) sender.getSource()).getPlayer() != null;
 
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
         //#     throw new RuntimeException(e);
         //# }
@@ -45,13 +45,13 @@ public class FabricPlatform implements Platform {
 
     @Override
     public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# try {
         //# {% endif %}
 
         return api.fromServerPlayer(((ServerCommandSource) context.getSource()).getPlayer());
 
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
         //#     throw new RuntimeException(e);
         //# }
@@ -75,7 +75,7 @@ public class FabricPlatform implements Platform {
     @Override
     public boolean isOperator(CommandContext<?> sender) {
         var serverCommandSource = (ServerCommandSource) sender.getSource();
-        //# {% if minecraft_version <= 1_16_05 %}
+        //# {% if minecraft_version <= mc_1_16_5 %}
         //# var server = serverCommandSource.getMinecraftServer();
         //# {% else %}
         var server = serverCommandSource.getServer();
@@ -90,7 +90,7 @@ public class FabricPlatform implements Platform {
 
     @Override
     public void sendMessage(CommandContext<?> sender, Component... message) {
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# ((ServerCommandSource) sender.getSource()).sendFeedback(toNative(message), false);
         //# {% else %}
         ((ServerCommandSource) sender.getSource()).sendMessage(toNative(message));
@@ -99,7 +99,7 @@ public class FabricPlatform implements Platform {
 
     @Override
     public void sendMessage(Player player, Component... message) {
-        //# {% if minecraft_version <= 1_18_02 %}
+        //# {% if minecraft_version <= mc_1_18_2 %}
         //# ((ServerPlayerEntity) player.getPlayer()).sendMessage(toNative(message), false);
         //# {% else %}
         ((ServerPlayerEntity) player.getPlayer()).sendMessage(toNative(message));
