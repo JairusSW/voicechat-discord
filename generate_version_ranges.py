@@ -92,7 +92,6 @@ with open("buildSrc/src/main/kotlin/FabricVersionRanges.kt", "w") as f:
     f.write("val fabricVersionRanges = mapOf(\n")
     for range in ranges:
         f.write(f"    \"{range[0]}\" to listOf(")
-        for version in range:
-            f.write(f"\"{version}\", ")
+        f.write(", ".join(map(lambda v: f"\"{v}\"", range)))
         f.write("),\n")
     f.write(")\n")
