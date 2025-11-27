@@ -28,9 +28,9 @@
   "depends": {
     "fabricloader": "*",
     "fabric-api": "*",
-    "minecraft": "${minecraftVersion}",
+    "minecraft": [${minecraftVersions}],
     "java": ">=${javaVersion}",
-    "voicechat": ">=${minecraftVersion}-${voicechatApiVersion}",
+    "voicechat": [${voicechatVersions}],
     "fabric-permissions-api-v0": "*"
   }
 }

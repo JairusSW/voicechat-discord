@@ -6,3 +6,5 @@ run/
 runs/
 .DS_Store
 config.yml
+
+buildSrc/src/main/kotlin/FabricVersionRanges.kt

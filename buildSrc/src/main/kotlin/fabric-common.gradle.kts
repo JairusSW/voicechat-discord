@@ -9,6 +9,7 @@ val parent = project.parent!!
 val platformName = parent.name
 val minecraftVersion = project.name
 val fabricMetadata = Properties.fabricVersions[minecraftVersion]!!
+val supportedVersions = fabricVersionRanges[minecraftVersion] ?: listOf()
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
 val projectVersion = "${minecraftVersion}-${Properties.pluginVersion}"
@@ -69,8 +70,8 @@ tasks.processResources {
 
     val properties = mapOf(
         "version" to projectVersion,
-        "minecraftVersion" to minecraftVersion,
-        "voicechatApiVersion" to Properties.voicechatApiVersion,
+        "minecraftVersions" to supportedVersions.joinToString(", ") { "\"${it}\"" },
+        "voicechatVersions" to supportedVersions.joinToString(", ") { "\">=${it}-${Properties.voicechatApiVersion}\"" },
         "javaVersion" to Properties.javaVersion.toString(),
     )
     inputs.properties(properties)
@@ -149,7 +150,7 @@ modrinth {
     versionNumber.set(modrinthVersionNumber)
     changelog.set("")
     uploadFile.set(tasks.remapJar)
-    gameVersions.set(listOf(minecraftVersion))
+    gameVersions.set(supportedVersions)
     versionType.set(Properties.modrinthVersionType)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
     dependencies {

@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+from os import listdir, mkdir, getenv
+from os.path import basename, getmtime
+from pathlib import Path
+from shutil import rmtree
+from subprocess import run
+from sys import argv
+from time import sleep
+
+platform = argv[1]
+print(f"platform: {platform}")
+
+def version_sorter(version):
+    if not version.startswith("1."):
+        return 0
+
+    version_split = version.split(".")
+    if len(version_split) < 3:
+        version_split.append("0")
+    major = version_split[0]
+    minor = version_split[1].rjust(2, "0")
+    patch = version_split[2].rjust(2, "0")
+    return int(major + minor + patch)
+
+versions = sorted(listdir(f"./{platform}"), key=version_sorter)
+version_hashes = {}
+
+for version in versions:
+    if not version.startswith("1."):
+        continue
+
+    # first find most recent jar and unzip
+    most_recent_jar = max(list(Path(f"./{platform}/{version}/build/libs").rglob("*.jar")), key=getmtime)
+    jar_dir_name = basename(most_recent_jar).replace(".jar", "")
+    jar_dir = f"./{platform}/{version}/build/libs/{jar_dir_name}"
+    try:
+        mkdir(jar_dir)
+    except FileExistsError:
+        input(f"remove {jar_dir}?")
+        rmtree(jar_dir)
+        mkdir(jar_dir)
+    run(["jar", "xf", f"../{basename(most_recent_jar)}"], check=True, cwd=jar_dir)
+
+    print(f"calculating hashes for {version}...".ljust(len("calculating hashes for 1.21.10..."), " "), end="")
+
+    class_files = list(Path(f"{jar_dir}/dev/amsam0").rglob("*.class"))
+    class_files.sort()
+
+    class_hashes = ""
+    for file in class_files:
+        output = run(["shasum", "-a", "256", file], capture_output=True, check=True, text=True)
+        class_hashes += output.stdout.split(" ")[0] # only take hash
+
+    output = run(["shasum", "-a", "256"], input=class_hashes, capture_output=True, check=True, text=True)
+    version_hashes[version] = output.stdout.split(" ")[0] # only take hash
+    print(version_hashes[version])
+
+# same_hashes = {}
+#
+# for version, hash in version_hashes.items():
+#     if hash not in same_hashes:
+#         same_hashes[hash] = [version]
+#     else:
+#         same_hashes[hash].append(version)
+#
+# print(same_hashes.values())
+
+version_hashes = sorted(version_hashes.items(), key=lambda item: version_sorter(item[0]))
+
+ranges = [[]]
+current_hash = None
+for version, hash in version_hashes:
+    if current_hash is None:
+        current_hash = hash
+
+    elif current_hash != hash:
+        # Reset
+        current_hash = hash
+        ranges.append([])
+
+    ranges[-1].append(version)
+
+print(ranges)
+
+with open("buildSrc/src/main/kotlin/FabricVersionRanges.kt", "w") as f:
+    f.write("val fabricVersionRanges = mapOf(\n")
+    for range in ranges:
+        f.write(f"    \"{range[0]}\" to listOf(")
+        for version in range:
+            f.write(f"\"{version}\", ")
+        f.write("),\n")
+    f.write(")\n")
