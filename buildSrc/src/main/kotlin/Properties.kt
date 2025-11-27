@@ -44,7 +44,6 @@ object Properties {
     val fabricVersions = mapOf(
         // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
         // See https://github.com/lucko/fabric-permissions-api/releases for permissions API
-        // See https://docs.advntr.dev/platform/fabric.html and https://github.com/KyoriPowered/adventure-platform-mod/releases for adventure
         // Make sure to update GitHub workflows
         "1.16.5"  to FabricMetadata(yarnMappingsVersion = "1.16.5+build.10", fabricApiVersion = "0.42.0+1.16",     permissionsApiVersion = "0.3.3"),
         "1.18.2"  to FabricMetadata(yarnMappingsVersion = "1.18.2+build.4",  fabricApiVersion = "0.77.0+1.18.2",   permissionsApiVersion = "0.3.3"),
@@ -67,6 +66,33 @@ object Properties {
         "1.21.8"  to FabricMetadata(yarnMappingsVersion = "1.21.8+build.1",  fabricApiVersion = "0.130.0+1.21.8",  permissionsApiVersion = "0.4.1"),
         "1.21.9"  to FabricMetadata(yarnMappingsVersion = "1.21.9+build.1",  fabricApiVersion = "0.134.0+1.21.9",  permissionsApiVersion = "0.5.0"),
         "1.21.10" to FabricMetadata(yarnMappingsVersion = "1.21.10+build.2", fabricApiVersion = "0.135.0+1.21.10", permissionsApiVersion = "0.5.0"),
+    )
+
+    /* NeoForge (https://neoforged.net, https://parchmentmc.org/docs/getting-started) */
+    val neoforgeVersions = mapOf(
+        // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
+        // Make sure to update GitHub workflows
+//        "1.16.5"  to "",
+//        "1.18.2"  to "",
+//        "1.19.2"  to "",
+//        "1.20"    to "",
+//        "1.20.1"  to "",
+//        "1.20.2"  to "",
+//        "1.20.3"  to "",
+//        "1.20.4"  to "",
+//        "1.20.5"  to "",
+//        "1.20.6"  to "",
+//        "1.21"    to "",
+//        "1.21.1"  to "",
+//        "1.21.2"  to "",
+//        "1.21.3"  to "",
+//        "1.21.4"  to "",
+//        "1.21.5"  to "",
+//        "1.21.6"  to "",
+//        "1.21.7"  to "",
+//        "1.21.8"  to "",
+//        "1.21.9"  to "",
+        "1.21.10" to "21.10.56-beta",
     )
 
     /* Dependencies */

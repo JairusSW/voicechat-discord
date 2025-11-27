@@ -1,6 +1,6 @@
 plugins {
     java
-    id("shared-plugins")
+    id("shared-plugin-minotaur")
 }
 
 project.version = Properties.pluginVersion

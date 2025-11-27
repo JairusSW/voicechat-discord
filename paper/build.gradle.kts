@@ -1,6 +1,7 @@
 plugins {
     java
-    id("shared-plugins")
+    id("shared-plugin-minotaur")
+    id("shared-plugin-shadow")
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.18"
 }
 

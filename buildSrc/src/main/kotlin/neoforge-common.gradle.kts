@@ -2,13 +2,13 @@ plugins {
     java
     id("shared-plugin-minotaur")
     id("shared-plugin-shadow")
-    id("fabric-loom") // version in buildSrc/build.gradle.kts
+    id("net.neoforged.gradle.userdev") // version in buildSrc/build.gradle.kts
 }
 
 val parent = project.parent!!
 val platformName = parent.name
 val minecraftVersion = project.name
-val fabricMetadata = Properties.fabricVersions[minecraftVersion]!!
+val neoforgeVersion = Properties.neoforgeVersions[minecraftVersion]!!
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
 val projectVersion = "${minecraftVersion}-${Properties.pluginVersion}"
@@ -19,19 +19,19 @@ project.version = projectVersion
 project.group = Properties.mavenGroup
 
 val setupServer = tasks.register<Exec>("setupServer") {
-    commandLine = listOf("./setup_server.sh", "fabric", minecraftVersion)
+    commandLine = listOf("./setup_server.sh", "neoforge", minecraftVersion)
     workingDir = project.rootDir
 
     dependsOn(tasks.build)
 }
 
-tasks.runServer {
-    dependsOn(setupServer)
+afterEvaluate {
+    tasks.getByName("runServer").dependsOn(setupServer)
 }
 
 sourceSets {
     main {
-        // Include common fabric code
+        // Include common neoforge code
         java.srcDirs(layout.projectDirectory.file("../src/common/java"))
         resources.srcDirs(layout.projectDirectory.file("../src/common/resources"))
     }
@@ -41,10 +41,14 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }
 
-loom {
-    runConfigs.configureEach {
-        // Without this, none of the run configurations will be generated because this project is not the root project
-        isIdeConfigGenerated = true
+runs {
+    configureEach {
+        modSources.add(sourceSets.main.get())
+        modSources.add(project.name, project(":core").sourceSets.main.get())
+    }
+
+    create("server") {
+        argument("--nogui")
     }
 }
 
@@ -58,14 +62,14 @@ tasks.processResources {
     filteringCharset = Charsets.UTF_8.name()
 
     val properties = mapOf(
-        "version" to projectVersion,
+        "modVersion" to projectVersion,
         "minecraftVersion" to minecraftVersion,
+        "neoforgeVersion" to neoforgeVersion,
         "voicechatApiVersion" to Properties.voicechatApiVersion,
-        "javaVersion" to Properties.javaVersion.toString(),
     )
     inputs.properties(properties)
 
-    filesMatching("fabric.mod.json") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand(properties)
     }
 }
@@ -80,39 +84,17 @@ tasks.shadowJar {
     archiveClassifier.set("")
     archiveVersion.set(projectVersion)
 
-    destinationDirectory.set(project.objects.directoryProperty().fileValue(layout.buildDirectory.file("shadow").get().asFile))
-
     from(file("${rootDir}/LICENSE")) {
         rename { "${it}_${Properties.archivesBaseName}" }
     }
 }
 
-tasks.remapJar {
-    archiveBaseName.set(archivesBaseName)
-    archiveClassifier.set("")
-    archiveVersion.set(projectVersion)
-
-    inputFile.set(tasks.shadowJar.get().archiveFile)
+tasks.assemble {
+    dependsOn(tasks.shadowJar)
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings("net.fabricmc:yarn:${fabricMetadata.yarnMappingsVersion}:v2")
-    modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
-    // For running a server, we need the whole API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricMetadata.fabricApiVersion}")
-//    setOf(
-//        "fabric-api-base",
-//        "fabric-command-api-v2",
-//        "fabric-lifecycle-events-v1",
-//        "fabric-networking-api-v1"
-//    ).forEach {
-//        modImplementation(fabricApi.module(it, fabricMetadata.fabricApiVersion))
-//    }
-
-    // This includes fabric-api - things will break because it has a newer version than what we use
-    modImplementation("me.lucko:fabric-permissions-api:${fabricMetadata.permissionsApiVersion}") { exclude(group = "net.fabricmc.fabric-api") }
-    include("me.lucko:fabric-permissions-api:${fabricMetadata.permissionsApiVersion}") { exclude(group = "net.fabricmc.fabric-api") }
+    implementation("net.neoforged:neoforge:${neoforgeVersion}")
 
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
 
@@ -138,12 +120,11 @@ modrinth {
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
     changelog.set("")
-    uploadFile.set(tasks.remapJar)
+    uploadFile.set(tasks.jar)
     gameVersions.set(listOf(minecraftVersion))
     versionType.set(Properties.modrinthVersionType)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
     dependencies {
         required.project("simple-voice-chat")
-        required.project("fabric-api")
     }
 }

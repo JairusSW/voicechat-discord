@@ -40,10 +40,6 @@ if [ "$platform" == "paper" ]; then
 
   voicechatFile="$runDir/plugins/voicechat-bukkit.jar"
 
-  eula="paper/run/*/eula.txt"
-  serverProperties="paper/run/*/server.properties"
-  opsJson="paper/run/*/ops.json"
-
   configFile="$runDir/plugins/voicechat-discord/config.yml"
 
   # Copy plugin
@@ -62,9 +58,17 @@ elif [ "$platform" == "fabric" ]; then
 
   voicechatFile="$runDir/mods/voicechat-fabric.jar"
 
-  eula="fabric/*/run/eula.txt"
-  serverProperties="fabric/*/run/server.properties"
-  opsJson="fabric/*/run/ops.json"
+  configFile="$runDir/config/voicechat-discord.yml"
+
+elif [ "$platform" == "neoforge" ]; then
+  runDir="neoforge/$minecraftVersion/runs/server"
+
+  echo -e "${yellow}Setting up NeoForge server on version $minecraftVersion at $runDir${clear}"
+
+  mkdir -p "$runDir/config"
+  mkdir -p "$runDir/mods"
+
+  voicechatFile="$runDir/mods/voicechat-neoforge.jar"
 
   configFile="$runDir/config/voicechat-discord.yml"
 
@@ -86,6 +90,7 @@ else
 fi
 
 # Copy eula.txt
+eula="paper/run/*/eula.txt"
 eula=$(echo $eula | cut -d " " -f 1 -)
 if [ -f $eula ]; then
   to="$runDir/eula.txt"
@@ -95,6 +100,7 @@ else
 fi
 
 # Copy server.properties
+serverProperties="paper/run/*/server.properties"
 serverProperties=$(echo $serverProperties | cut -d " " -f 1 -)
 if [ -f $serverProperties ]; then
   to="$runDir/server.properties"
@@ -104,6 +110,7 @@ else
 fi
 
 # Copy ops.json
+opsJson="paper/run/*/ops.json"
 opsJson=$(echo $opsJson | cut -d " " -f 1 -)
 if [ -f $opsJson ]; then
   to="$runDir/ops.json"

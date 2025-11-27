@@ -1,8 +1,6 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        maven { url = uri("https://maven.fabricmc.net/") }
-        maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     }
 }
 
@@ -11,6 +9,8 @@ include(
     "core",
     "paper",
     "fabric",
+    "neoforge",
 
     "fabric:1.21.10",
+    "neoforge:1.21.10",
 )
