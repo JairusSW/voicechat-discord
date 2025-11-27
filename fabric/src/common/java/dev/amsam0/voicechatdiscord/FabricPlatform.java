@@ -54,7 +54,8 @@ public class FabricPlatform implements Platform {
 
     @Override
     public boolean isOperator(CommandContext<?> sender) {
-        return ((ServerCommandSource) sender.getSource()).hasPermissionLevel(2);
+        var serverCommandSource = (ServerCommandSource) sender.getSource();
+        return serverCommandSource.hasPermissionLevel(serverCommandSource.getServer().getOpPermissionLevel());
     }
 
     @Override
