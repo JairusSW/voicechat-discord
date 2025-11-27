@@ -5,5 +5,7 @@ mkShell {
 
     libopus
     pkg-config
-  ] ++ lib.optional stdenv.hostPlatform.isDarwin darwin.libiconv;
+
+    (python3.withPackages (ps: with ps; [ jinja2 ]))
+  ] ++ lib.optionals stdenv.hostPlatform.isDarwin [ darwin.libiconv gnused ];
 }

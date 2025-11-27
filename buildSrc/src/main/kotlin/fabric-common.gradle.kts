@@ -31,9 +31,11 @@ tasks.runServer {
 
 sourceSets {
     main {
-        // Include common fabric code
-        java.srcDirs(layout.projectDirectory.file("../src/common/java"))
-        resources.srcDirs(layout.projectDirectory.file("../src/common/resources"))
+        // Include template fabric code
+        // Note that this isn't actually used in compileJava. This just allows autocomplete to be used when editing templates
+        java.srcDirs(layout.projectDirectory.file("../src/template/java"))
+        // Include common fabric resources
+        resources.srcDirs(layout.projectDirectory.file("../src/main/resources"))
     }
 }
 
@@ -48,10 +50,18 @@ loom {
     }
 }
 
+val generateSource = tasks.register<Exec>("generateSource") {
+    commandLine = listOf(System.getenv("PYTHON3") ?: "python3", "generate_source.py")
+    workingDir = parent.projectDir
+}
+
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
     options.release.set(Properties.javaVersion)
+
+    source = fileTree(layout.buildDirectory.file("generatedSrc"))
+    dependsOn(generateSource)
 }
 
 tasks.processResources {

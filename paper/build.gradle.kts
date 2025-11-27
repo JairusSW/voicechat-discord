@@ -53,7 +53,7 @@ tasks.register<Copy>("processSources") {
 
         expand(properties)
     }
-    into("build/filteredSrc")
+    into("build/processedSrc")
 }
 
 tasks.compileJava {

@@ -26,7 +26,7 @@ tasks.jar {
     archiveBaseName.set(Properties.archivesBaseName + "-" + project.name)
 }
 
-tasks.register<Copy>("processSources") {
+val processSources = tasks.register<Copy>("processSources") {
     filteringCharset = Charsets.UTF_8.name()
 
     val properties = mapOf(
@@ -39,7 +39,7 @@ tasks.register<Copy>("processSources") {
 
         expand(properties)
     }
-    into("build/filteredSrc")
+    into("build/processedSrc")
 }
 
 tasks.compileJava {
@@ -53,8 +53,7 @@ tasks.compileJava {
         it.name != "Constants.java"
     }.asFileTree
 
-    val processSources = tasks.getByName<Copy>("processSources")
-    source = javaSources + fileTree(processSources.destinationDir)
+    source = javaSources + fileTree(processSources.get().destinationDir)
     dependsOn(processSources)
 }
 

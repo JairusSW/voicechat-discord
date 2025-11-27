@@ -1,1 +1,0 @@
-../../../../../../../1.19.2/src/main/java/dev/amsam0/voicechatdiscord/FabricVersionSpecific.java
