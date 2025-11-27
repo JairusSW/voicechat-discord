@@ -26,6 +26,7 @@ def version_sorter(version):
 versions = sorted(listdir(f"./{platform}"), key=version_sorter)
 version_hashes = {}
 
+should_remove = False
 for version in versions:
     if not version.startswith("1."):
         continue
@@ -37,7 +38,10 @@ for version in versions:
     try:
         mkdir(jar_dir)
     except FileExistsError:
-        input(f"remove {jar_dir}?")
+        if not should_remove:
+            input(f"remove {jar_dir}? Ctrl-C to cancel, enter to confirm. Pressing enter will allow future removes to be executed without prompting")
+            should_remove = True
+        print(f"Removing {jar_dir}")
         rmtree(jar_dir)
         mkdir(jar_dir)
     run(["jar", "xf", f"../{basename(most_recent_jar)}"], check=True, cwd=jar_dir)
