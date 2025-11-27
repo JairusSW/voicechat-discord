@@ -32,11 +32,7 @@ public interface Platform {
 
     void setOnPlayerLeaveHandler(Consumer<UUID> handler);
 
-    @Nullable String getSimpleVoiceChatVersion();
-
     String getConfigPath();
-
-    Loader getLoader();
 
     void info(String message);
 
@@ -60,10 +56,5 @@ public interface Platform {
 
     default void debug(String message, Throwable throwable) {
         if (debugLevel >= 1) error("[DEBUG 1] " + message, throwable);
-    }
-
-    enum Loader {
-        PAPER,
-        FABRIC,
     }
 }

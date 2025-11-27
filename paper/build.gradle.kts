@@ -39,10 +39,34 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(Properties.javaVersion))
 }
 
+tasks.register<Copy>("processSources") {
+    filteringCharset = Charsets.UTF_8.name()
+
+    val properties = mapOf(
+        "voicechatApiVersion" to Properties.voicechatApiVersion,
+    )
+    inputs.properties(properties)
+
+    from("src/main/java") {
+        include("**/PaperConstants.java")
+
+        expand(properties)
+    }
+    into("build/filteredSrc")
+}
+
 tasks.compileJava {
     options.encoding = Charsets.UTF_8.name()
 
     options.release.set(Properties.javaVersion)
+
+    val javaSources = sourceSets["main"].allJava.filter {
+        it.name != "PaperConstants.java"
+    }.asFileTree
+
+    val processSources = tasks.getByName<Copy>("processSources")
+    source = javaSources + fileTree(processSources.destinationDir)
+    dependsOn(processSources)
 }
 
 tasks.processResources {

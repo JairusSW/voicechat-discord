@@ -31,8 +31,6 @@ tasks.register<Copy>("processSources") {
 
     val properties = mapOf(
         "version" to Properties.pluginVersion,
-        "modrinthProjectId" to Properties.modrinthProjectId,
-        "voicechatApiVersion" to Properties.voicechatApiVersion,
     )
     inputs.properties(properties)
 

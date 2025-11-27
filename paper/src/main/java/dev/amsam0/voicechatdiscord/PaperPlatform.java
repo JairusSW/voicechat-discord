@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
@@ -120,25 +119,9 @@ public class PaperPlatform implements Platform {
         EventListener.onPlayerLeaveHandler = handler;
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public @Nullable String getSimpleVoiceChatVersion() {
-        Plugin svcPlugin = Bukkit.getServer().getPluginManager().getPlugin("voicechat");
-        if (svcPlugin == null) {
-            error("Simple Voice Chat plugin is null");
-            return null;
-        }
-        return svcPlugin.getDescription().getVersion();
-    }
-
     @Override
     public String getConfigPath() {
         return "plugins/voicechat-discord/config.yml";
-    }
-
-    @Override
-    public Loader getLoader() {
-        return Loader.PAPER;
     }
 
     @Override

@@ -6,10 +6,12 @@ import dev.amsam0.voicechatdiscord.pre_1_20_6.Pre_1_20_6_CommandHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import static dev.amsam0.voicechatdiscord.Constants.PLUGIN_ID;
 import static dev.amsam0.voicechatdiscord.Core.*;
+import static dev.amsam0.voicechatdiscord.PaperConstants.VOICECHAT_MIN_VERSION;
 
 public final class PaperPlugin extends JavaPlugin {
     public static final Logger LOGGER = LogManager.getLogger(PLUGIN_ID);
@@ -31,9 +33,41 @@ public final class PaperPlugin extends JavaPlugin {
             platform = new PaperPlatform();
         }
 
+        // Check SVC version because Bukkit's plugin.yml doesn't support version requirements
+        Plugin svcPlugin = Bukkit.getServer().getPluginManager().getPlugin("voicechat");
+        if (svcPlugin != null) {
+            //noinspection deprecation
+            String version = svcPlugin.getDescription().getVersion();
+            platform.debug("SVC version: " + version);
+            String[] splitVersion = version.split("-");
+            if (splitVersion.length > 1) {
+                // Beta builds are fine since they will have the new APIs we depend on.
+                // If we don't remove the ending part, it will say SVC isn't new enough
+                // We're on Paper, we want to get rid of the ending part (pre1)
+                version = splitVersion[0];
+                platform.debug("SVC version after normalizing: " + version);
+            }
+
+            try {
+                if (version == null || Version.parseChecked(version).isLowerThan(VOICECHAT_MIN_VERSION)) {
+                    String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
+                    if (version != null) {
+                        message += " You have version " + version + ".";
+                    }
+                    platform.error(message);
+                    throw new RuntimeException(message);
+                }
+            } catch (NumberFormatException e) {
+                platform.error("Failed to parse SVC version", e);
+                platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
+            }
+        } else {
+            platform.error("Simple Voice Chat plugin is null");
+        }
+
+        // Check Minecraft version to determine proper CommandHelper to use
         String originalVersion = getServer().getMinecraftVersion();
         platform.info("Original Minecraft version: " + originalVersion);
-
         try {
             Version parsedVersion = Version.parseChecked(originalVersion);
             platform.info("Parsed Minecraft version: " + parsedVersion);
@@ -78,6 +112,7 @@ public final class PaperPlugin extends JavaPlugin {
             }
         }
 
+        // Register voicechat service
         BukkitVoicechatService service = getServer().getServicesManager().load(BukkitVoicechatService.class);
         if (service != null) {
             voicechatPlugin = new PaperVoicechatPlugin();
@@ -88,10 +123,13 @@ public final class PaperPlugin extends JavaPlugin {
             throw new RuntimeException("Failed to register voicechat discord plugin");
         }
 
+        // Enable core
         enable();
 
+        // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);
 
+        // Register commands
         commandHelper.registerCommands();
     }
 

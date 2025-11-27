@@ -4,10 +4,8 @@ import java.util.List;
 
 public final class Constants {
     public static final String VERSION = "$version";
-    public static final String MODRINTH_PROJECT_ID = "$modrinthProjectId";
     public static final String PLUGIN_ID = "voicechat-discord";
     public static final String RELOAD_CONFIG_PERMISSION = "voicechat-discord.reload-config";
-    public static final Version VOICECHAT_MIN_VERSION = Version.parseUnchecked("$voicechatApiVersion");
 
     public static final List<String> CONFIG_HEADER = List.of(
             "To add a bot, just copy paste the following into bots:",

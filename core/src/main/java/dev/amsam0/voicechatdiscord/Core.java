@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static dev.amsam0.voicechatdiscord.Constants.CONFIG_HEADER;
-import static dev.amsam0.voicechatdiscord.Constants.VOICECHAT_MIN_VERSION;
 
 /**
  * Core code between Paper and Fabric.
@@ -33,9 +32,6 @@ public final class Core {
 
     public static void enable() {
         platform.info("Enabling " + Constants.PLUGIN_ID + " " + Constants.VERSION);
-
-        // This should happen first
-        checkSimpleVoiceChatVersion(platform.getSimpleVoiceChatVersion());
 
         try {
             LibraryLoader.load("voicechat_discord");
@@ -176,39 +172,5 @@ public final class Core {
                 return bot;
         }
         return null;
-    }
-
-    private static void checkSimpleVoiceChatVersion(@Nullable String version) {
-        if (version != null) {
-            platform.debug("SVC version: " + version);
-            String[] splitVersion = version.split("-");
-            if (splitVersion.length > 1) {
-                // Beta builds are fine since they will have the new APIs we depend on.
-                // If we don't remove the ending part, it will say SVC isn't new enough
-                if (platform.getLoader() == Platform.Loader.FABRIC) {
-                    // On fabric, the version is prefixed with the minecraft version
-                    // We don't care about the minecraft version
-                    version = splitVersion[1];
-                } else {
-                    // We're on Paper, we still want to get rid of the ending part (pre1)
-                    version = splitVersion[0];
-                }
-                platform.debug("SVC version after normalizing: " + version);
-            }
-        }
-
-        try {
-            if (version == null || Version.parseChecked(version).isLowerThan(VOICECHAT_MIN_VERSION)) {
-                String message = "Simple Voice Chat Discord Bridge requires Simple Voice Chat version " + VOICECHAT_MIN_VERSION + " or later.";
-                if (version != null) {
-                    message += " You have version " + version + ".";
-                }
-                platform.error(message);
-                throw new RuntimeException(message);
-            }
-        } catch (NumberFormatException e) {
-            platform.error("Failed to parse SVC version", e);
-            platform.warn("Assuming SVC is " + VOICECHAT_MIN_VERSION + " or later. If not, things will break.");
-        }
     }
 }

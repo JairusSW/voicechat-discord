@@ -7,8 +7,6 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.command.ServerCommandSource;
@@ -111,23 +109,8 @@ public class FabricPlatform implements Platform {
     }
 
     @Override
-    public @Nullable String getSimpleVoiceChatVersion() {
-        ModContainer svcMod = FabricLoader.getInstance().getModContainer("voicechat").orElse(null);
-        if (svcMod == null) {
-            error("Simple Voice Chat mod is null");
-            return null;
-        }
-        return svcMod.getMetadata().getVersion().toString();
-    }
-
-    @Override
     public String getConfigPath() {
         return "config/voicechat-discord.yml";
-    }
-
-    @Override
-    public Loader getLoader() {
-        return Loader.FABRIC;
     }
 
     protected static final String logPrefixAndFormatPlaceholder = "[" + Constants.PLUGIN_ID + "] {}";
