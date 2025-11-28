@@ -53,7 +53,14 @@ public class NeoForgePlatform implements Platform {
     @Override
     public boolean isOperator(CommandContext<?> sender) {
         var commandSourceStack = (CommandSourceStack) sender.getSource();
-        return commandSourceStack.hasPermission(commandSourceStack.getServer().operatorUserPermissionLevel());
+
+        //# {% if minecraft_version <= mc_1_21_8 %}
+        //# var operatorUserPermissionLevel = commandSourceStack.getServer().getOperatorUserPermissionLevel();
+        //# {% else %}
+        var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissionLevel();
+        //# {% endif %}
+
+        return commandSourceStack.hasPermission(operatorUserPermissionLevel);
     }
 
     @Override

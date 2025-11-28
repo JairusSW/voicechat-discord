@@ -2,18 +2,18 @@
 
 from os import makedirs, listdir
 from os.path import dirname
+from sys import argv
 
 from jinja2 import Environment, FileSystemLoader
 
-with open("../settings.gradle.kts", "r") as f:
-    for line in f.readlines():
-        if line.startswith("    \"fabric:"):
-            current_version = line.split(":")[1].split("\"")[0]
-            break
+platform = argv[1]
+print(f"platform: {platform}")
 
+current_version = argv[2]
 print(f"version: {current_version}")
-output_dir = f"./{current_version}/build/generatedSrc"
-input_dir = f"./src/template/java"
+
+output_dir = f"./{platform}/{current_version}/build/generatedSrc"
+input_dir = f"./{platform}/src/template/java"
 
 env = Environment(
     loader=FileSystemLoader(input_dir),
@@ -36,12 +36,11 @@ def convert_version_to_int(version):
     patch = version_split[2].rjust(2, "0")
     return int(major + minor + patch)
 
-current_version_as_var = "mc_" + current_version.replace(".", "_")
 current_version = convert_version_to_int(current_version)
-print(f"version as int: {current_version} (variable: {current_version_as_var})")
+#print(f"version as int: {current_version}")
 
 version_variables = {}
-for version in listdir("."):
+for version in listdir(f"./{platform}"):
     if not version.startswith("1."):
         continue
     version_as_var = "mc_" + version.replace(".", "_")

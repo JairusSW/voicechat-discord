@@ -14,7 +14,8 @@ for dir in $version_directories
     sed -E -e '/"'$platform':/s/[^:]*",$/'$ver'",/' -i settings.gradle.kts
     while true
         if ! ./gradlew :$platform:$ver:build
-            set_color yellow; echo Press enter to try again; set_color normal
+            echo
+            set_color red; echo Press enter to try again; set_color normal
             if ! read
                 exit 1
             end

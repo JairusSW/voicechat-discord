@@ -15,7 +15,7 @@ description = '''A mod to make a bridge between Simple Voice Chat and Discord to
 [[dependencies.voicechat_discord]]
 modId = "neoforge"
 type = "required"
-versionRange = "[${neoforgeVersion},)"
+versionRange = "*"
 ordering = "NONE"
 side = "BOTH"
 

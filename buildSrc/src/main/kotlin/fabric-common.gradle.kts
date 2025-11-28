@@ -20,7 +20,7 @@ project.version = projectVersion
 project.group = Properties.mavenGroup
 
 val setupServer = tasks.register<Exec>("setupServer") {
-    commandLine = listOf("./setup_server.sh", "fabric", minecraftVersion)
+    commandLine = listOf("./setup_server.sh", platformName, minecraftVersion)
     workingDir = project.rootDir
 
     dependsOn(tasks.build)
@@ -35,6 +35,7 @@ sourceSets {
         // Include template fabric code
         // Note that this isn't actually used in compileJava. This just allows autocomplete to be used when editing templates
         java.srcDirs(layout.projectDirectory.file("../src/template/java"))
+
         // Include common fabric resources
         resources.srcDirs(layout.projectDirectory.file("../src/main/resources"))
     }
@@ -51,9 +52,9 @@ loom {
     }
 }
 
-val generateSource = tasks.register<Exec>("generateSource") {
-    commandLine = listOf(System.getenv("PYTHON3") ?: "python3", "generate_source.py")
-    workingDir = parent.projectDir
+val generateVersionSource = tasks.register<Exec>("generateVersionSource") {
+    commandLine = listOf(System.getenv("PYTHON3") ?: "python3", "./generate_version_source.py", platformName, minecraftVersion)
+    workingDir = project.rootDir
 }
 
 tasks.compileJava {
@@ -62,7 +63,7 @@ tasks.compileJava {
     options.release.set(Properties.javaVersion)
 
     source = fileTree(layout.buildDirectory.file("generatedSrc"))
-    dependsOn(generateSource)
+    dependsOn(generateVersionSource)
 }
 
 tasks.processResources {
