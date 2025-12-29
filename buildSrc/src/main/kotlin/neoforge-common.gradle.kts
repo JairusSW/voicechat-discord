@@ -56,7 +56,7 @@ runs {
 }
 
 val generateVersionSource = tasks.register<Exec>("generateVersionSource") {
-    commandLine = listOf(System.getenv("PYTHON3") ?: "python3", "./generate_version_source.py", platformName, minecraftVersion)
+    commandLine = listOf("./venv/bin/python3", "./generate_version_source.py", platformName, minecraftVersion)
     workingDir = project.rootDir
 }
 

@@ -6,3 +6,4 @@ run/
 runs/
 .DS_Store
 config.yml
+venv/
