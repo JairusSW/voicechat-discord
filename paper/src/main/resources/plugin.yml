@@ -7,3 +7,4 @@ authors: [ "amsam0", "Totobird" ]
 description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without Simple Voice Chat installed on their client to hear and speak.
 website: https://modrinth.com/mod/simple-voice-chat-discord-bridge
 depend: [ voicechat ]
+folia-supported: true
