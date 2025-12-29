@@ -4,7 +4,7 @@ set platform $argv[1]
 echo platform: $platform
 
 cd $platform
-set version_directories ./1.*
+set version_directories ./*.*
 cd ..
 
 for dir in $version_directories
