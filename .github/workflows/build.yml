@@ -193,6 +193,7 @@ jobs:
         with:
           python-version: "3.13"
           cache: "pip"
+          cache-dependency-path: setup_python.sh
           pip-install: Jinja2
 
       - name: Setup mock venv
