@@ -3,7 +3,7 @@ object Properties {
     const val javaVersion = 21
 
     /* Project */
-    const val pluginVersion = "3.1.1" // Make sure to sync with setup_server.sh
+    const val pluginVersion = "3.1.2" // Make sure to sync with setup_server.sh
     const val mavenGroup = "dev.amsam0.voicechatdiscord"
     const val archivesBaseName = "voicechat-discord"
     const val modrinthProjectId = "S1jG5YV5"
