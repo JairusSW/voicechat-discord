@@ -1,5 +1,3 @@
-#!./venv/bin/python3
-
 from os import makedirs, listdir
 from os.path import dirname
 from sys import argv

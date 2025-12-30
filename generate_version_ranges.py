@@ -1,5 +1,3 @@
-#!./venv/bin/python3
-
 from os import listdir, mkdir, getenv
 from os.path import basename, getmtime
 from pathlib import Path
