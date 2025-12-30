@@ -188,6 +188,18 @@ jobs:
       - name: Make gradle wrapper executable
         run: chmod +x ./gradlew
 
+      - name: Setup python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: "pip"
+          pip-install: Jinja2
+
+      - name: Setup mock venv
+        run: |
+          mkdir -p venv/bin
+          ln -s $(which python3) venv/bin/python3
+
       - name: Download linux-aarch64
         uses: actions/download-artifact@v4
         with:
