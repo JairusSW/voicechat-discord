@@ -129,7 +129,7 @@ modrinth {
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
-    changelog.set("**Please note:** this version supports the following Minecraft versions: ${supportedVersions.joinToString(", ")}")
+    changelog.set("")
     uploadFile.set(tasks.jar)
     gameVersions.set(listOf(minecraftVersion))
     versionType.set(Properties.modrinthVersionType)
