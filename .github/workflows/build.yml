@@ -135,7 +135,7 @@ jobs:
       fail-fast: false
       matrix:
         platform: [fabric]
-        version: ["1.16.5", "1.19.2", "1.21.2", "1.21.5"]
+        version: ["1.16.5", "1.19.2", "1.21.2", "1.21.5", "1.21.11"]
         include:
           # We don't want paper to map to all the versions
           - platform: paper
