@@ -56,11 +56,17 @@ public class NeoForgePlatform implements Platform {
 
         //# {% if minecraft_version <= mc_1_21_8 %}
         //# var operatorUserPermissionLevel = commandSourceStack.getServer().getOperatorUserPermissionLevel();
+        //# {% elif minecraft_version <= mc_1_21_10 %}
+        //# var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissionLevel();
         //# {% else %}
-        var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissionLevel();
+        var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissions();
         //# {% endif %}
 
-        return commandSourceStack.hasPermission(operatorUserPermissionLevel);
+        //# {% if minecraft_version <= mc_1_21_10 %}
+        //# return commandSourceStack.hasPermission(operatorUserPermissionLevel);
+        //# {% else %}
+        return commandSourceStack.permissions().hasPermission(new net.minecraft.server.permissions.Permission.HasCommandLevel(operatorUserPermissionLevel.level()));
+        //# {% endif %}
     }
 
     @Override

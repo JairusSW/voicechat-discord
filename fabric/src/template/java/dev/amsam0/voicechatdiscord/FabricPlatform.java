@@ -75,12 +75,18 @@ public class FabricPlatform implements Platform {
     @Override
     public boolean isOperator(CommandContext<?> sender) {
         var serverCommandSource = (ServerCommandSource) sender.getSource();
+
         //# {% if minecraft_version <= mc_1_16_5 %}
         //# var server = serverCommandSource.getMinecraftServer();
         //# {% else %}
         var server = serverCommandSource.getServer();
         //# {% endif %}
-        return serverCommandSource.hasPermissionLevel(server.getOpPermissionLevel());
+
+        //# {% if minecraft_version <= mc_1_21_10 %}
+        //# return serverCommandSource.hasPermissionLevel(server.getOpPermissionLevel());
+        //# {% else %}
+        return serverCommandSource.getPermissions().hasPermission(new net.minecraft.command.permission.Permission.Level(server.getOpPermissionLevel().getLevel()));
+        //# {% endif %}
     }
 
     @Override

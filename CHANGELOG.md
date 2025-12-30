@@ -15,6 +15,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 - Fabric versions that produce an identical jar will now be combined to reduce the number of jars that are built.
 - Fixed Fabric API dependency on 1.16.5 by using the legacy mod ID.
 - Fixed Folia not being marked as supported.
+- Added support for 1.21.11.
 
 Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.1...3.1.2
 GitHub Actions workflow changes: https://github.com/amsam0/voicechat-discord/compare/3.1.1...3.1.2

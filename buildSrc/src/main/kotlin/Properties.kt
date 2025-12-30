@@ -34,13 +34,14 @@ object Properties {
         "1.21.8",
         "1.21.9",
         "1.21.10",
+        "1.21.11",
     )
     // https://repo.papermc.io/ui/packages/gav:%2F%2Fio.papermc.paper:dev-bundle?name=dev-bundle&type=packages
     val paperDevBundleVersion = "${paperSupportedMinecraftVersions.last()}-R0.1-SNAPSHOT"
 
     /* Fabric (https://fabricmc.net/develop) */
     data class FabricMetadata(val yarnMappingsVersion: String, val fabricApiVersion: String, val permissionsApiVersion: String)
-    const val fabricLoaderVersion = "0.17.2" // Make sure to sync with setup_server.sh
+    const val fabricLoaderVersion = "0.18.4" // Make sure to sync with setup_server.sh
     val fabricVersions = mapOf(
         // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
         // See https://github.com/lucko/fabric-permissions-api/releases for permissions API
@@ -66,6 +67,7 @@ object Properties {
         "1.21.8"  to FabricMetadata(yarnMappingsVersion = "1.21.8+build.1",  fabricApiVersion = "0.130.0+1.21.8",  permissionsApiVersion = "0.4.1"),
         "1.21.9"  to FabricMetadata(yarnMappingsVersion = "1.21.9+build.1",  fabricApiVersion = "0.134.0+1.21.9",  permissionsApiVersion = "0.5.0"),
         "1.21.10" to FabricMetadata(yarnMappingsVersion = "1.21.10+build.2", fabricApiVersion = "0.135.0+1.21.10", permissionsApiVersion = "0.5.0"),
+        "1.21.11" to FabricMetadata(yarnMappingsVersion = "1.21.11+build.3", fabricApiVersion = "0.140.2+1.21.11", permissionsApiVersion = "0.6.1"),
     )
 
     /* NeoForge (https://neoforged.net, https://parchmentmc.org/docs/getting-started) */
@@ -85,6 +87,7 @@ object Properties {
         "1.21.8"  to "21.8.51",
         "1.21.9"  to "21.9.16-beta",
         "1.21.10" to "21.10.56-beta",
+        "1.21.11" to "21.11.17-beta",
     )
 
     /* Dependencies */
