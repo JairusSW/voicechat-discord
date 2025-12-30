@@ -36,7 +36,7 @@ public final class PaperPlugin extends JavaPlugin {
         // Check SVC version because Bukkit's plugin.yml doesn't support version requirements
         Plugin svcPlugin = Bukkit.getServer().getPluginManager().getPlugin("voicechat");
         if (svcPlugin != null) {
-            //noinspection deprecation
+            @SuppressWarnings("deprecation")
             String version = svcPlugin.getDescription().getVersion();
             platform.debug("SVC version: " + version);
             String[] splitVersion = version.split("-");
