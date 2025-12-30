@@ -17,7 +17,7 @@ This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/ch
 - Fixed Folia not being marked as supported.
 - Added support for 1.21.11.
 
-Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.1...3.1.2
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.1...3.1.2+build-fix
 GitHub Actions workflow changes: https://github.com/amsam0/voicechat-discord/compare/3.1.1...3.1.2
 
 ## 3.1.1
