@@ -68,7 +68,7 @@ jobs:
 
       - name: '[windows] Log source hash'
         if: runner.os == 'Windows'
-        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName } | Format-Table -AutoSize
+        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName } | Format-List -Force
 
       - name: Upload source
         uses: actions/upload-artifact@v4
@@ -155,7 +155,7 @@ jobs:
 
       - name: '[windows] Log source hash'
         if: runner.os == 'Windows'
-        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName } | Format-Table -AutoSize 
+        run: Get-ChildItem -Recurse -File | %{ Get-FileHash $_.FullName } | Format-List -Force
 
       - name: Upload source
         uses: actions/upload-artifact@v4
