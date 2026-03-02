@@ -2,6 +2,14 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.1.3
+
+- Updated songbird to PR [#291](https://github.com/serenity-rs/songbird/pull/291) to add support for DAVE in Discord voice calls.
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.2+build-fix...3.1.3
+
+GitHub Actions workflow changes: None
+
 ## 3.1.2
 
 - Fixed the infamous issue of needing a newer glibc than is available on old LTS Linux distributions ([#144](https://github.com/amsam0/voicechat-discord/issues/144), [#63](https://github.com/amsam0/voicechat-discord/issues/63), [#106](https://github.com/amsam0/voicechat-discord/issues/106))
