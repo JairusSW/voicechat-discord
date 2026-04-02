@@ -1,4 +1,4 @@
-use songbird::driver::opus::{Channels, SampleRate};
+use opus2::Channels;
 use tracing::{trace, warn};
 
 /// 1 second of RawAudio
@@ -7,11 +7,10 @@ pub const RAW_AUDIO_SIZE: usize = 960;
 /// 20 ms of 16-bit PCM
 pub type RawAudio = [i16; RAW_AUDIO_SIZE];
 
-pub const OPUS_SAMPLE_RATE: SampleRate = SampleRate::Hz48000;
-pub const OPUS_CHANNELS: Channels = Channels::Mono;
+pub const SAMPLE_RATE: u32 = 48000;
 
-pub const SAMPLE_RATE: u32 = OPUS_SAMPLE_RATE as i32 as u32;
-pub const CHANNELS: u32 = OPUS_CHANNELS as i32 as u32;
+pub const OPUS_CHANNELS: Channels = Channels::Mono;
+pub const CHANNELS: u32 = OPUS_CHANNELS as u32;
 
 pub fn combine_audio_parts(parts: Vec<RawAudio>) -> RawAudio {
     // Based on https://github.com/DV8FromTheWorld/JDA/blob/11c5bf02a1f4df3372ab68e0ccb4a94d0db368df/src/main/java/net/dv8tion/jda/internal/audio/AudioConnection.java#L529

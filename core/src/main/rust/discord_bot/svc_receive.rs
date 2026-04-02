@@ -2,12 +2,11 @@ use std::{f64::consts::PI, time::Instant};
 
 use dashmap::{mapref::one::RefMut, DashMap};
 use eyre::{eyre, Context as _, Report};
+use opus2::Decoder;
 use parking_lot::Mutex;
-use songbird::driver::opus::coder::Decoder;
 
 use crate::audio_util::{
-    adjust_volume, RawAudio, CHANNELS, MAX_AUDIO_BUFFER, OPUS_CHANNELS, OPUS_SAMPLE_RATE,
-    RAW_AUDIO_SIZE,
+    adjust_volume, RawAudio, CHANNELS, MAX_AUDIO_BUFFER, OPUS_CHANNELS, RAW_AUDIO_SIZE, SAMPLE_RATE,
 };
 
 use super::{Sender, SenderId, State};
@@ -26,7 +25,7 @@ impl super::DiscordBot {
                     audio_buffer_tx,
                     audio_buffer_rx,
                     decoder: Mutex::new(
-                        Decoder::new(OPUS_SAMPLE_RATE, OPUS_CHANNELS)
+                        Decoder::new(SAMPLE_RATE, OPUS_CHANNELS)
                             .expect("Unable to make opus decoder"),
                     ),
                     last_audio_received: Mutex::new(None),
@@ -58,11 +57,7 @@ impl super::DiscordBot {
         sender
             .decoder
             .lock()
-            .decode(
-                Some((&raw_opus_data).try_into().wrap_err("Invalid opus data")?),
-                (&mut audio).try_into().wrap_err("Unable to wrap output")?,
-                false,
-            )
+            .decode(&raw_opus_data, &mut audio, false)
             .wrap_err("Unable to decode raw opus data")?;
         let len = audio.len();
         let mut audio: RawAudio = audio.try_into().map_err(|_| {

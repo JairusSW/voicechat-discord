@@ -7,15 +7,10 @@ use std::{
 
 use dashmap::DashMap;
 use eyre::{eyre, Context as _, Report};
+use opus2::Decoder;
 use parking_lot::{Mutex, RwLock};
 use serenity::all::{ChannelId, GuildId, Http};
-use songbird::{
-    driver::{
-        opus::coder::{Decoder, GenericCtl},
-        DecodeMode,
-    },
-    Config, Songbird,
-};
+use songbird::{driver::DecodeMode, Config, Songbird};
 use tokio::task::AbortHandle;
 use tracing::{debug, info, trace, warn};
 
