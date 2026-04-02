@@ -2,6 +2,15 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.1.4
+
+- Updated songbird to the next branch. This should fix any issues with DAVE.
+- Switched to `opus2` Rust crate. As we already updated to Opus 1.5.2, this shouldn't change anything.
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.3...3.1.4
+
+GitHub Actions workflow changes: None
+
 ## 3.1.3
 
 - Updated songbird to PR [#291](https://github.com/serenity-rs/songbird/pull/291) to add support for DAVE in Discord voice calls.

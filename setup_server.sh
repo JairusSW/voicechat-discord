@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-pluginVersion="3.1.3"
+pluginVersion="3.1.4"
 fabricLoaderVersion="0.18.4"
 
 minecraftVersion="$2"
