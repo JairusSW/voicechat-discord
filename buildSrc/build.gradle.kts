@@ -12,7 +12,7 @@ repositories {
 val loomVersion = "1.17-SNAPSHOT" // https://fabricmc.net/develop
 val minotaurVersion = "2.+" // https://plugins.gradle.org/plugin/com.modrinth.minotaur
 val shadowVersion = "9.4.2" // https://plugins.gradle.org/plugin/com.gradleup.shadow
-val neoGradleVersion = "7.1.37" // https://projects.neoforged.net/neoforged/neogradle
+val neoGradleVersion = "7.1.38" // https://projects.neoforged.net/neoforged/neogradle
 val paperweightVersion = "2.0.0-beta.21" // https://github.com/PaperMC/paperweight-test-plugin/blob/master/build.gradle.kts
 
 dependencies {

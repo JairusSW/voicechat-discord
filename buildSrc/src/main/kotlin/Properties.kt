@@ -36,6 +36,9 @@ object Properties {
         "1.21.10",
         "1.21.11",
         "26.1",
+        "26.1.1",
+        "26.1.2",
+        "26.2",
     )
     // https://repo.papermc.io/ui/packages/gav:%2F%2Fio.papermc.paper:dev-bundle?name=dev-bundle&type=packages
     val paperDevBundleVersion = "${paperSupportedMinecraftVersions.last()}.build.+"
@@ -70,6 +73,9 @@ object Properties {
         "1.21.10" to FabricMetadata(fabricApiVersion = "0.138.4+1.21.10", permissionsApiVersion = "0.5.0"),
         "1.21.11" to FabricMetadata(fabricApiVersion = "0.141.4+1.21.11", permissionsApiVersion = "0.6.1"),
         "26.1"    to FabricMetadata(fabricApiVersion = "0.145.1+26.1",    permissionsApiVersion = "0.7.0"),
+        "26.1.1"  to FabricMetadata(fabricApiVersion = "0.145.4+26.1.1",  permissionsApiVersion = "0.7.0"),
+        "26.1.2"  to FabricMetadata(fabricApiVersion = "0.152.1+26.1.2",  permissionsApiVersion = "0.7.0"),
+        "26.2"    to FabricMetadata(fabricApiVersion = "0.152.1+26.2",    permissionsApiVersion = "0.7.0"),
     )
 
     /* NeoForge (https://neoforged.net, https://parchmentmc.org/docs/getting-started) */
@@ -91,6 +97,9 @@ object Properties {
         "1.21.10" to "21.10.56-beta",
         "1.21.11" to "21.11.17-beta",
         "26.1"    to "26.1.0.19-beta",
+        "26.1.1"  to "26.1.1.15-beta",
+        "26.1.2"  to "26.1.2.76",
+        "26.2"    to "26.2.0.0-beta",
     )
 
     /* Dependencies */
