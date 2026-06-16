@@ -10,17 +10,9 @@ object Properties {
     const val modrinthVersionType = "release" // Can be release, beta, or alpha
 
     /* Paper */
-    const val paperApiVersion = "1.16"
+    const val paperApiVersion = "1.20"
     val paperSupportedMinecraftVersions = listOf(
         // We follow https://modrepo.de/minecraft/voicechat/wiki/supported_versions
-        "1.16.5",
-        "1.18.2",
-        "1.19.2",
-        "1.20",
-        "1.20.1",
-        "1.20.2",
-        "1.20.3",
-        "1.20.4",
         "1.20.5",
         "1.20.6",
         "1.21",

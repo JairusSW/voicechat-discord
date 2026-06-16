@@ -92,7 +92,7 @@ tasks.shadowJar {
 
     archiveBaseName.set(archivesBaseName)
     archiveClassifier.set("")
-    archiveVersion.set("${Properties.pluginVersion}-shadow")
+    archiveVersion.set(Properties.pluginVersion)
 
     from(file("${rootDir}/LICENSE")) {
         rename { "${it}_${Properties.archivesBaseName}" }
@@ -105,15 +105,8 @@ tasks.jar {
     archiveVersion.set("${Properties.pluginVersion}-raw")
 }
 
-tasks.reobfJar {
-    // No idea why we didn't need to do this when we used Groovy, but this is necessary to have the correct jar filename (otherwise it will be paper-{VERSION}.jar)
-    outputJar.set(layout.buildDirectory.file("libs/${archivesBaseName}-${Properties.pluginVersion}.jar"))
-
-    dependsOn(tasks.jar.get())
-}
-
 tasks.assemble {
-    dependsOn(tasks.reobfJar.get())
+    dependsOn(tasks.jar.get())
 }
 
 tasks.build {
@@ -145,7 +138,7 @@ modrinth {
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
     changelog.set("")
-    uploadFile.set(tasks.reobfJar.get().outputJar.get())
+    uploadFile.set(tasks.shadowJar.get().archiveFile.get())
     gameVersions.set(Properties.paperSupportedMinecraftVersions)
     loaders.set(listOf("paper", "purpur", "folia"))
     versionType.set(Properties.modrinthVersionType)
