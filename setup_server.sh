@@ -2,7 +2,7 @@
 set -euo pipefail
 
 pluginVersion="3.1.4"
-fabricLoaderVersion="0.18.4"
+fabricLoaderVersion="0.19.3"
 
 minecraftVersion="$2"
 platform="$1"

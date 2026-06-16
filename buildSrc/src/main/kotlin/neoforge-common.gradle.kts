@@ -1,7 +1,7 @@
 plugins {
     java
-    id("shared-plugin-minotaur")
-    id("shared-plugin-shadow")
+    id("plugin-minotaur")
+    id("plugin-shadow")
     id("net.neoforged.gradle.userdev") // version in buildSrc/build.gradle.kts
 }
 

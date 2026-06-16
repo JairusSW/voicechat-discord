@@ -1,8 +1,8 @@
 plugins {
     java
-    id("shared-plugin-minotaur")
-    id("shared-plugin-shadow")
-    id("fabric-loom") // version in buildSrc/build.gradle.kts
+    id("plugin-minotaur")
+    id("plugin-shadow")
+    id("net.fabricmc.fabric-loom-remap") // version in buildSrc/build.gradle.kts
 }
 
 val parent = project.parent!!
@@ -109,7 +109,7 @@ tasks.remapJar {
 
 dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings("net.fabricmc:yarn:${fabricMetadata.yarnMappingsVersion}:v2")
+    mappings(loom.officialMojangMappings())
     modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
     // For running a server, we need the whole API
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricMetadata.fabricApiVersion}")

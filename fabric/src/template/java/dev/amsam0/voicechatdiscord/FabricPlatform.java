@@ -7,14 +7,10 @@ import de.maxhenkel.voicechat.api.ServerLevel;
 import de.maxhenkel.voicechat.api.ServerPlayer;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,38 +25,8 @@ public class FabricPlatform implements Platform {
     private static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
     @Override
-    public boolean isValidPlayer(CommandContext<?> sender) {
-        //# {% if minecraft_version <= mc_1_18_2 %}
-        //# try {
-        //# {% endif %}
-
-        return ((ServerCommandSource) sender.getSource()).getPlayer() != null;
-
-        //# {% if minecraft_version <= mc_1_18_2 %}
-        //# } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
-        //#     throw new RuntimeException(e);
-        //# }
-        //# {% endif %}
-    }
-
-    @Override
-    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        //# {% if minecraft_version <= mc_1_18_2 %}
-        //# try {
-        //# {% endif %}
-
-        return api.fromServerPlayer(((ServerCommandSource) context.getSource()).getPlayer());
-
-        //# {% if minecraft_version <= mc_1_18_2 %}
-        //# } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
-        //#     throw new RuntimeException(e);
-        //# }
-        //# {% endif %}
-    }
-
-    @Override
     public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
-        ServerWorld world = (ServerWorld) level.getServerLevel();
+        net.minecraft.server.level.ServerLevel world = (net.minecraft.server.level.ServerLevel) level.getServerLevel();
         Entity entity = world.getEntity(uuid);
         if (entity == null) {
             return null;
@@ -73,55 +39,75 @@ public class FabricPlatform implements Platform {
     }
 
     @Override
-    public boolean isOperator(CommandContext<?> sender) {
-        var serverCommandSource = (ServerCommandSource) sender.getSource();
+    public boolean isValidPlayer(CommandContext<?> sender) {
+        try {
+            return ((CommandSourceStack) sender.getSource()).getPlayerOrException() != null;
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            return false;
+        }
+    }
 
-        //# {% if minecraft_version <= mc_1_16_5 %}
-        //# var server = serverCommandSource.getMinecraftServer();
+    @Override
+    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
+        try {
+            return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getPlayerOrException());
+        } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean isOperator(CommandContext<?> sender) {
+        var commandSourceStack = (CommandSourceStack) sender.getSource();
+
+        //# {% if minecraft_version <= mc_1_21_8 %}
+        //# var operatorUserPermissionLevel = commandSourceStack.getServer().getOperatorUserPermissionLevel();
+        //# {% elif minecraft_version <= mc_1_21_10 %}
+        //# var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissionLevel();
         //# {% else %}
-        var server = serverCommandSource.getServer();
+        var operatorUserPermissionLevel = commandSourceStack.getServer().operatorUserPermissions();
         //# {% endif %}
 
         //# {% if minecraft_version <= mc_1_21_10 %}
-        //# return serverCommandSource.hasPermissionLevel(server.getOpPermissionLevel());
+        //# return commandSourceStack.hasPermission(operatorUserPermissionLevel);
         //# {% else %}
-        return serverCommandSource.getPermissions().hasPermission(new net.minecraft.command.permission.Permission.Level(server.getOpPermissionLevel().getLevel()));
+        return commandSourceStack.permissions().hasPermission(new net.minecraft.server.permissions.Permission.HasCommandLevel(operatorUserPermissionLevel.level()));
         //# {% endif %}
     }
 
     @Override
     public boolean hasPermission(CommandContext<?> sender, String permission) {
-        return Permissions.check((ServerCommandSource) sender.getSource(), permission);
+        return Permissions.check((CommandSourceStack) sender.getSource(), permission);
     }
 
     @Override
     public void sendMessage(CommandContext<?> sender, Component... message) {
         //# {% if minecraft_version <= mc_1_18_2 %}
-        //# ((ServerCommandSource) sender.getSource()).sendFeedback(toNative(message), false);
+        //# ((CommandSourceStack) sender.getSource()).sendSuccess(toNative(message), false);
         //# {% else %}
-        ((ServerCommandSource) sender.getSource()).sendMessage(toNative(message));
+        ((CommandSourceStack) sender.getSource()).sendSystemMessage(toNative(message));
         //# {% endif %}
     }
 
     @Override
     public void sendMessage(Player player, Component... message) {
         //# {% if minecraft_version <= mc_1_18_2 %}
-        //# ((ServerPlayerEntity) player.getPlayer()).sendMessage(toNative(message), false);
+        //# ((net.minecraft.server.level.ServerPlayer) player.getPlayer()).displayClientMessage(toNative(message), false);
         //# {% else %}
-        ((ServerPlayerEntity) player.getPlayer()).sendMessage(toNative(message));
+        ((net.minecraft.server.level.ServerPlayer) player.getPlayer()).sendSystemMessage(toNative(message));
         //# {% endif %}
     }
 
-    private Text toNative(Component... message) {
-        MutableText nativeText = null;
+    private net.minecraft.network.chat.Component toNative(Component... message) {
+        MutableComponent nativeText = null;
 
         for (var component : message) {
-            MutableText mapped = ((MutableText) Text.of(component.text()))
-                    .formatted(switch (component.color()) {
-                        case WHITE -> Formatting.WHITE;
-                        case RED -> Formatting.RED;
-                        case YELLOW -> Formatting.YELLOW;
-                        case GREEN -> Formatting.GREEN;
+            MutableComponent mapped = ((MutableComponent) net.minecraft.network.chat.Component.nullToEmpty(component.text()))
+                    .withStyle(switch (component.color()) {
+                        case WHITE -> ChatFormatting.WHITE;
+                        case RED -> ChatFormatting.RED;
+                        case YELLOW -> ChatFormatting.YELLOW;
+                        case GREEN -> ChatFormatting.GREEN;
                     });
             if (nativeText == null) {
                 nativeText = mapped;
@@ -133,19 +119,19 @@ public class FabricPlatform implements Platform {
         if (nativeText == null) {
             // Cast is needed on newer versions
             //noinspection RedundantCast
-            return Text.of((String) null);
+            return net.minecraft.network.chat.Component.nullToEmpty((String) null);
         }
         return nativeText;
     }
 
     @Override
     public String getName(Player player) {
-        return ((PlayerEntity) player.getPlayer()).getName().getString();
+        return ((net.minecraft.world.entity.player.Player) player.getPlayer()).getName().getString();
     }
 
     @Override
     public void setOnPlayerLeaveHandler(Consumer<UUID> handler) {
-        ServerPlayConnectionEvents.DISCONNECT.register((minecraftHandler, server) -> handler.accept(minecraftHandler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((minecraftHandler, server) -> handler.accept(minecraftHandler.player.getUUID()));
     }
 
     @Override

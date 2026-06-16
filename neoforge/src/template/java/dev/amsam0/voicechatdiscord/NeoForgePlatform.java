@@ -27,16 +27,6 @@ public class NeoForgePlatform implements Platform {
     private static final Logger LOGGER = LoggerFactory.getLogger(PLUGIN_ID);
 
     @Override
-    public boolean isValidPlayer(CommandContext<?> sender) {
-        return ((CommandSourceStack) sender.getSource()).getPlayer() != null;
-    }
-
-    @Override
-    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
-        return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getPlayer());
-    }
-
-    @Override
     public @Nullable Position getEntityPosition(ServerLevel level, UUID uuid) {
         net.minecraft.server.level.ServerLevel world = (net.minecraft.server.level.ServerLevel) level.getServerLevel();
         Entity entity = world.getEntity(uuid);
@@ -48,6 +38,16 @@ public class NeoForgePlatform implements Platform {
                 entity.getY(),
                 entity.getZ()
         );
+    }
+
+    @Override
+    public boolean isValidPlayer(CommandContext<?> sender) {
+        return ((CommandSourceStack) sender.getSource()).getPlayer() != null;
+    }
+
+    @Override
+    public ServerPlayer commandContextToPlayer(CommandContext<?> context) {
+        return api.fromServerPlayer(((CommandSourceStack) context.getSource()).getPlayer());
     }
 
     @Override

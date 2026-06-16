@@ -9,9 +9,16 @@ repositories {
     maven { url = uri("https://maven.neoforged.net/releases") }
 }
 
+val loomVersion = "1.17-SNAPSHOT" // https://fabricmc.net/develop
+val minotaurVersion = "2.+" // https://plugins.gradle.org/plugin/com.modrinth.minotaur
+val shadowVersion = "9.4.2" // https://plugins.gradle.org/plugin/com.gradleup.shadow
+val neoGradleVersion = "7.1.37" // https://projects.neoforged.net/neoforged/neogradle
+val paperweightVersion = "2.0.0-beta.21" // https://github.com/PaperMC/paperweight-test-plugin/blob/master/build.gradle.kts
+
 dependencies {
-    implementation("fabric-loom:fabric-loom.gradle.plugin:1.14-SNAPSHOT") // https://fabricmc.net/develop
-    implementation("com.modrinth.minotaur:com.modrinth.minotaur.gradle.plugin:2.+")
-    implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.3.0")
-    implementation("net.neoforged.gradle.userdev:net.neoforged.gradle.userdev.gradle.plugin:7.1.16")
+    implementation("net.fabricmc.fabric-loom-remap:net.fabricmc.fabric-loom-remap.gradle.plugin:${loomVersion}")
+    implementation("com.modrinth.minotaur:com.modrinth.minotaur.gradle.plugin:${minotaurVersion}")
+    implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:${shadowVersion}")
+    implementation("net.neoforged.gradle.userdev:net.neoforged.gradle.userdev.gradle.plugin:${neoGradleVersion}")
+    implementation("io.papermc.paperweight.userdev:io.papermc.paperweight.userdev.gradle.plugin:${paperweightVersion}")
 }
