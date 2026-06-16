@@ -14,7 +14,7 @@ elif platform == "neoforge": platform_capitalized = "NeoForge"
 else: raise AssertionError()
 
 def version_sorter(version):
-    if not version.startswith("1."):
+    if "." not in version or version.startswith("."):
         return 0
 
     version_split = version.split(".")
@@ -30,7 +30,7 @@ version_hashes = {}
 
 should_remove = False
 for version in versions:
-    if not version.startswith("1."):
+    if "." not in version or version.startswith("."):
         continue
 
     # first find most recent jar and unzip

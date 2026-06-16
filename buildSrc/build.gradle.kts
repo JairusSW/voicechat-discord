@@ -17,6 +17,7 @@ val paperweightVersion = "2.0.0-beta.21" // https://github.com/PaperMC/paperweig
 
 dependencies {
     implementation("net.fabricmc.fabric-loom-remap:net.fabricmc.fabric-loom-remap.gradle.plugin:${loomVersion}")
+    implementation("net.fabricmc.fabric-loom:net.fabricmc.fabric-loom.gradle.plugin:${loomVersion}")
     implementation("com.modrinth.minotaur:com.modrinth.minotaur.gradle.plugin:${minotaurVersion}")
     implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:${shadowVersion}")
     implementation("net.neoforged.gradle.userdev:net.neoforged.gradle.userdev.gradle.plugin:${neoGradleVersion}")

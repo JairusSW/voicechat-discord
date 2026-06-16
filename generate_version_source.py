@@ -39,7 +39,7 @@ current_version = convert_version_to_int(current_version)
 
 version_variables = {}
 for version in listdir(f"./{platform}"):
-    if not version.startswith("1."):
+    if "." not in version or version.startswith("."):
         continue
     version_as_var = "mc_" + version.replace(".", "_")
     version_variables[version_as_var] = convert_version_to_int(version)

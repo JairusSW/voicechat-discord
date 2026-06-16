@@ -1,3 +1,3 @@
 plugins {
-    id("fabric-common")
+    id("fabric-remap-common")
 }

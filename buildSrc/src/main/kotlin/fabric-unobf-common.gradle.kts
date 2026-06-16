@@ -2,7 +2,7 @@ plugins {
     java
     id("plugin-minotaur")
     id("plugin-shadow")
-    id("net.fabricmc.fabric-loom-remap") // version in buildSrc/build.gradle.kts
+    id("net.fabricmc.fabric-loom") // version in buildSrc/build.gradle.kts
 }
 
 val parent = project.parent!!
@@ -74,6 +74,7 @@ tasks.processResources {
         "minecraftVersions" to supportedVersions.joinToString("\", \""),
         "voicechatVersions" to supportedVersions.joinToString("\", \"") { ">=${it}-${Properties.voicechatApiVersion}" },
         "javaVersion" to Properties.javaVersion.toString(),
+        "fabricApiId" to "fabric-api",
     )
     inputs.properties(properties)
 
@@ -92,38 +93,27 @@ tasks.shadowJar {
     archiveClassifier.set("")
     archiveVersion.set(projectVersion)
 
-    destinationDirectory.set(project.objects.directoryProperty().fileValue(layout.buildDirectory.file("shadow").get().asFile))
-
     from(file("${rootDir}/LICENSE")) {
         rename { "${it}_${Properties.archivesBaseName}" }
     }
 }
 
-tasks.remapJar {
-    archiveBaseName.set(archivesBaseName)
-    archiveClassifier.set("")
-    archiveVersion.set(projectVersion)
-
-    inputFile.set(tasks.shadowJar.get().archiveFile)
-}
-
 dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
+    implementation("net.fabricmc:fabric-loader:${Properties.fabricLoaderVersion}")
     // For running a server, we need the whole API
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricMetadata.fabricApiVersion}")
+    implementation("net.fabricmc.fabric-api:fabric-api:${fabricMetadata.fabricApiVersion}")
 //    setOf(
 //        "fabric-api-base",
 //        "fabric-command-api-v2",
 //        "fabric-lifecycle-events-v1",
 //        "fabric-networking-api-v1"
 //    ).forEach {
-//        modImplementation(fabricApi.module(it, fabricMetadata.fabricApiVersion))
+//        implementation(fabricApi.module(it, fabricMetadata.fabricApiVersion))
 //    }
 
     // This includes fabric-api - things will break because it has a newer version than what we use
-    modImplementation("me.lucko:fabric-permissions-api:${fabricMetadata.permissionsApiVersion}") { exclude(group = "net.fabricmc.fabric-api") }
+    implementation("me.lucko:fabric-permissions-api:${fabricMetadata.permissionsApiVersion}") { exclude(group = "net.fabricmc.fabric-api") }
     include("me.lucko:fabric-permissions-api:${fabricMetadata.permissionsApiVersion}") { exclude(group = "net.fabricmc.fabric-api") }
 
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
@@ -150,7 +140,7 @@ modrinth {
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
     changelog.set("**Please note:** this version supports the following Minecraft versions: ${supportedVersions.joinToString(", ")}")
-    uploadFile.set(tasks.remapJar)
+    uploadFile.set(tasks.shadowJar)
     gameVersions.set(supportedVersions)
     versionType.set(Properties.modrinthVersionType)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
