@@ -22,7 +22,7 @@ side = "BOTH"
 [[dependencies.voicechat_discord]]
 modId = "minecraft"
 type = "required"
-versionRange = "[${minecraftVersion}]"
+versionRange = "[${minecraftVersions}]"
 ordering = "NONE"
 side = "BOTH"
 

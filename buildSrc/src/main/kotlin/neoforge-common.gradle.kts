@@ -9,6 +9,7 @@ val parent = project.parent!!
 val platformName = parent.name
 val minecraftVersion = project.name
 val neoforgeVersion = Properties.neoforgeVersions[minecraftVersion]!!
+val supportedVersions = neoforgeVersionRanges[minecraftVersion] ?: listOf(minecraftVersion)
 
 val archivesBaseName = "${Properties.archivesBaseName}-${platformName}"
 val projectVersion = "${minecraftVersion}-${Properties.pluginVersion}"
@@ -74,7 +75,7 @@ tasks.processResources {
 
     val properties = mapOf(
         "modVersion" to projectVersion,
-        "minecraftVersion" to minecraftVersion,
+        "minecraftVersions" to supportedVersions.joinToString("],["),
         "voicechatApiVersion" to Properties.voicechatApiVersion,
     )
     inputs.properties(properties)
@@ -129,9 +130,9 @@ modrinth {
     projectId.set(Properties.modrinthProjectId)
     versionName.set(modrinthVersionName)
     versionNumber.set(modrinthVersionNumber)
-    changelog.set("")
+    changelog.set("**Please note:** this version supports the following Minecraft versions: ${supportedVersions.joinToString(", ")}")
     uploadFile.set(tasks.jar)
-    gameVersions.set(listOf(minecraftVersion))
+    gameVersions.set(supportedVersions)
     versionType.set(Properties.modrinthVersionType)
     debugMode.set(System.getenv("MODRINTH_DEBUG") != null)
     dependencies {
