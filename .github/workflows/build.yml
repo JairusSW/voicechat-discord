@@ -134,11 +134,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [fabric]
-        version: ["1.16.5", "1.19.2", "1.21.2", "1.21.5", "1.21.11", "26.1"]
         include:
-          # We don't want paper to map to all the versions
+          # Paper
           - platform: paper
+
+          # Fabric
+          - platform: fabric
+            version: "1.16.5"
+          - platform: fabric
+            version: "1.19.2"
+          - platform: fabric
+            version: "1.21.2"
+          - platform: fabric
+            version: "1.21.5"
+          - platform: fabric
+            version: "1.21.11"
+          - platform: fabric
+            version: "26.1"
+
+          # NeoForge
+          - platform: neoforge
+            version: "1.20.5"
+          - platform: neoforge
+            version: "1.21.9"
+          - platform: neoforge
+            version: "1.21.11"
 
     runs-on: ubuntu-22.04
     needs: [natives]
