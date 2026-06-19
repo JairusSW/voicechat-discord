@@ -72,7 +72,7 @@ tasks.processResources {
     val properties = mapOf(
         "version" to projectVersion,
         "minecraftVersions" to supportedVersions.joinToString("\", \""),
-        "voicechatVersions" to supportedVersions.joinToString("\", \"") { ">=${it}-${Properties.voicechatApiVersion}" },
+        "voicechatApiVersion" to Properties.voicechatApiVersion,
         "javaVersion" to Properties.javaVersion.toString(),
         "fabricApiId" to "fabric",
     )

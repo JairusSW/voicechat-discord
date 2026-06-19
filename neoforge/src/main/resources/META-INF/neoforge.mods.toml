@@ -27,8 +27,8 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.voicechat_discord]]
-modId = "voicechat"
+modId = "voicechat_api"
 type = "required"
-versionRange = "[${minecraftVersion}-${voicechatApiVersion},)"
+versionRange = "[${voicechatApiVersion},)"
 ordering = "AFTER"
 side = "BOTH"

@@ -30,7 +30,7 @@
     "${fabricApiId}": "*",
     "minecraft": ["${minecraftVersions}"],
     "java": ">=${javaVersion}",
-    "voicechat": ["${voicechatVersions}"],
+    "voicechat_api": ">=${voicechatApiVersion}",
     "fabric-permissions-api-v0": "*"
   }
 }
