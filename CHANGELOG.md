@@ -2,6 +2,21 @@
 
 This will mirror https://modrinth.com/plugin/simple-voice-chat-discord-bridge/changelog
 
+## 3.2.0
+
+- Add support for Minecraft versions 26.1, 26.1.1, 26.1.2, and 26.2
+- Add NeoForge support for Minecraft versions 1.20.5-26.2 (this has been implemented for a while, but I never got around to releasing it)
+- Drop support for the following Minecraft versions on Paper: 1.16.5, 1.18.2, 1.19.2, 1.20, 1.20.1, 1.20.2, 1.20.3, 1.20.4
+  - If you need to use any of these versions on Paper, please make an issue on GitHub
+- Internal changes:
+  - Switch to Mojang mappings on Fabric
+  - Build without obfuscation on Paper (this is why we had to drop support for Minecraft versions below 1.20.5)
+  - Use voicechat_api mod ID instead of voicechat mod ID for checking required voicechat API version on Fabric and NeoForge
+
+Code changes: https://gitlab.com/amsam0/voicechat-discord/-/compare/3.1.4...3.2.0
+
+GitHub Actions workflow changes: https://github.com/amsam0/voicechat-discord/compare/3.1.2...3.2.0
+
 ## 3.1.4
 
 - Updated songbird to the next branch. This should fix any issues with DAVE.
