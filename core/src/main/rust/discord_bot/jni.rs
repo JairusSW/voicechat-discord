@@ -37,6 +37,17 @@ pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1isStarted(
 }
 
 #[no_mangle]
+pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1setVoiceChannel(
+    mut _env: JNIEnv<'_>,
+    _obj: jobject,
+    ptr: jlong,
+    vc_id: jlong,
+) {
+    let discord_bot = unsafe { &mut *(ptr as *mut DiscordBot) };
+    discord_bot.vc_id = ChannelId::new(vc_id as u64);
+}
+
+#[no_mangle]
 pub extern "system" fn Java_dev_amsam0_voicechatdiscord_DiscordBot__1logIn(
     mut env: JNIEnv<'_>,
     _obj: jobject,

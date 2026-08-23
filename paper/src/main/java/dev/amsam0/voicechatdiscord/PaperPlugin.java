@@ -20,6 +20,8 @@ public final class PaperPlugin extends JavaPlugin {
 
     private final EventListener eventListener = new EventListener();
     private PaperVoicechatPlugin voicechatPlugin;
+    private LobbyOrchestrator lobbyOrchestrator;
+    private IdentityRegistry identityRegistry;
 
     public static PaperPlugin get() {
         return INSTANCE;
@@ -126,6 +128,13 @@ public final class PaperPlugin extends JavaPlugin {
         // Enable core
         enable();
 
+        lobbyOrchestrator = LobbyOrchestrator.start(this);
+
+        identityRegistry = new IdentityRegistry(this);
+        Bukkit.getPluginManager().registerEvents(identityRegistry, this);
+        getCommand("link").setExecutor(identityRegistry);
+        getCommand("whois").setExecutor(identityRegistry);
+
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);
 
@@ -135,6 +144,9 @@ public final class PaperPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (lobbyOrchestrator != null) {
+            lobbyOrchestrator.close();
+        }
         disable();
 
         if (voicechatPlugin != null) {

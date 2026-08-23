@@ -4,6 +4,33 @@
 
 # Simple Voice Chat Discord Bridge
 
+## Geneva automatic lobby fork
+
+The Paper/Folia build can use DiscordSRV account links to turn a lobby join into a
+complete bridge session. When a linked, online player joins the configured lobby,
+the plugin allocates an audio bot, creates a temporary two-seat voice channel,
+moves the player, bridges audio at their Minecraft position, and cleans the channel
+up when either side disconnects.
+
+The fork also provides `/link <real name> [--voice]`, requires that identity link
+before gameplay, exposes `/whois <player>`, and maps bridge controls to
+`/discord voice`, `/discord stop`, and `/discord group ...` while leaving
+DiscordSRV's `/discord link` intact.
+
+Example Paper configuration:
+
+```yaml
+automatic_lobby:
+  enabled: true
+  lobby_id: 971151641673875492
+  category_id: 1007702827226890251
+  channel_prefix: prox-
+```
+
+Each entry in `bots` still needs a unique bot token. Its configured `vc_id` is
+only a startup placeholder in automatic-lobby mode; the fork retargets the bot
+to the temporary session channel before connecting.
+
 [<img alt="Modrinth" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg">](https://modrinth.com/plugin/simple-voice-chat-discord-bridge)
 [<img alt="Requires Fabric API" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/requires/fabric-api_vector.svg">](https://modrinth.com/mod/fabric-api)
 

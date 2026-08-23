@@ -117,6 +117,7 @@ dependencies {
     paperweight.paperDevBundle(Properties.paperDevBundleVersion)
 
     compileOnly("de.maxhenkel.voicechat:voicechat-api:${Properties.voicechatApiVersion}")
+    compileOnly("com.discordsrv:discordsrv:1.30.5")
 
     shadow("org.bspfsystems:yamlconfiguration:${Properties.yamlConfigurationVersion}")
 
@@ -129,6 +130,7 @@ repositories {
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") }
     maven { url = uri("https://maven.maxhenkel.de/repository/public") }
     maven { url = uri("https://jitpack.io") }
+    maven { url = uri("https://nexus.scarsz.me/content/groups/public/") }
     mavenLocal()
 }
 

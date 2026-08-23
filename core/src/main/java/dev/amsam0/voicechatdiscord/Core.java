@@ -94,6 +94,11 @@ public final class Core {
 
         config.addDefault("debug_level", 0);
 
+        config.addDefault("automatic_lobby.enabled", false);
+        config.addDefault("automatic_lobby.lobby_id", 0L);
+        config.addDefault("automatic_lobby.category_id", 0L);
+        config.addDefault("automatic_lobby.channel_prefix", "prox-");
+
         config.getOptions().setCopyDefaults(true);
         config.getOptions().setHeader(CONFIG_HEADER);
         try {
@@ -166,7 +171,7 @@ public final class Core {
         return null;
     }
 
-    private static @Nullable DiscordBot getAvailableBot() {
+    public static @Nullable DiscordBot getAvailableBot() {
         for (DiscordBot bot : bots) {
             if (bot.player() == null)
                 return bot;

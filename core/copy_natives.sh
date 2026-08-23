@@ -39,7 +39,7 @@ case $(uname -m) in
     ;;
 esac
 
-mkdir -p "src/main/resources/$OS-$ARCH"
+mkdir -p "src/main/resources/natives/$OS-$ARCH"
 
 DIR="${1:-debug}"
 

@@ -7,4 +7,12 @@ authors: [ "amsam0", "Totobird" ]
 description: A plugin to make a bridge between Simple Voice Chat and Discord to allow for players without Simple Voice Chat installed on their client to hear and speak.
 website: https://modrinth.com/mod/simple-voice-chat-discord-bridge
 depend: [ voicechat ]
+softdepend: [ DiscordSRV ]
 folia-supported: true
+commands:
+  link:
+    description: Link your real name to your Minecraft account
+    usage: /link <real name> [--voice]
+  whois:
+    description: Look up a player's linked real name
+    usage: /whois <player>

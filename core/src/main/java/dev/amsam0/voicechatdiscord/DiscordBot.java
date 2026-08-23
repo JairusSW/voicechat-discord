@@ -21,7 +21,7 @@ public final class DiscordBot {
     /**
      * ID for the voice channel the bot is assigned to
      */
-    private final long vcId;
+    private long vcId;
     /**
      * Pointer to Rust struct
      */
@@ -69,6 +69,16 @@ public final class DiscordBot {
     public DiscordBot(String token, long vcId) {
         this.vcId = vcId;
         ptr = _new(token, vcId);
+    }
+
+    private native void _setVoiceChannel(long ptr, long vcId);
+
+    public void setVoiceChannel(long vcId) {
+        if (player != null || isStarted()) {
+            throw new IllegalStateException("Cannot change voice channel while a bot is in use");
+        }
+        this.vcId = vcId;
+        _setVoiceChannel(ptr, vcId);
     }
 
     public void logInAndStart(ServerPlayer player) {
