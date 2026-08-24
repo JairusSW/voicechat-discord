@@ -17,6 +17,9 @@ before gameplay, exposes `/whois <player>`, and maps bridge controls to
 `/discord voice`, `/discord stop`, and `/discord group ...` while leaving
 DiscordSRV's `/discord link` intact.
 
+Unlinked players are placed in spectator mode and frozen in place. Their prior
+game mode is stored and restored immediately after `/link` succeeds.
+
 Example Paper configuration:
 
 ```yaml

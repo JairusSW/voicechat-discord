@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
@@ -50,14 +52,43 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         player.sendMessage(Component.text("Before playing, use /link <real name>. Add --voice to begin Discord voice setup.", NamedTextColor.YELLOW));
     }
 
+    private void enterOnboarding(Player player) {
+        String path = "onboarding." + player.getUniqueId();
+        if (!data.isString(path + ".previous_game_mode")) {
+            data.set(path + ".previous_game_mode", player.getGameMode().name());
+            save();
+        }
+        player.setGameMode(GameMode.SPECTATOR);
+        requireLink(player);
+    }
+
+    private void leaveOnboarding(Player player) {
+        String path = "onboarding." + player.getUniqueId();
+        String previous = data.getString(path + ".previous_game_mode", GameMode.SURVIVAL.name());
+        GameMode restored;
+        try {
+            restored = GameMode.valueOf(previous);
+        } catch (IllegalArgumentException ignored) {
+            restored = GameMode.SURVIVAL;
+        }
+        data.set(path, null);
+        save();
+        player.setGameMode(restored);
+    }
+
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        if (!linked(event.getPlayer())) requireLink(event.getPlayer());
+        if (!linked(event.getPlayer())) enterOnboarding(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onMove(PlayerMoveEvent event) {
         if (!linked(event.getPlayer()) && event.hasChangedBlock()) event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerTeleportEvent event) {
+        if (!linked(event.getPlayer())) event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -159,6 +190,7 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         data.set(path + ".ign", player.getName());
         data.set(path + ".linked_at", Instant.now().toString());
         save();
+        leaveOnboarding(player);
         player.sendMessage(Component.text("Linked " + player.getName() + " to " + realName + ". You can now play!", NamedTextColor.GREEN));
 
         if (voice) {
