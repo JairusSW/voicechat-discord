@@ -106,7 +106,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         }
         linkingCodes.entrySet().removeIf(entry -> entry.getValue().playerId().equals(player.getUniqueId()));
         String code;
-        do { code = "GCMC-" + String.format("%06d", random.nextInt(1_000_000)); }
+        do { code = String.format("%03d", random.nextInt(1_000)); }
         while (linkingCodes.containsKey(code));
         linkingCodes.put(code, new PendingName(player.getUniqueId(), player.getName()));
         player.sendMessage("§6§lGenevaMC setup");
@@ -154,8 +154,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private void promptForName(String discordId, String ign) {
         TextChannel channel = channel();
         if (channel == null) return;
-        channel.sendMessage("<@" + discordId + "> Hey! Your Minecraft account **" + ign
-                + "** is linked. Please read **#rules**, then reply here with just your real first and last name.").queue();
+        channel.sendMessage("<@" + discordId + "> Code accepted for Minecraft account **" + ign
+                + "**. Please read **#rules**, then reply here with just your real first and last name.").queue();
     }
 
     @Override
