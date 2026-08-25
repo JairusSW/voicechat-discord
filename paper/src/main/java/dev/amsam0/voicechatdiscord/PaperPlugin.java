@@ -148,6 +148,8 @@ public final class PaperPlugin extends JavaPlugin {
 
         dvcGroupInvites = new DvcGroupInvites();
         Bukkit.getPluginManager().registerEvents(dvcGroupInvites, this);
+        getCommand("vc").setExecutor(dvcGroupInvites);
+        getCommand("vc").setTabCompleter(dvcGroupInvites);
 
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);

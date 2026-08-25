@@ -10,6 +10,9 @@ depend: [ voicechat ]
 softdepend: [ DiscordSRV ]
 folia-supported: true
 commands:
+  vc:
+    description: Unified Simple Voice Chat and Discord voice command
+    usage: /vc [help|status|setup|start|stop|invite|accept|leave|group|whisper|players]
   link:
     description: Link your real name to your Minecraft account
     usage: /link <real name> [--voice]
