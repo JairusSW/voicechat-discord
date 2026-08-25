@@ -45,6 +45,7 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
     private final File file;
     private final YamlConfiguration data;
     private final Set<UUID> onboardingTeleports = ConcurrentHashMap.newKeySet();
+    private final java.util.Map<UUID, Long> lastJoined = new ConcurrentHashMap<>();
 
     public IdentityRegistry(PaperPlugin plugin) {
         file = new File(plugin.getDataFolder(), "identities.yml");
@@ -76,6 +77,33 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
 
     public String knownIgn(UUID playerId) {
         return data.getString("players." + playerId + ".ign", playerId.toString());
+    }
+
+    public boolean hasDiscordAccount(String discordId) {
+        ConfigurationSection players = data.getConfigurationSection("players");
+        if (players == null) return false;
+        return players.getKeys(false).stream().anyMatch(id ->
+                discordId.equals(data.getString("players." + id + ".discord_id")));
+    }
+
+    public Player onlinePlayerForDiscord(String discordId) {
+        ConfigurationSection players = data.getConfigurationSection("players");
+        Player newest = null;
+        long newestJoin = Long.MIN_VALUE;
+        if (players != null) {
+            for (String id : players.getKeys(false)) {
+                if (!discordId.equals(data.getString("players." + id + ".discord_id"))) continue;
+                try {
+                    UUID uuid = UUID.fromString(id);
+                    Player candidate = org.bukkit.Bukkit.getPlayer(uuid);
+                    if (candidate != null && candidate.isOnline() && lastJoined.getOrDefault(uuid, 0L) >= newestJoin) {
+                        newest = candidate;
+                        newestJoin = lastJoined.getOrDefault(uuid, 0L);
+                    }
+                } catch (IllegalArgumentException ignored) {}
+            }
+        }
+        return newest;
     }
 
     private void requireLink(Player player) {
@@ -133,6 +161,7 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
+        lastJoined.put(event.getPlayer().getUniqueId(), System.nanoTime());
         if (!linked(event.getPlayer())) enterOnboarding(event.getPlayer());
     }
 
@@ -280,8 +309,10 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         player.sendMessage(Component.text("Linked " + player.getName() + " to " + realName + ". You can now play!", NamedTextColor.GREEN));
     }
 
-    public void completeDiscordLink(UUID playerId, String ign, String realName) {
+    public void completeDiscordLink(UUID playerId, String ign, String realName, String discordId) {
         storeIdentity(playerId, ign, realName);
+        data.set("players." + playerId + ".discord_id", discordId);
+        save();
         Player player = org.bukkit.Bukkit.getPlayer(playerId);
         if (player != null) {
             player.getScheduler().run(PaperPlugin.get(), task -> {

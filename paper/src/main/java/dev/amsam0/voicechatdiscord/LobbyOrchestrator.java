@@ -33,15 +33,17 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
     private final long lobbyId;
     private final long categoryId;
     private final String channelPrefix;
+    private final IdentityRegistry identities;
     private final Map<String, Session> sessions = new ConcurrentHashMap<>();
 
-    private LobbyOrchestrator(long lobbyId, long categoryId, String channelPrefix) {
+    private LobbyOrchestrator(long lobbyId, long categoryId, String channelPrefix, IdentityRegistry identities) {
         this.lobbyId = lobbyId;
         this.categoryId = categoryId;
         this.channelPrefix = channelPrefix;
+        this.identities = identities;
     }
 
-    public static @Nullable LobbyOrchestrator start(PaperPlugin plugin) {
+    public static @Nullable LobbyOrchestrator start(PaperPlugin plugin, IdentityRegistry identities) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
         if (!config.getBoolean("automatic_lobby.enabled", false)) {
             return null;
@@ -62,7 +64,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
 
         LobbyOrchestrator orchestrator = new LobbyOrchestrator(
                 lobbyId, categoryId,
-                config.getString("automatic_lobby.channel_prefix", "prox-")
+                config.getString("automatic_lobby.channel_prefix", "prox-"), identities
         );
         Thread initializer = new Thread(orchestrator::waitForDiscordSrv, "voicechat-discord: Lobby Initializer");
         initializer.setDaemon(true);
@@ -111,17 +113,14 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
         String discordId = member.getId();
         if (sessions.containsKey(discordId)) return;
 
-        UUID minecraftId = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
-        if (minecraftId == null) {
-            setServerMuted(member, true);
-            platform.warn("Discord user " + member.getEffectiveName() + " joined the bridge lobby without a linked Minecraft account");
-            return;
+        Player bukkitPlayer = identities.onlinePlayerForDiscord(discordId);
+        if (bukkitPlayer == null) {
+            UUID primary = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
+            if (primary != null) bukkitPlayer = Bukkit.getPlayer(primary);
         }
-
-        Player bukkitPlayer = Bukkit.getPlayer(minecraftId);
-        if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
+        if (bukkitPlayer == null) {
             setServerMuted(member, true);
-            platform.warn("Linked player for " + member.getEffectiveName() + " is not online");
+            platform.warn("Discord user " + member.getEffectiveName() + " has no linked Minecraft account online");
             return;
         }
 
@@ -143,7 +142,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
             VoiceChannel channel = category.createVoiceChannel(channelPrefix + safeName(bukkitPlayer.getName()))
                     .setUserlimit(2)
                     .complete();
-            sessions.put(discordId, new Session(bot, channel, minecraftId));
+            sessions.put(discordId, new Session(bot, channel, bukkitPlayer.getUniqueId()));
 
             try {
                 bot.setVoiceChannel(channel.getIdLong());

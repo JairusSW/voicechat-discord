@@ -130,12 +130,12 @@ public final class PaperPlugin extends JavaPlugin {
         // Enable core
         enable();
 
-        lobbyOrchestrator = LobbyOrchestrator.start(this);
-
         identityRegistry = new IdentityRegistry(this);
         Bukkit.getPluginManager().registerEvents(identityRegistry, this);
         getCommand("link").setExecutor(identityRegistry);
         getCommand("whois").setExecutor(identityRegistry);
+
+        lobbyOrchestrator = LobbyOrchestrator.start(this, identityRegistry);
 
         genevaRoles = new GenevaRoles(this, identityRegistry);
         Bukkit.getPluginManager().registerEvents(genevaRoles, this);

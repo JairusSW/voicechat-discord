@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.util.Map;
 import java.util.UUID;
+import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.amsam0.voicechatdiscord.Core.platform;
@@ -36,6 +37,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final long guildId;
     private final long unlinkedRoleId;
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
+    private final Map<String, PendingName> linkingCodes = new ConcurrentHashMap<>();
+    private final SecureRandom random = new SecureRandom();
     private volatile JDA jda;
     private volatile boolean closed;
 
@@ -101,7 +104,11 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             player.sendMessage("Your Discord is linked. Answer the bot in #linking to finish.");
             return;
         }
-        String code = DiscordSRV.getPlugin().getAccountLinkManager().generateCode(player.getUniqueId());
+        linkingCodes.entrySet().removeIf(entry -> entry.getValue().playerId().equals(player.getUniqueId()));
+        String code;
+        do { code = "GCMC-" + String.format("%06d", random.nextInt(1_000_000)); }
+        while (linkingCodes.containsKey(code));
+        linkingCodes.put(code, new PendingName(player.getUniqueId(), player.getName()));
         player.sendMessage("§6§lGenevaMC setup");
         player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/new");
         player.sendMessage("§f2. Go to §b#rules§f and read the rules.");
@@ -123,7 +130,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         if (event.getGuild().getIdLong() != guildId || event.getUser().isBot()) return;
-        if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getUser().getId()) != null) return;
+        if (identities.hasDiscordAccount(event.getUser().getId())
+                || DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getUser().getId()) != null) return;
         Role role = event.getGuild().getRoleById(unlinkedRoleId);
         if (role == null) {
             platform.error("Configured unlinked Discord role is unavailable");
@@ -153,9 +161,22 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         if (event.getAuthor().isBot() || event.getChannel().getIdLong() != linkingChannelId) return;
+        String content = event.getMessage().getContentRaw().trim();
+        PendingName codeAccount = linkingCodes.remove(content.toUpperCase(java.util.Locale.ROOT));
+        if (codeAccount != null) {
+            if (awaitingNames.containsKey(event.getAuthor().getId())) {
+                linkingCodes.put(content.toUpperCase(java.util.Locale.ROOT), codeAccount);
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                        + " Finish the current account's name prompt before linking another account.").queue();
+                return;
+            }
+            awaitingNames.put(event.getAuthor().getId(), codeAccount);
+            promptForName(event.getAuthor().getId(), codeAccount.ign());
+            return;
+        }
         PendingName pending = awaitingNames.get(event.getAuthor().getId());
         if (pending == null) return;
-        String name = event.getMessage().getContentRaw().trim();
+        String name = content;
         if (name.matches("[0-9]{4,8}")) return;
         if (!name.matches("[\\p{L}][\\p{L} .'-]{1,63}")) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention()
@@ -166,7 +187,11 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         String ign = pending.ign();
         Player online = Bukkit.getPlayer(pending.playerId());
         if (online != null) ign = online.getName();
-        identities.completeDiscordLink(pending.playerId(), ign, name);
+        identities.completeDiscordLink(pending.playerId(), ign, name, event.getAuthor().getId());
+        if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId()) == null) {
+            DiscordSRV.getPlugin().getAccountLinkManager().link(event.getAuthor().getId(), pending.playerId());
+        }
+        removeUnlinkedRole(event.getAuthor().getId());
         event.getChannel().sendMessage(event.getAuthor().getAsMention()
                 + " You're all set! **" + ign + "** can now play on GenevaMC.").queue();
         event.getMessage().delete().queue(null, ignored -> {});
@@ -185,6 +210,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         DiscordSRV.api.unsubscribe(this);
         if (jda != null) jda.removeEventListener(this);
         awaitingNames.clear();
+        linkingCodes.clear();
     }
 
     private record PendingName(UUID playerId, String ign) {}
