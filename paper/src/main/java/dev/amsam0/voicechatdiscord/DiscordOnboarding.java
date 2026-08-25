@@ -5,6 +5,10 @@ import github.scarsz.discordsrv.api.Subscribe;
 import github.scarsz.discordsrv.api.events.AccountLinkedEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.JDA;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Guild;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Role;
+import github.scarsz.discordsrv.dependencies.jda.api.events.guild.member.GuildMemberJoinEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
@@ -29,22 +33,28 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final PaperPlugin plugin;
     private final IdentityRegistry identities;
     private final long linkingChannelId;
+    private final long guildId;
+    private final long unlinkedRoleId;
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
     private volatile JDA jda;
     private volatile boolean closed;
 
-    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, long linkingChannelId) {
+    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, long guildId, long linkingChannelId, long unlinkedRoleId) {
         this.plugin = plugin;
         this.identities = identities;
+        this.guildId = guildId;
         this.linkingChannelId = linkingChannelId;
+        this.unlinkedRoleId = unlinkedRoleId;
     }
 
     public static @Nullable DiscordOnboarding start(PaperPlugin plugin, IdentityRegistry identities) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
         if (!config.getBoolean("discord_onboarding.enabled", false)) return null;
         long channelId = config.getLong("discord_onboarding.linking_channel_id", 0L);
-        if (channelId == 0L) {
-            platform.error("discord_onboarding requires linking_channel_id");
+        long guildId = config.getLong("discord_onboarding.guild_id", 0L);
+        long roleId = config.getLong("discord_onboarding.unlinked_role_id", 0L);
+        if (channelId == 0L || guildId == 0L || roleId == 0L) {
+            platform.error("discord_onboarding requires guild_id, linking_channel_id, and unlinked_role_id");
             return null;
         }
         Plugin discordSrv = Bukkit.getPluginManager().getPlugin("DiscordSRV");
@@ -52,7 +62,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             platform.error("discord_onboarding is enabled, but DiscordSRV is unavailable");
             return null;
         }
-        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, channelId);
+        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, guildId, channelId, roleId);
         DiscordSRV.api.subscribe(onboarding);
         Bukkit.getPluginManager().registerEvents(onboarding, plugin);
         Thread initializer = new Thread(onboarding::waitForDiscordSrv, "voicechat-discord: Onboarding Initializer");
@@ -105,7 +115,31 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         String discordId = event.getUser().getId();
         String ign = event.getPlayer().getName() == null ? playerId.toString() : event.getPlayer().getName();
         awaitingNames.put(discordId, new PendingName(playerId, ign));
+        removeUnlinkedRole(discordId);
         promptForName(discordId, ign);
+    }
+
+    @Override
+    public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+        if (event.getGuild().getIdLong() != guildId || event.getUser().isBot()) return;
+        if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getUser().getId()) != null) return;
+        Role role = event.getGuild().getRoleById(unlinkedRoleId);
+        if (role == null) {
+            platform.error("Configured unlinked Discord role is unavailable");
+            return;
+        }
+        event.getGuild().addRoleToMember(event.getMember(), role).queue(
+                ignored -> {}, error -> platform.error("Failed to assign unlinked role to " + event.getUser().getId(), error));
+    }
+
+    private void removeUnlinkedRole(String discordId) {
+        JDA current = jda != null ? jda : DiscordSRV.getPlugin().getJda();
+        Guild guild = current == null ? null : current.getGuildById(guildId);
+        Role role = guild == null ? null : guild.getRoleById(unlinkedRoleId);
+        Member member = guild == null ? null : guild.getMemberById(discordId);
+        if (guild == null || role == null || member == null || !member.getRoles().contains(role)) return;
+        guild.removeRoleFromMember(member, role).queue(
+                ignored -> {}, error -> platform.error("Failed to remove unlinked role from " + discordId, error));
     }
 
     private void promptForName(String discordId, String ign) {
