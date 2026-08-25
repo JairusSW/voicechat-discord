@@ -280,6 +280,23 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         return true;
     }
 
+    public synchronized String discordTeamSummary(String[] args) {
+        if (args.length == 0 || args[0].equalsIgnoreCase("list")) {
+            if (teams.isEmpty()) return "There are no teams yet.";
+            return "**Teams**\n" + teams.values().stream()
+                    .sorted(Comparator.comparing(team -> team.name.toLowerCase(Locale.ROOT)))
+                    .map(team -> "• **" + team.name + "** — " + team.members.size() + " members; leader " + identities.knownIgn(team.leader))
+                    .reduce((a, b) -> a + "\n" + b).orElse("There are no teams yet.");
+        }
+        if (args[0].equalsIgnoreCase("info") && args.length == 2) {
+            Team team = teams.get(key(args[1]));
+            if (team == null) return "Team not found.";
+            String members = team.members.stream().map(identities::knownIgn).sorted().reduce((a, b) -> a + ", " + b).orElse("none");
+            return "**[" + team.name + "]**\nLeader: " + identities.knownIgn(team.leader) + "\nMembers: " + members;
+        }
+        return "From Discord, use `/team`, `/team list`, or `/team info <team>`. Join Minecraft to modify teams.";
+    }
+
     private void help(CommandSender sender) {
         sender.sendMessage(Component.text("Team commands", NamedTextColor.GOLD));
         sender.sendMessage(Component.text("/team list • /team info [team]", NamedTextColor.GRAY));

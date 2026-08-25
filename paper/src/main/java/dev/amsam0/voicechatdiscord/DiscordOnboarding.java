@@ -242,6 +242,38 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private void handleMinecraftCommand(GuildMessageReceivedEvent event) {
         String raw = event.getMessage().getContentRaw().trim().substring(1).trim();
         if (raw.isEmpty()) return;
+        String[] parts = raw.split("\\s+");
+        String root = parts[0].toLowerCase(java.util.Locale.ROOT);
+
+        if (root.equals("whois")) {
+            if (parts.length != 2) {
+                event.getChannel().sendMessage(event.getAuthor().getAsMention() + " Usage: `/whois <username>`").queue();
+                return;
+            }
+            String realName = identities.whoisName(parts[1]);
+            event.getChannel().sendMessage(event.getAuthor().getAsMention() + (realName == null
+                    ? " No linked real name was found for **" + parts[1] + "**."
+                    : " **" + parts[1] + "** is **" + realName + "**.")).queue();
+            return;
+        }
+
+        if (root.equals("ping") && parts.length == 2) {
+            Bukkit.getGlobalRegionScheduler().run(plugin, task -> {
+                Player target = Bukkit.getPlayerExact(parts[1]);
+                event.getChannel().sendMessage(event.getAuthor().getAsMention() + (target == null
+                        ? " **" + parts[1] + "** is not online."
+                        : " **" + target.getName() + "** has **" + target.getPing() + " ms** ping.")).queue();
+            });
+            return;
+        }
+
+        if (root.equals("team")) {
+            String[] teamArgs = java.util.Arrays.copyOfRange(parts, 1, parts.length);
+            String response = genevaRoles.discordTeamSummary(teamArgs);
+            event.getChannel().sendMessage(event.getAuthor().getAsMention() + "\n" + response).queue();
+            return;
+        }
+
         Player player = identities.onlinePlayerForDiscord(event.getAuthor().getId());
         if (player == null) {
             UUID primary = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId());
@@ -252,7 +284,6 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                     + " Join GenevaMC with a linked account before running Minecraft commands here.").queue();
             return;
         }
-        String root = raw.split("\\s+", 2)[0].toLowerCase(java.util.Locale.ROOT);
         java.util.Set<String> publicCommands = java.util.Set.of("ping", "team", "whois", "discord", "dvc");
         if (!player.isOp() && !publicCommands.contains(root)) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention()

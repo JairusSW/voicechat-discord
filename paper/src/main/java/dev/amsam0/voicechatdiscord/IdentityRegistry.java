@@ -79,6 +79,11 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         return data.getString("players." + playerId + ".ign", playerId.toString());
     }
 
+    public String whoisName(String ign) {
+        UUID playerId = findLinkedPlayer(ign);
+        return playerId == null ? null : data.getString("players." + playerId + ".real_name");
+    }
+
     public boolean hasDiscordAccount(String discordId) {
         ConfigurationSection players = data.getConfigurationSection("players");
         if (players == null) return false;
