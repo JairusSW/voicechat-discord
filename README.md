@@ -19,6 +19,8 @@ DiscordSRV's `/discord link` intact.
 
 Unlinked players are placed in spectator mode and frozen in place. Their prior
 game mode is stored and restored immediately after `/link` succeeds.
+Running `/link` without arguments starts a clickable, guided flow with name
+confirmation, a `/whois` privacy notice, and optional Discord voice onboarding.
 
 Example Paper configuration:
 
