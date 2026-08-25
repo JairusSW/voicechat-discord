@@ -1,5 +1,8 @@
 package dev.amsam0.voicechatdiscord;
 
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Guild;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -22,6 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ConcurrentHashMap;
 
 /** GenevaMC staff roles, teams, display tags, and utility commands. */
@@ -32,14 +38,19 @@ public final class GenevaRoles implements Listener, CommandExecutor {
     private final YamlConfiguration data;
     private final Map<UUID, Role> roles = new ConcurrentHashMap<>();
     private final Map<String, Team> teams = new ConcurrentHashMap<>();
+    private final Object discordSyncLock = new Object();
+    private final long discordGuildId;
 
     public GenevaRoles(PaperPlugin plugin, IdentityRegistry identities) {
         this.plugin = plugin;
         this.identities = identities;
         file = new File(plugin.getDataFolder(), "roles-teams.yml");
         data = YamlConfiguration.loadConfiguration(file);
+        YamlConfiguration pluginConfig = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
+        discordGuildId = pluginConfig.getLong("discord_onboarding.guild_id", 0L);
         load();
         Bukkit.getOnlinePlayers().forEach(this::updateDisplay);
+        Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> syncDiscord(), 10, 60, TimeUnit.SECONDS);
     }
 
     private void load() {
@@ -67,7 +78,7 @@ public final class GenevaRoles implements Listener, CommandExecutor {
                         try { members.add(UUID.fromString(member)); } catch (IllegalArgumentException ignored) {}
                     }
                     if (!members.contains(leader)) members.add(leader);
-                    teams.put(key(key), new Team(name, leader, members));
+                    teams.put(key(key), new Team(name, leader, members, data.getLong(base + ".discord_role_id", 0L)));
                 } catch (IllegalArgumentException ignored) {
                     plugin.getLogger().warning("Ignoring team with invalid leader: " + key);
                 }
@@ -150,7 +161,7 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         if (leader == null) return error(sender, "Unknown linked player: " + args[2]);
         if (leadingTeam(leader) != null) return error(sender, "That player already leads another team.");
         removeFromTeam(leader);
-        teams.put(key, new Team(args[1], leader, new ArrayList<>(List.of(leader))));
+        teams.put(key, new Team(args[1], leader, new ArrayList<>(List.of(leader)), 0L));
         saveAndRefresh();
         sender.sendMessage(Component.text("Created " + args[1] + " with leader " + identities.knownIgn(leader) + ".", NamedTextColor.GREEN));
         return true;
@@ -161,6 +172,7 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         if (args.length != 2) return error(sender, "Usage: /team remove <team>");
         Team removed = teams.remove(key(args[1]));
         if (removed == null) return error(sender, "Team not found.");
+        deleteDiscordRole(removed);
         saveAndRefresh();
         sender.sendMessage(Component.text("Removed team " + removed.name + ".", NamedTextColor.GREEN));
         return true;
@@ -324,6 +336,7 @@ public final class GenevaRoles implements Listener, CommandExecutor {
     private void saveAndRefresh() {
         save();
         Bukkit.getOnlinePlayers().forEach(this::updateDisplay);
+        syncDiscordSoon();
     }
 
     private synchronized void save() {
@@ -334,6 +347,7 @@ public final class GenevaRoles implements Listener, CommandExecutor {
             data.set("teams." + key + ".name", team.name);
             data.set("teams." + key + ".leader", team.leader.toString());
             data.set("teams." + key + ".members", team.members.stream().map(UUID::toString).toList());
+            if (team.discordRoleId != 0L) data.set("teams." + key + ".discord_role_id", team.discordRoleId);
         });
         try { data.save(file); }
         catch (IOException error) { throw new RuntimeException("Failed to save GenevaMC roles and teams", error); }
@@ -378,6 +392,63 @@ public final class GenevaRoles implements Listener, CommandExecutor {
     private static NamedTextColor pingColor(int ping) { return ping < 80 ? NamedTextColor.GREEN : ping < 160 ? NamedTextColor.YELLOW : NamedTextColor.RED; }
     private static boolean error(CommandSender sender, String message) { sender.sendMessage(Component.text(message, NamedTextColor.RED)); return true; }
 
+    public void syncDiscordSoon() {
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> syncDiscord());
+    }
+
+    private void syncDiscord() {
+        synchronized (discordSyncLock) {
+            try {
+                if (!DiscordSRV.isReady || DiscordSRV.getPlugin().getJda() == null || discordGuildId == 0L) return;
+                Guild guild = DiscordSRV.getPlugin().getJda().getGuildById(discordGuildId);
+                if (guild == null) return;
+                guild.retrieveMembers().join();
+
+                for (Team team : teams.values()) {
+                    github.scarsz.discordsrv.dependencies.jda.api.entities.Role discordRole =
+                            team.discordRoleId == 0L ? null : guild.getRoleById(team.discordRoleId);
+                    String roleName = "Team • " + team.name;
+                    if (discordRole == null) {
+                        List<github.scarsz.discordsrv.dependencies.jda.api.entities.Role> matches = guild.getRolesByName(roleName, true);
+                        discordRole = matches.isEmpty() ? guild.createRole().setName(roleName).setMentionable(false).complete() : matches.getFirst();
+                        team.discordRoleId = discordRole.getIdLong();
+                        save();
+                    } else if (!discordRole.getName().equals(roleName)) {
+                        discordRole.getManager().setName(roleName).complete();
+                    }
+
+                    Set<String> wantedDiscordIds = new HashSet<>();
+                    for (UUID minecraftId : team.members) {
+                        String discordId = identities.discordId(minecraftId);
+                        if (discordId != null) wantedDiscordIds.add(discordId);
+                    }
+                    for (Member member : guild.getMembers()) {
+                        if (member.getUser().isBot()) continue;
+                        boolean wanted = wantedDiscordIds.contains(member.getId());
+                        boolean assigned = member.getRoles().contains(discordRole);
+                        if (wanted && !assigned) guild.addRoleToMember(member, discordRole).complete();
+                        if (!wanted && assigned) guild.removeRoleFromMember(member, discordRole).complete();
+                    }
+                }
+            } catch (Throwable error) {
+                plugin.getLogger().log(java.util.logging.Level.WARNING, "Failed to synchronize Minecraft teams to Discord", error);
+            }
+        }
+    }
+
+    private void deleteDiscordRole(Team team) {
+        if (team.discordRoleId == 0L) return;
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> {
+            try {
+                Guild guild = DiscordSRV.getPlugin().getJda().getGuildById(discordGuildId);
+                github.scarsz.discordsrv.dependencies.jda.api.entities.Role role = guild == null ? null : guild.getRoleById(team.discordRoleId);
+                if (role != null) role.delete().complete();
+            } catch (Throwable error) {
+                plugin.getLogger().log(java.util.logging.Level.WARNING, "Failed to delete Discord role for team " + team.name, error);
+            }
+        });
+    }
+
     private enum Role {
         OWNER("Owner"), STAFF("Staff"), MEMBER("Member");
         private final String display;
@@ -388,10 +459,12 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         private String name;
         private UUID leader;
         private final List<UUID> members;
-        private Team(String name, UUID leader, List<UUID> members) {
+        private long discordRoleId;
+        private Team(String name, UUID leader, List<UUID> members, long discordRoleId) {
             this.name = name;
             this.leader = leader;
             this.members = members;
+            this.discordRoleId = discordRoleId;
         }
     }
 }

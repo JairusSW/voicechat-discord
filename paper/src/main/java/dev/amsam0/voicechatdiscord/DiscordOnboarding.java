@@ -33,6 +33,7 @@ import static dev.amsam0.voicechatdiscord.Core.platform;
 public final class DiscordOnboarding extends ListenerAdapter implements Listener, AutoCloseable {
     private final PaperPlugin plugin;
     private final IdentityRegistry identities;
+    private final GenevaRoles genevaRoles;
     private final long linkingChannelId;
     private final long guildId;
     private final long unlinkedRoleId;
@@ -43,15 +44,16 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private volatile JDA jda;
     private volatile boolean closed;
 
-    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, long guildId, long linkingChannelId, long unlinkedRoleId) {
+    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles, long guildId, long linkingChannelId, long unlinkedRoleId) {
         this.plugin = plugin;
         this.identities = identities;
+        this.genevaRoles = genevaRoles;
         this.guildId = guildId;
         this.linkingChannelId = linkingChannelId;
         this.unlinkedRoleId = unlinkedRoleId;
     }
 
-    public static @Nullable DiscordOnboarding start(PaperPlugin plugin, IdentityRegistry identities) {
+    public static @Nullable DiscordOnboarding start(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles) {
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
         if (!config.getBoolean("discord_onboarding.enabled", false)) return null;
         long channelId = config.getLong("discord_onboarding.linking_channel_id", 0L);
@@ -66,7 +68,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             platform.error("discord_onboarding is enabled, but DiscordSRV is unavailable");
             return null;
         }
-        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, guildId, channelId, roleId);
+        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, genevaRoles, guildId, channelId, roleId);
         DiscordSRV.api.subscribe(onboarding);
         Bukkit.getPluginManager().registerEvents(onboarding, plugin);
         Thread initializer = new Thread(onboarding::waitForDiscordSrv, "voicechat-discord: Onboarding Initializer");
@@ -218,6 +220,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         Player online = Bukkit.getPlayer(pending.playerId());
         if (online != null) ign = online.getName();
         identities.completeDiscordLink(pending.playerId(), ign, name, event.getAuthor().getId());
+        genevaRoles.syncDiscordSoon();
         if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId()) == null) {
             DiscordSRV.getPlugin().getAccountLinkManager().link(event.getAuthor().getId(), pending.playerId());
         }

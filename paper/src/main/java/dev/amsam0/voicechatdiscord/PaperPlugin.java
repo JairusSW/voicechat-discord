@@ -143,7 +143,7 @@ public final class PaperPlugin extends JavaPlugin {
         getCommand("role").setExecutor(genevaRoles);
         getCommand("ping").setExecutor(genevaRoles);
 
-        discordOnboarding = DiscordOnboarding.start(this, identityRegistry);
+        discordOnboarding = DiscordOnboarding.start(this, identityRegistry, genevaRoles);
 
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);

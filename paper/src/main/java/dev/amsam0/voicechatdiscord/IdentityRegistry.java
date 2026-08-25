@@ -86,6 +86,12 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
                 discordId.equals(data.getString("players." + id + ".discord_id")));
     }
 
+    public String discordId(UUID playerId) {
+        String stored = data.getString("players." + playerId + ".discord_id");
+        if (stored != null) return stored;
+        return DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(playerId);
+    }
+
     public Player onlinePlayerForDiscord(String discordId) {
         ConfigurationSection players = data.getConfigurationSection("players");
         Player newest = null;
