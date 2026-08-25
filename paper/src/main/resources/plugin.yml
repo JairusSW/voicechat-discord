@@ -16,3 +16,12 @@ commands:
   whois:
     description: Look up a player's linked real name
     usage: /whois <player>
+  team:
+    description: Manage GenevaMC teams
+    usage: /team <add|remove|edit|invite|kick|list|info>
+  role:
+    description: Manage GenevaMC Owner and Staff roles
+    usage: /role <get|set> <player> [owner|staff|member]
+  ping:
+    description: Show your connection latency
+    usage: /ping [player]

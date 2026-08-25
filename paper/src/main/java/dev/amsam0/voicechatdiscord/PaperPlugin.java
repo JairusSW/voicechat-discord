@@ -22,6 +22,7 @@ public final class PaperPlugin extends JavaPlugin {
     private PaperVoicechatPlugin voicechatPlugin;
     private LobbyOrchestrator lobbyOrchestrator;
     private IdentityRegistry identityRegistry;
+    private GenevaRoles genevaRoles;
 
     public static PaperPlugin get() {
         return INSTANCE;
@@ -134,6 +135,12 @@ public final class PaperPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(identityRegistry, this);
         getCommand("link").setExecutor(identityRegistry);
         getCommand("whois").setExecutor(identityRegistry);
+
+        genevaRoles = new GenevaRoles(this, identityRegistry);
+        Bukkit.getPluginManager().registerEvents(genevaRoles, this);
+        getCommand("team").setExecutor(genevaRoles);
+        getCommand("role").setExecutor(genevaRoles);
+        getCommand("ping").setExecutor(genevaRoles);
 
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);

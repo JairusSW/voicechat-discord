@@ -54,6 +54,25 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         return data.isString("players." + player.getUniqueId() + ".real_name");
     }
 
+    public UUID findLinkedPlayer(String ign) {
+        ConfigurationSection players = data.getConfigurationSection("players");
+        if (players == null) return null;
+        for (String id : players.getKeys(false)) {
+            if (ign.equalsIgnoreCase(data.getString("players." + id + ".ign", ""))) {
+                try {
+                    return UUID.fromString(id);
+                } catch (IllegalArgumentException ignored) {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    public String knownIgn(UUID playerId) {
+        return data.getString("players." + playerId + ".ign", playerId.toString());
+    }
+
     private void requireLink(Player player) {
         player.sendMessage(Component.text("Welcome to GenevaMC! Run ", NamedTextColor.YELLOW)
                 .append(Component.text("/link", NamedTextColor.WHITE)
