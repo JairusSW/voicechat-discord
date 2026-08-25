@@ -113,15 +113,19 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
 
         UUID minecraftId = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
         if (minecraftId == null) {
+            setServerMuted(member, true);
             platform.warn("Discord user " + member.getEffectiveName() + " joined the bridge lobby without a linked Minecraft account");
             return;
         }
 
         Player bukkitPlayer = Bukkit.getPlayer(minecraftId);
         if (bukkitPlayer == null || !bukkitPlayer.isOnline()) {
+            setServerMuted(member, true);
             platform.warn("Linked player for " + member.getEffectiveName() + " is not online");
             return;
         }
+
+        setServerMuted(member, false);
 
         Category category = member.getGuild().getCategoryById(categoryId);
         if (category == null) {
@@ -180,6 +184,16 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
 
     private static String safeName(String name) {
         return name.toLowerCase().replaceAll("[^a-z0-9_-]", "-");
+    }
+
+    private void setServerMuted(Member member, boolean muted) {
+        try {
+            member.getGuild().mute(member, muted).complete();
+            platform.info((muted ? "Server-muted " : "Server-unmuted ") + member.getEffectiveName()
+                    + " based on Minecraft online status");
+        } catch (Throwable error) {
+            platform.error("Failed to " + (muted ? "mute " : "unmute ") + member.getEffectiveName(), error);
+        }
     }
 
     @Override
