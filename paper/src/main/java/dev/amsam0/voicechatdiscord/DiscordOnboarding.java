@@ -103,9 +103,10 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         }
         String code = DiscordSRV.getPlugin().getAccountLinkManager().generateCode(player.getUniqueId());
         player.sendMessage("§6§lGenevaMC setup");
-        player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/join");
-        player.sendMessage("§f2. In §b#linking§f, type this code: §e§l" + code);
-        player.sendMessage("§f3. Follow the bot's prompts there.");
+        player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/new");
+        player.sendMessage("§f2. Go to §b#rules§f and read the rules.");
+        player.sendMessage("§f3. In §b#linking§f, type this code: §e§l" + code);
+        player.sendMessage("§f4. Follow the bot's prompts there.");
     }
 
     @Subscribe
@@ -146,7 +147,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         TextChannel channel = channel();
         if (channel == null) return;
         channel.sendMessage("<@" + discordId + "> Hey! Your Minecraft account **" + ign
-                + "** is linked. What is your real first and last name? Reply here with just your name.").queue();
+                + "** is linked. Please read **#rules**, then reply here with just your real first and last name.").queue();
     }
 
     @Override
