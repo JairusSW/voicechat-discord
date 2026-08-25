@@ -37,6 +37,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final long guildId;
     private final long unlinkedRoleId;
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
+    private final Map<String, PendingName> awaitingRuleAcceptance = new ConcurrentHashMap<>();
     private final Map<String, PendingName> linkingCodes = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
     private volatile JDA jda;
@@ -99,9 +100,10 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private void begin(Player player) {
         String discordId = DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(player.getUniqueId());
         if (discordId != null) {
-            awaitingNames.put(discordId, new PendingName(player.getUniqueId(), player.getName()));
-            promptForName(discordId, player.getName());
-            player.sendMessage("Your Discord is linked. Answer the bot in #linking to finish.");
+            PendingName pending = new PendingName(player.getUniqueId(), player.getName());
+            awaitingRuleAcceptance.put(discordId, pending);
+            promptForRules(discordId, pending.ign());
+            player.sendMessage("Your Discord is linked. Review the rules in #linking to finish.");
             return;
         }
         linkingCodes.entrySet().removeIf(entry -> entry.getValue().playerId().equals(player.getUniqueId()));
@@ -111,9 +113,9 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         linkingCodes.put(code, new PendingName(player.getUniqueId(), player.getName()));
         player.sendMessage("§6§lGenevaMC setup");
         player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/new");
-        player.sendMessage("§f2. Go to §b#rules§f and read the rules.");
-        player.sendMessage("§f3. In §b#linking§f, type this code: §e§l" + code);
-        player.sendMessage("§f4. Follow the bot's prompts there.");
+        player.sendMessage("§f2. In §b#linking§f, type this code: §e§l" + code);
+        player.sendMessage("§f3. Read the rules and reply §ayes §for §cno§f.");
+        player.sendMessage("§f4. Enter your real name when prompted.");
     }
 
     @Subscribe
@@ -122,9 +124,9 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         if (identities.linked(playerId)) return;
         String discordId = event.getUser().getId();
         String ign = event.getPlayer().getName() == null ? playerId.toString() : event.getPlayer().getName();
-        awaitingNames.put(discordId, new PendingName(playerId, ign));
-        removeUnlinkedRole(discordId);
-        promptForName(discordId, ign);
+        PendingName pending = new PendingName(playerId, ign);
+        awaitingRuleAcceptance.put(discordId, pending);
+        promptForRules(discordId, ign);
     }
 
     @Override
@@ -154,8 +156,20 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private void promptForName(String discordId, String ign) {
         TextChannel channel = channel();
         if (channel == null) return;
-        channel.sendMessage("<@" + discordId + "> Code accepted for Minecraft account **" + ign
-                + "**. Please read **#rules**, then reply here with just your real first and last name.").queue();
+        channel.sendMessage("<@" + discordId + "> Thanks for accepting the rules. Now reply with just your real first and last name for **"
+                + ign + "**.").queue();
+    }
+
+    private void promptForRules(String discordId, String ign) {
+        TextChannel channel = channel();
+        if (channel == null) return;
+        channel.sendMessage("<@" + discordId + "> Code accepted for Minecraft account **" + ign + "**.\n\n"
+                + "**GenevaMC Rules**\n"
+                + "1. Be respectful to each other.\n"
+                + "2. Don't ruin each other's builds.\n"
+                + "3. Participate in and respect player government.\n"
+                + "4. Don't use profane language.\n\n"
+                + "Do you understand and agree to follow these rules? Reply with **yes** or **no**.").queue();
     }
 
     @Override
@@ -164,14 +178,30 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         String content = event.getMessage().getContentRaw().trim();
         PendingName codeAccount = linkingCodes.remove(content.toUpperCase(java.util.Locale.ROOT));
         if (codeAccount != null) {
-            if (awaitingNames.containsKey(event.getAuthor().getId())) {
+            if (awaitingNames.containsKey(event.getAuthor().getId()) || awaitingRuleAcceptance.containsKey(event.getAuthor().getId())) {
                 linkingCodes.put(content.toUpperCase(java.util.Locale.ROOT), codeAccount);
                 event.getChannel().sendMessage(event.getAuthor().getAsMention()
                         + " Finish the current account's name prompt before linking another account.").queue();
                 return;
             }
-            awaitingNames.put(event.getAuthor().getId(), codeAccount);
-            promptForName(event.getAuthor().getId(), codeAccount.ign());
+            awaitingRuleAcceptance.put(event.getAuthor().getId(), codeAccount);
+            promptForRules(event.getAuthor().getId(), codeAccount.ign());
+            return;
+        }
+        PendingName rulesPending = awaitingRuleAcceptance.get(event.getAuthor().getId());
+        if (rulesPending != null) {
+            if (content.equalsIgnoreCase("yes")) {
+                awaitingRuleAcceptance.remove(event.getAuthor().getId());
+                awaitingNames.put(event.getAuthor().getId(), rulesPending);
+                promptForName(event.getAuthor().getId(), rulesPending.ign());
+            } else if (content.equalsIgnoreCase("no")) {
+                awaitingRuleAcceptance.remove(event.getAuthor().getId());
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                        + " Onboarding cancelled. Rejoin Minecraft when you're ready to review the rules again.").queue();
+            } else {
+                event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                        + " Please respond with **yes** to accept the rules or **no** to cancel.").queue();
+            }
             return;
         }
         PendingName pending = awaitingNames.get(event.getAuthor().getId());
@@ -210,6 +240,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         DiscordSRV.api.unsubscribe(this);
         if (jda != null) jda.removeEventListener(this);
         awaitingNames.clear();
+        awaitingRuleAcceptance.clear();
         linkingCodes.clear();
     }
 
