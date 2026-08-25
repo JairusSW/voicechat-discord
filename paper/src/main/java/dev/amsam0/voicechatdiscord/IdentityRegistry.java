@@ -47,8 +47,12 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         data = YamlConfiguration.loadConfiguration(file);
     }
 
-    private boolean linked(Player player) {
+    public boolean linked(Player player) {
         return data.isString("players." + player.getUniqueId() + ".real_name");
+    }
+
+    public boolean linked(UUID playerId) {
+        return data.isString("players." + playerId + ".real_name");
     }
 
     public UUID findLinkedPlayer(String ign) {
@@ -71,7 +75,7 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
     }
 
     private void requireLink(Player player) {
-        player.sendMessage(Component.text("Type /link to join GenevaMC.", NamedTextColor.YELLOW));
+        player.sendMessage(Component.text("Finish linking through the GenevaMC Discord to play.", NamedTextColor.YELLOW));
     }
 
     private void enterOnboarding(Player player) {
@@ -82,8 +86,8 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         }
         player.setGameMode(GameMode.SPECTATOR);
         player.showTitle(Title.title(
-                Component.text("Type /link", NamedTextColor.GOLD),
-                Component.text("to join GenevaMC", NamedTextColor.GRAY),
+                Component.text("Join the Discord", NamedTextColor.GOLD),
+                Component.text("Then link your account to play", NamedTextColor.GRAY),
                 Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(5), Duration.ofSeconds(1))));
         requireLink(player);
     }
@@ -246,14 +250,31 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
     }
 
     private void completeLink(Player player, String realName) {
-
-        String path = "players." + player.getUniqueId();
-        data.set(path + ".real_name", realName);
-        data.set(path + ".ign", player.getName());
-        data.set(path + ".linked_at", Instant.now().toString());
-        save();
+        storeIdentity(player.getUniqueId(), player.getName(), realName);
         leaveOnboarding(player);
         player.sendMessage(Component.text("Linked " + player.getName() + " to " + realName + ". You can now play!", NamedTextColor.GREEN));
+    }
+
+    public void completeDiscordLink(UUID playerId, String ign, String realName) {
+        storeIdentity(playerId, ign, realName);
+        Player player = org.bukkit.Bukkit.getPlayer(playerId);
+        if (player != null) {
+            player.getScheduler().run(PaperPlugin.get(), task -> {
+                leaveOnboarding(player);
+                player.showTitle(Title.title(
+                        Component.text("You're linked!", NamedTextColor.GREEN),
+                        Component.text("Welcome to GenevaMC, " + realName, NamedTextColor.GRAY)));
+                player.sendMessage(Component.text("Discord setup complete. You can now play!", NamedTextColor.GREEN));
+            }, null);
+        }
+    }
+
+    private void storeIdentity(UUID playerId, String ign, String realName) {
+        String path = "players." + playerId;
+        data.set(path + ".real_name", realName);
+        data.set(path + ".ign", ign);
+        data.set(path + ".linked_at", Instant.now().toString());
+        save();
     }
 
     private void showVoiceChoice(Player player) {

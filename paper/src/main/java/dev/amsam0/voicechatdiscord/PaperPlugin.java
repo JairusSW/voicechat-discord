@@ -23,6 +23,7 @@ public final class PaperPlugin extends JavaPlugin {
     private LobbyOrchestrator lobbyOrchestrator;
     private IdentityRegistry identityRegistry;
     private GenevaRoles genevaRoles;
+    private DiscordOnboarding discordOnboarding;
 
     public static PaperPlugin get() {
         return INSTANCE;
@@ -142,6 +143,8 @@ public final class PaperPlugin extends JavaPlugin {
         getCommand("role").setExecutor(genevaRoles);
         getCommand("ping").setExecutor(genevaRoles);
 
+        discordOnboarding = DiscordOnboarding.start(this, identityRegistry);
+
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);
 
@@ -151,6 +154,9 @@ public final class PaperPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (discordOnboarding != null) {
+            discordOnboarding.close();
+        }
         if (lobbyOrchestrator != null) {
             lobbyOrchestrator.close();
         }
