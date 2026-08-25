@@ -11,6 +11,8 @@ import de.maxhenkel.voicechat.api.packets.StaticSoundPacket;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
+import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 
 import static dev.amsam0.voicechatdiscord.Core.api;
 import static dev.amsam0.voicechatdiscord.Core.platform;
@@ -26,6 +28,7 @@ public final class DiscordBot {
      * Pointer to Rust struct
      */
     private final long ptr;
+    private final long discordUserId;
     /**
      * The player that this Discord bot is linked to.
      */
@@ -68,7 +71,13 @@ public final class DiscordBot {
 
     public DiscordBot(String token, long vcId) {
         this.vcId = vcId;
+        String encodedId = token.substring(0, token.indexOf('.'));
+        discordUserId = Long.parseLong(new String(Base64.getUrlDecoder().decode(encodedId), StandardCharsets.UTF_8));
         ptr = _new(token, vcId);
+    }
+
+    public long discordUserId() {
+        return discordUserId;
     }
 
     private native void _setVoiceChannel(long ptr, long vcId);

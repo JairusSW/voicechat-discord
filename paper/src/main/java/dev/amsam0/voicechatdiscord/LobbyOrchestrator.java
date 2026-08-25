@@ -6,6 +6,7 @@ import github.scarsz.discordsrv.dependencies.jda.api.JDA;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Category;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.VoiceChannel;
+import github.scarsz.discordsrv.dependencies.jda.api.Permission;
 import github.scarsz.discordsrv.dependencies.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
@@ -19,6 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.Map;
+import java.util.EnumSet;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -145,9 +148,14 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
             sessions.put(discordId, new Session(bot, channel, bukkitPlayer.getUniqueId()));
 
             try {
+                channel.getManager().putMemberPermissionOverride(
+                        bot.discordUserId(),
+                        EnumSet.of(Permission.VIEW_CHANNEL, Permission.VOICE_CONNECT, Permission.VOICE_SPEAK, Permission.VOICE_USE_VAD),
+                        Collections.emptySet()).complete();
                 bot.setVoiceChannel(channel.getIdLong());
                 ServerPlayer serverPlayer = api.fromServerPlayer(bukkitPlayer);
                 bot.logInAndStart(serverPlayer);
+                if (!bot.isStarted()) throw new IllegalStateException("Audio bot failed to start");
                 member.getGuild().moveVoiceMember(member, channel).complete();
                 platform.info("Automatically started bridge session for " + bukkitPlayer.getName());
             } catch (Throwable error) {
