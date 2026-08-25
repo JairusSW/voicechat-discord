@@ -197,6 +197,8 @@ If you are a operator (specifically permission level 2 or higher on fabric) or i
 
 ## Project Infrastructure
 
+The GenevaMC fork can read bot tokens from environment variables by setting a bot token to `${VARIABLE_NAME}` in the configuration.
+
 Source code and development is done on GitLab at https://gitlab.com/amsam0/voicechat-discord.
 
 However, because there are a lot more users with GitHub accounts than GitLab accounts, bug reports, feature requests, and general support is done through GitHub at https://github.com/amsam0/voicechat-discord/issues.

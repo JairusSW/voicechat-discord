@@ -124,7 +124,9 @@ public final class Core {
             }
 
             try {
-                bots.add(new DiscordBot((String) bot.get("token"), (Long) bot.get("vc_id")));
+                String token = resolveToken((String) bot.get("token"));
+                if (token == null) continue;
+                bots.add(new DiscordBot(token, (Long) bot.get("vc_id")));
             } catch (ClassCastException e) {
                 platform.error("Failed to load a bot. Please make sure that the token property is a string and the vc_id property is a number.");
             }
@@ -139,6 +141,18 @@ public final class Core {
         } catch (ClassCastException e) {
             platform.error("Please make sure the debug_level option is a valid integer");
         }
+    }
+
+    private static String resolveToken(String configuredToken) {
+        if (!configuredToken.startsWith("${") || !configuredToken.endsWith("}")) return configuredToken;
+
+        String variable = configuredToken.substring(2, configuredToken.length() - 1);
+        String token = System.getenv(variable);
+        if (token == null || token.isBlank()) {
+            platform.error("Failed to load a bot: environment variable " + variable + " is missing or empty.");
+            return null;
+        }
+        return token;
     }
 
     public static void clearBots() {
