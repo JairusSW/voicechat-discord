@@ -24,6 +24,7 @@ public final class PaperPlugin extends JavaPlugin {
     private IdentityRegistry identityRegistry;
     private GenevaRoles genevaRoles;
     private DiscordOnboarding discordOnboarding;
+    private DvcGroupInvites dvcGroupInvites;
 
     public static PaperPlugin get() {
         return INSTANCE;
@@ -144,6 +145,9 @@ public final class PaperPlugin extends JavaPlugin {
         getCommand("ping").setExecutor(genevaRoles);
 
         discordOnboarding = DiscordOnboarding.start(this, identityRegistry, genevaRoles);
+
+        dvcGroupInvites = new DvcGroupInvites();
+        Bukkit.getPluginManager().registerEvents(dvcGroupInvites, this);
 
         // Register events
         Bukkit.getPluginManager().registerEvents(eventListener, this);
