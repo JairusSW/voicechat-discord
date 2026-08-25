@@ -35,6 +35,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final IdentityRegistry identities;
     private final GenevaRoles genevaRoles;
     private final long linkingChannelId;
+    private final long minecraftChatChannelId;
     private final long guildId;
     private final long unlinkedRoleId;
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
@@ -44,12 +45,13 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private volatile JDA jda;
     private volatile boolean closed;
 
-    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles, long guildId, long linkingChannelId, long unlinkedRoleId) {
+    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles, long guildId, long linkingChannelId, long minecraftChatChannelId, long unlinkedRoleId) {
         this.plugin = plugin;
         this.identities = identities;
         this.genevaRoles = genevaRoles;
         this.guildId = guildId;
         this.linkingChannelId = linkingChannelId;
+        this.minecraftChatChannelId = minecraftChatChannelId;
         this.unlinkedRoleId = unlinkedRoleId;
     }
 
@@ -57,10 +59,11 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "config.yml"));
         if (!config.getBoolean("discord_onboarding.enabled", false)) return null;
         long channelId = config.getLong("discord_onboarding.linking_channel_id", 0L);
+        long minecraftChatChannelId = config.getLong("discord_onboarding.minecraft_chat_channel_id", 0L);
         long guildId = config.getLong("discord_onboarding.guild_id", 0L);
         long roleId = config.getLong("discord_onboarding.unlinked_role_id", 0L);
-        if (channelId == 0L || guildId == 0L || roleId == 0L) {
-            platform.error("discord_onboarding requires guild_id, linking_channel_id, and unlinked_role_id");
+        if (channelId == 0L || minecraftChatChannelId == 0L || guildId == 0L || roleId == 0L) {
+            platform.error("discord_onboarding requires guild_id, linking_channel_id, minecraft_chat_channel_id, and unlinked_role_id");
             return null;
         }
         Plugin discordSrv = Bukkit.getPluginManager().getPlugin("DiscordSRV");
@@ -68,7 +71,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             platform.error("discord_onboarding is enabled, but DiscordSRV is unavailable");
             return null;
         }
-        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, genevaRoles, guildId, channelId, roleId);
+        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, genevaRoles, guildId, channelId, minecraftChatChannelId, roleId);
         DiscordSRV.api.subscribe(onboarding);
         Bukkit.getPluginManager().registerEvents(onboarding, plugin);
         Thread initializer = new Thread(onboarding::waitForDiscordSrv, "voicechat-discord: Onboarding Initializer");
@@ -176,7 +179,13 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        if (event.getAuthor().isBot() || event.getChannel().getIdLong() != linkingChannelId) return;
+        if (event.getAuthor().isBot()) return;
+        if (event.getChannel().getIdLong() == minecraftChatChannelId
+                && event.getMessage().getContentRaw().trim().startsWith("/")) {
+            handleMinecraftCommand(event);
+            return;
+        }
+        if (event.getChannel().getIdLong() != linkingChannelId) return;
         String content = event.getMessage().getContentRaw().trim();
         PendingName codeAccount = linkingCodes.remove(content.toUpperCase(java.util.Locale.ROOT));
         if (codeAccount != null) {
@@ -228,6 +237,35 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         event.getChannel().sendMessage(event.getAuthor().getAsMention()
                 + " You're all set! **" + ign + "** can now play on GenevaMC.").queue();
         event.getMessage().delete().queue(null, ignored -> {});
+    }
+
+    private void handleMinecraftCommand(GuildMessageReceivedEvent event) {
+        String raw = event.getMessage().getContentRaw().trim().substring(1).trim();
+        if (raw.isEmpty()) return;
+        Player player = identities.onlinePlayerForDiscord(event.getAuthor().getId());
+        if (player == null) {
+            UUID primary = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId());
+            if (primary != null) player = Bukkit.getPlayer(primary);
+        }
+        if (player == null || !player.isOnline()) {
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " Join GenevaMC with a linked account before running Minecraft commands here.").queue();
+            return;
+        }
+        String root = raw.split("\\s+", 2)[0].toLowerCase(java.util.Locale.ROOT);
+        java.util.Set<String> publicCommands = java.util.Set.of("ping", "team", "whois", "discord", "dvc");
+        if (!player.isOp() && !publicCommands.contains(root)) {
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " You may use `/ping`, `/team`, `/whois`, and `/discord` here. Other commands require Minecraft OP.").queue();
+            return;
+        }
+        Player target = player;
+        target.getScheduler().run(plugin, task -> {
+            boolean accepted = target.performCommand(raw);
+            event.getChannel().sendMessage(event.getAuthor().getAsMention() + (accepted
+                    ? " Ran `/" + raw.replace("`", "") + "` as **" + target.getName() + "**. Check Minecraft for the output."
+                    : " Minecraft did not recognize that command.")).queue();
+        }, null);
     }
 
     private TextChannel channel() {
