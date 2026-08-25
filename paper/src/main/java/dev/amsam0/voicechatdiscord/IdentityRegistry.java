@@ -12,6 +12,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,11 +38,13 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Persistent real-name onboarding and bridge command integration. */
 public final class IdentityRegistry implements Listener, CommandExecutor {
     private final File file;
     private final YamlConfiguration data;
+    private final Set<UUID> onboardingTeleports = ConcurrentHashMap.newKeySet();
 
     public IdentityRegistry(PaperPlugin plugin) {
         file = new File(plugin.getDataFolder(), "identities.yml");
@@ -81,10 +85,21 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
     private void enterOnboarding(Player player) {
         String path = "onboarding." + player.getUniqueId();
         if (!data.isString(path + ".previous_game_mode")) {
+            Location previous = player.getLocation();
             data.set(path + ".previous_game_mode", player.getGameMode().name());
+            data.set(path + ".previous_location.world", previous.getWorld().getName());
+            data.set(path + ".previous_location.x", previous.getX());
+            data.set(path + ".previous_location.y", previous.getY());
+            data.set(path + ".previous_location.z", previous.getZ());
+            data.set(path + ".previous_location.yaw", previous.getYaw());
+            data.set(path + ".previous_location.pitch", previous.getPitch());
             save();
         }
         player.setGameMode(GameMode.SPECTATOR);
+        Location current = player.getLocation();
+        onboardingTeleports.add(player.getUniqueId());
+        player.teleportAsync(new Location(current.getWorld(), current.getX(), 320.0, current.getZ(), current.getYaw(), 0))
+                .whenComplete((success, error) -> onboardingTeleports.remove(player.getUniqueId()));
         player.showTitle(Title.title(
                 Component.text("Join the Discord", NamedTextColor.GOLD),
                 Component.text("Then link your account to play", NamedTextColor.GRAY),
@@ -101,9 +116,19 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         } catch (IllegalArgumentException ignored) {
             restored = GameMode.SURVIVAL;
         }
+        String worldName = data.getString(path + ".previous_location.world");
+        World world = worldName == null ? null : org.bukkit.Bukkit.getWorld(worldName);
+        Location destination = world == null ? null : new Location(
+                world,
+                data.getDouble(path + ".previous_location.x"),
+                data.getDouble(path + ".previous_location.y"),
+                data.getDouble(path + ".previous_location.z"),
+                (float) data.getDouble(path + ".previous_location.yaw"),
+                (float) data.getDouble(path + ".previous_location.pitch"));
         data.set(path, null);
         save();
         player.setGameMode(restored);
+        if (destination != null) player.teleportAsync(destination);
     }
 
     @EventHandler
@@ -118,7 +143,7 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onTeleport(PlayerTeleportEvent event) {
-        if (!linked(event.getPlayer())) event.setCancelled(true);
+        if (!linked(event.getPlayer()) && !onboardingTeleports.remove(event.getPlayer().getUniqueId())) event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
