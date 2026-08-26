@@ -40,6 +40,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
     private final String channelPrefix;
     private final IdentityRegistry identities;
     private final Map<String, Session> sessions = new ConcurrentHashMap<>();
+    private final Map<String, Object> memberLocks = new ConcurrentHashMap<>();
 
     private LobbyOrchestrator(long lobbyId, long categoryId, String channelPrefix, IdentityRegistry identities) {
         this.lobbyId = lobbyId;
@@ -106,15 +107,24 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
 
         if (joined != null && joined.getIdLong() == lobbyId) {
             new Thread(() -> openSession(event.getMember()), "voicechat-discord: Lobby Join").start();
+        }
+        if (left != null && left.getIdLong() == lobbyId) {
+            new Thread(() -> leaveLobby(event.getMember(), joined), "voicechat-discord: Lobby Leave").start();
         } else if (left != null && sessions.containsKey(discordId)) {
             Session session = sessions.get(discordId);
-            if (session != null && (joined == null || joined.getIdLong() != session.channel.getIdLong())) {
-                new Thread(() -> closeSession(discordId), "voicechat-discord: Lobby Leave").start();
-            }
+            if (session != null && (joined == null || joined.getIdLong() != session.channel.getIdLong()))
+                new Thread(() -> closeSession(discordId), "voicechat-discord: Bridge Leave").start();
         }
     }
 
     private void openSession(Member member) {
+        String discordId = member.getId();
+        synchronized (memberLocks.computeIfAbsent(discordId, ignored -> new Object())) {
+            openSessionLocked(member);
+        }
+    }
+
+    private void openSessionLocked(Member member) {
         String discordId = member.getId();
         if (sessions.containsKey(discordId)) return;
 
@@ -124,7 +134,12 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
             if (primary != null) bukkitPlayer = Bukkit.getPlayer(primary);
         }
         if (bukkitPlayer == null) {
-            setServerMuted(member, true);
+            // The lobby event is handled asynchronously. Do not leave someone muted
+            // if they already moved to another voice channel while this was running.
+            if (member.getVoiceState() != null && member.getVoiceState().getChannel() != null
+                    && member.getVoiceState().getChannel().getIdLong() == lobbyId) {
+                setServerMuted(member, true);
+            }
             platform.warn("Discord user " + member.getEffectiveName() + " has no linked Minecraft account online");
             return;
         }
@@ -162,6 +177,19 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
                 platform.info("Automatically started bridge session for " + bukkitPlayer.getName());
             } catch (Throwable error) {
                 platform.error("Failed to automatically start bridge for " + bukkitPlayer.getName(), error);
+                closeSession(discordId);
+            }
+        }
+    }
+
+    private void leaveLobby(Member member, VoiceChannel joined) {
+        String discordId = member.getId();
+        synchronized (memberLocks.computeIfAbsent(discordId, ignored -> new Object())) {
+            // A lobby mute is only a guard while the member is waiting in prox-lobby.
+            // It must never leak into an ordinary or unrelated Discord voice channel.
+            setServerMuted(member, false);
+            Session session = sessions.get(discordId);
+            if (session != null && (joined == null || joined.getIdLong() != session.channel.getIdLong())) {
                 closeSession(discordId);
             }
         }
@@ -216,6 +244,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
         for (String discordId : sessions.keySet().toArray(String[]::new)) {
             closeSession(discordId);
         }
+        memberLocks.clear();
     }
 
     private record Session(DiscordBot bot, VoiceChannel channel, UUID playerId) {}

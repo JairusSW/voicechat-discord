@@ -16,6 +16,12 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - `/vc mute` and `/vc unmute` server-mute or server-unmute the invoking player's linked Discord member while they are connected to voice.
 - These control the Discord microphone path. Players using the native SVC client still use their client mute key.
 
+## Prox-lobby mute cleanup (`geneva.33`)
+
+- Members without an online Minecraft player are server-muted only while they remain in prox-lobby.
+- Leaving prox-lobby for any other voice channel or disconnecting always clears that temporary server mute.
+- Per-member locking and a current-channel check prevent asynchronous lobby handling from re-muting someone after they leave.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
