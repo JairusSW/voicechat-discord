@@ -161,8 +161,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private void promptForName(String discordId, String ign) {
         TextChannel channel = channel();
         if (channel == null) return;
-        channel.sendMessage("<@" + discordId + "> Thanks for accepting the rules. Now reply with just your real first and last name for **"
-                + ign + "**.").queue();
+        channel.sendMessage("<@" + discordId + "> Thanks for accepting the rules. Now reply with just your **first and last name** for "
+                + ign + ". It'll help us know who you are.").queue();
     }
 
     private void promptForRules(String discordId, String ign) {
