@@ -22,6 +22,12 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - Leaving prox-lobby for any other voice channel or disconnecting always clears that temporary server mute.
 - Per-member locking and a current-channel check prevent asynchronous lobby handling from re-muting someone after they leave.
 
+## Waypoint editor codes (`geneva.34`)
+
+- Linked Discord members can type `/waypoint login` in `#linking` to receive a separate six-digit squaremap editor code.
+- The request is deleted and the bot response self-deletes after 60 seconds; the one-time code itself expires after five minutes.
+- Owner/staff status is passed to GenevaWaypoints so their map sessions can manage every public waypoint.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.

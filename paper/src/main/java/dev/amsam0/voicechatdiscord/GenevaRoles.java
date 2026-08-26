@@ -53,6 +53,10 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> syncDiscord(), 10, 60, TimeUnit.SECONDS);
     }
 
+    public boolean canManageWaypoints(UUID playerId) {
+        return effectiveRole(playerId) != Role.MEMBER;
+    }
+
     private void load() {
         ConfigurationSection roleSection = data.getConfigurationSection("roles");
         if (roleSection != null) {

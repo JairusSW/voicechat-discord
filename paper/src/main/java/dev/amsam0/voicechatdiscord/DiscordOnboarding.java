@@ -263,6 +263,10 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         }
         if (event.getChannel().getIdLong() != linkingChannelId) return;
         String content = event.getMessage().getContentRaw().trim();
+        if (content.equalsIgnoreCase("/waypoint login") || content.equalsIgnoreCase("waypoint login")) {
+            issueWaypointEditorCode(event);
+            return;
+        }
         PendingName codeAccount = linkingCodes.remove(content.toUpperCase(java.util.Locale.ROOT));
         if (codeAccount != null) {
             if (awaitingNames.containsKey(event.getAuthor().getId()) || awaitingRuleAcceptance.containsKey(event.getAuthor().getId())) {
@@ -380,6 +384,35 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                     ? " Ran `/" + raw.replace("`", "") + "` as **" + target.getName() + "**. Check Minecraft for the output."
                     : " Minecraft did not recognize that command.")).queue();
         }, null);
+    }
+
+    private void issueWaypointEditorCode(GuildMessageReceivedEvent event) {
+        UUID playerId = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId());
+        if (playerId == null) {
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " Link a Minecraft account before requesting a waypoint editor code.").queue();
+            return;
+        }
+        Plugin waypointPlugin = Bukkit.getPluginManager().getPlugin("GenevaWaypoints");
+        if (waypointPlugin == null || !waypointPlugin.isEnabled()) {
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " The waypoint editor is temporarily unavailable.").queue();
+            return;
+        }
+        try {
+            String code = (String) waypointPlugin.getClass()
+                    .getMethod("issueEditorLoginCode", UUID.class, String.class, boolean.class)
+                    .invoke(waypointPlugin, playerId, identities.knownIgn(playerId), genevaRoles.canManageWaypoints(playerId));
+            event.getMessage().delete().queue(null, ignored -> {});
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " Your GenevaMC map editor code is **" + code + "**. Enter it at <https://genevamc.net/map/> within five minutes. This message will disappear in 60 seconds.")
+                    .queue(message -> message.delete().queueAfter(60, java.util.concurrent.TimeUnit.SECONDS),
+                            error -> platform.error("Failed to send waypoint editor code", error));
+        } catch (ReflectiveOperationException error) {
+            platform.error("Failed to issue waypoint editor code", error);
+            event.getChannel().sendMessage(event.getAuthor().getAsMention()
+                    + " The waypoint editor could not issue a code. Please try again shortly.").queue();
+        }
     }
 
     private TextChannel channel() {
