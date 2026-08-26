@@ -32,7 +32,6 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
@@ -139,11 +138,6 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         onboardingTeleports.add(player.getUniqueId());
         player.teleportAsync(new Location(current.getWorld(), current.getX(), 320.0, current.getZ(), current.getYaw(), 0))
                 .whenComplete((success, error) -> onboardingTeleports.remove(player.getUniqueId()));
-        player.showTitle(Title.title(
-                Component.text("Join the Discord", NamedTextColor.GOLD),
-                Component.text("Then link your account to play", NamedTextColor.GRAY),
-                Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(5), Duration.ofSeconds(1))));
-        requireLink(player);
     }
 
     private void leaveOnboarding(Player player) {

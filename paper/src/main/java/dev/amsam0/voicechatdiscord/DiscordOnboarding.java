@@ -11,6 +11,10 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.Role;
 import github.scarsz.discordsrv.dependencies.jda.api.events.guild.member.GuildMemberJoinEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.events.message.guild.GuildMessageReceivedEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.hooks.ListenerAdapter;
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -22,6 +26,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 import java.security.SecureRandom;
@@ -41,6 +46,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
     private final Map<String, PendingName> awaitingRuleAcceptance = new ConcurrentHashMap<>();
     private final Map<String, PendingName> linkingCodes = new ConcurrentHashMap<>();
+    private final Map<UUID, ScheduledTask> reminderTasks = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
     private volatile JDA jda;
     private volatile boolean closed;
@@ -108,7 +114,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             PendingName pending = new PendingName(player.getUniqueId(), player.getName());
             awaitingRuleAcceptance.put(discordId, pending);
             promptForRules(discordId, pending.ign());
-            player.sendMessage("Your Discord is linked. Review the rules in #linking to finish.");
+            scheduleReminder(player, null);
             return;
         }
         linkingCodes.entrySet().removeIf(entry -> entry.getValue().playerId().equals(player.getUniqueId()));
@@ -116,11 +122,33 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         do { code = String.format("%03d", random.nextInt(1_000)); }
         while (linkingCodes.containsKey(code));
         linkingCodes.put(code, new PendingName(player.getUniqueId(), player.getName()));
-        player.sendMessage("§6§lGenevaMC setup");
-        player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/new");
-        player.sendMessage("§f2. In §b#linking§f, type this code: §e§l" + code);
-        player.sendMessage("§f3. Read the rules and reply §ayes §for §cno§f.");
-        player.sendMessage("§f4. Enter your real name when prompted.");
+        scheduleReminder(player, code);
+    }
+
+    private void scheduleReminder(Player player, @Nullable String code) {
+        UUID playerId = player.getUniqueId();
+        ScheduledTask previous = reminderTasks.remove(playerId);
+        if (previous != null) previous.cancel();
+        ScheduledTask scheduled = player.getScheduler().runAtFixedRate(plugin, task -> {
+            if (!player.isOnline() || identities.linked(playerId)) {
+                task.cancel();
+                reminderTasks.remove(playerId, task);
+                return;
+            }
+            player.showTitle(Title.title(
+                    Component.text("Join the Discord", NamedTextColor.GOLD),
+                    Component.text("Then link your account to play", NamedTextColor.GRAY),
+                    Title.Times.times(Duration.ZERO, Duration.ofSeconds(16), Duration.ZERO)));
+            if (code == null) {
+                player.sendMessage("§fComplete the linking process in §b#linking§f.");
+                return;
+            }
+            player.sendMessage("§f1. Join Discord: §bhttps://genevamc.net/new");
+            player.sendMessage("§f2. In §b#linking§f, type this code: §e§l" + code);
+            player.sendMessage("§f3. Complete the linking process in Discord.");
+            player.sendMessage("§f4. Have fun!");
+        }, () -> reminderTasks.remove(playerId), 100L, 300L);
+        reminderTasks.put(playerId, scheduled);
     }
 
     @Subscribe
@@ -242,6 +270,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         Player online = Bukkit.getPlayer(pending.playerId());
         if (online != null) ign = online.getName();
         identities.completeDiscordLink(pending.playerId(), ign, name, event.getAuthor().getId());
+        ScheduledTask reminder = reminderTasks.remove(pending.playerId());
+        if (reminder != null) reminder.cancel();
         genevaRoles.syncDiscordSoon();
         if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId()) == null) {
             DiscordSRV.getPlugin().getAccountLinkManager().link(event.getAuthor().getId(), pending.playerId());
@@ -329,6 +359,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         awaitingNames.clear();
         awaitingRuleAcceptance.clear();
         linkingCodes.clear();
+        reminderTasks.values().forEach(ScheduledTask::cancel);
+        reminderTasks.clear();
     }
 
     private record PendingName(UUID playerId, String ign) {}
