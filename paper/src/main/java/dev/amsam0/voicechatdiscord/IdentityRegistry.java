@@ -98,6 +98,14 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         return DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(playerId);
     }
 
+    public void revokeDiscordLink(Player player) {
+        UUID playerId = player.getUniqueId();
+        data.set("players." + playerId, null);
+        data.set("onboarding." + playerId, null);
+        save();
+        enterOnboarding(player);
+    }
+
     public Player onlinePlayerForDiscord(String discordId) {
         ConfigurationSection players = data.getConfigurationSection("players");
         Player newest = null;

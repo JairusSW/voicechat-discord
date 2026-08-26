@@ -108,7 +108,25 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        if (!identities.linked(event.getPlayer())) begin(event.getPlayer());
+        Player player = event.getPlayer();
+        if (!identities.linked(player)) {
+            begin(player);
+            return;
+        }
+        String discordId = identities.discordId(player.getUniqueId());
+        JDA current = jda != null ? jda : DiscordSRV.getPlugin().getJda();
+        Guild guild = current == null ? null : current.getGuildById(guildId);
+        if (guild == null) {
+            player.kick(Component.text("Discord verification is temporarily unavailable. Please reconnect shortly.", NamedTextColor.RED));
+            return;
+        }
+        if (discordId != null && guild.getMemberById(discordId) != null) return;
+
+        identities.revokeDiscordLink(player);
+        DiscordSRV.getPlugin().getAccountLinkManager().unlink(player.getUniqueId());
+        player.sendMessage("§cYour GenevaMC Discord membership could not be verified.");
+        player.sendMessage("§fRejoin the Discord and complete verification again to play.");
+        begin(player);
     }
 
     private void begin(Player player) {
