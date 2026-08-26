@@ -34,6 +34,9 @@ import java.util.List;
 import java.util.UUID;
 import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static dev.amsam0.voicechatdiscord.Core.platform;
 
@@ -58,6 +61,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final Map<String, PendingName> linkingCodes = new ConcurrentHashMap<>();
     private final Map<UUID, ScheduledTask> reminderTasks = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
+    private final ScheduledExecutorService hallRoleSync = Executors.newSingleThreadScheduledExecutor(r->{Thread t=new Thread(r,"voicechat-discord: Hall Role Sync");t.setDaemon(true);return t;});
     private volatile JDA jda;
     private volatile boolean closed;
 
@@ -103,6 +107,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             if (DiscordSRV.isReady && DiscordSRV.getPlugin().getJda() != null) {
                 jda = DiscordSRV.getPlugin().getJda();
                 jda.addEventListener(this);
+                hallRoleSync.scheduleAtFixedRate(this::syncHallRoles,0,30,TimeUnit.SECONDS);
                 platform.info("Discord-first player onboarding enabled");
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (!identities.linked(player)) begin(player);
@@ -210,13 +215,20 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
 
     @Override public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
         if(event.getUser().isBot()||event.getGuild().getIdLong()!=guildId||event.getChannel().getIdLong()!=HALL_CHANNEL_ID||event.getMessageIdLong()!=HALL_MESSAGE_ID)return;
-        String emoji=event.getReactionEmote().getEmoji();Long selectedId=HALL_ROLES.get(emoji);if(selectedId==null)return;
-        Role selected=event.getGuild().getRoleById(selectedId);if(selected==null){platform.error("Residence hall role is unavailable: "+selectedId);return;}
-        List<Role> remove=event.getMember().getRoles().stream().filter(role->HALL_ROLES.containsValue(role.getIdLong())&&role.getIdLong()!=selectedId).toList();
-        event.getGuild().modifyMemberRoles(event.getMember(),List.of(selected),remove).reason("Residence hall reaction role").queue(
-                ignored->event.getChannel().retrieveMessageById(HALL_MESSAGE_ID).queue(message->{for(String other:HALL_ROLES.keySet())if(!other.equals(emoji))message.removeReaction(other,event.getUser()).queue();}),
-                error->platform.error("Failed to update residence hall role for "+event.getUserId(),error));
+        applyHallRole(event.getMember(),event.getUser(),event.getReactionEmote().getEmoji());
     }
+
+    private void applyHallRole(Member member,github.scarsz.discordsrv.dependencies.jda.api.entities.User user,String emoji){
+        Long selectedId=HALL_ROLES.get(emoji);if(selectedId==null)return;
+        Guild guild=member.getGuild();
+        Role selected=guild.getRoleById(selectedId);if(selected==null){platform.error("Residence hall role is unavailable: "+selectedId);return;}
+        List<Role> remove=member.getRoles().stream().filter(role->HALL_ROLES.containsValue(role.getIdLong())&&role.getIdLong()!=selectedId).toList();
+        guild.modifyMemberRoles(member,List.of(selected),remove).reason("Residence hall reaction role").queue(
+                ignored->{TextChannel channel=guild.getTextChannelById(HALL_CHANNEL_ID);if(channel!=null)channel.retrieveMessageById(HALL_MESSAGE_ID).queue(message->{for(String other:HALL_ROLES.keySet())if(!other.equals(emoji))message.removeReaction(other,user).queue(null,error->{});});},
+                error->platform.error("Failed to update residence hall role for "+user.getId(),error));
+    }
+
+    private void syncHallRoles(){try{JDA current=jda;if(current==null)return;Guild guild=current.getGuildById(guildId);TextChannel channel=current.getTextChannelById(HALL_CHANNEL_ID);if(guild==null||channel==null)return;channel.retrieveMessageById(HALL_MESSAGE_ID).queue(message->{for(var reaction:message.getReactions()){String emoji=reaction.getReactionEmote().getEmoji();if(!HALL_ROLES.containsKey(emoji))continue;reaction.retrieveUsers().queue(users->{for(var user:users)if(!user.isBot())guild.retrieveMember(user).queue(member->applyHallRole(member,user,emoji),error->platform.error("Failed to retrieve hall member "+user.getId(),error));},error->platform.error("Failed to retrieve hall reaction users for "+emoji,error));}},error->platform.error("Failed to reconcile residence hall reactions",error));}catch(Exception error){platform.error("Failed to reconcile residence hall roles",error);}}
 
     @Override public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent event) {
         if(event.getUser()==null||event.getUser().isBot()||event.getGuild().getIdLong()!=guildId||event.getChannel().getIdLong()!=HALL_CHANNEL_ID||event.getMessageIdLong()!=HALL_MESSAGE_ID)return;
@@ -455,6 +467,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         linkingCodes.clear();
         reminderTasks.values().forEach(ScheduledTask::cancel);
         reminderTasks.clear();
+        hallRoleSync.shutdownNow();
     }
 
     private record PendingName(UUID playerId, String ign) {}

@@ -49,6 +49,14 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 
 - The exclusive hall selector lives at the bottom of `#getting-started` and ends with an emphasized prompt directing new members to scroll to the top for the onboarding instructions.
 
+## Residence role reconciliation (`geneva.39`)
+
+- Hall reactions are reconciled at startup and every 30 seconds in addition to live gateway events, so reactions made during a restart or Discord reconnect still receive their roles.
+
+## Residence reconciliation diagnostics (`geneva.40`)
+
+- Failed reaction-user or guild-member retrievals are logged instead of being silently discarded, making Discord permission and API failures actionable.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
