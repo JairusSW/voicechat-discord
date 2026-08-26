@@ -39,8 +39,8 @@ import static dev.amsam0.voicechatdiscord.Core.platform;
 
 /** Discord-first account linking and real-name onboarding. */
 public final class DiscordOnboarding extends ListenerAdapter implements Listener, AutoCloseable {
-    private static final long HALL_CHANNEL_ID = 991765086463074465L;
-    private static final long HALL_MESSAGE_ID = 1542258750126297132L;
+    private static final long HALL_CHANNEL_ID = 1541882952236146718L;
+    private static final long HALL_MESSAGE_ID = 1542260120258351124L;
     private static final Map<String,Long> HALL_ROLES = Map.of(
             "🦁",1542258555556597760L,"♦️",1542258556584071180L,"🌲",1542258560790962250L,
             "🔑",1542258562716147803L,"🏫",1542258564322820187L,"🦋",1542258566566772756L,

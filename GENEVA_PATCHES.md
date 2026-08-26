@@ -45,6 +45,10 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - Selecting a hall atomically removes every other hall role and clears the member's previous hall reactions, enforcing one residence per member.
 - Removing the selected reaction also removes its role. Hall membership roles remain separate from future Hall Delegate roles.
 
+## Residence selector placement (`geneva.38`)
+
+- The exclusive hall selector lives at the bottom of `#getting-started` and ends with an emphasized prompt directing new members to scroll to the top for the onboarding instructions.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
