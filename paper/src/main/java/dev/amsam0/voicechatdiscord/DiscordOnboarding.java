@@ -10,6 +10,8 @@ import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
 import github.scarsz.discordsrv.dependencies.jda.api.entities.Role;
 import github.scarsz.discordsrv.dependencies.jda.api.events.guild.member.GuildMemberJoinEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.events.message.guild.GuildMessageReceivedEvent;
+import github.scarsz.discordsrv.dependencies.jda.api.events.message.guild.react.GuildMessageReactionAddEvent;
+import github.scarsz.discordsrv.dependencies.jda.api.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import github.scarsz.discordsrv.dependencies.jda.api.hooks.ListenerAdapter;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import net.kyori.adventure.text.Component;
@@ -28,6 +30,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.time.Duration;
 import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
@@ -36,6 +39,12 @@ import static dev.amsam0.voicechatdiscord.Core.platform;
 
 /** Discord-first account linking and real-name onboarding. */
 public final class DiscordOnboarding extends ListenerAdapter implements Listener, AutoCloseable {
+    private static final long HALL_CHANNEL_ID = 991765086463074465L;
+    private static final long HALL_MESSAGE_ID = 1542258750126297132L;
+    private static final Map<String,Long> HALL_ROLES = Map.of(
+            "🦁",1542258555556597760L,"♦️",1542258556584071180L,"🌲",1542258560790962250L,
+            "🔑",1542258562716147803L,"🏫",1542258564322820187L,"🦋",1542258566566772756L,
+            "🌙",1542258568194162803L,"🌹",1542258570534330429L,"🛡️",1542258572241535026L);
     private final PaperPlugin plugin;
     private final IdentityRegistry identities;
     private final GenevaRoles genevaRoles;
@@ -197,6 +206,22 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         }
         event.getGuild().addRoleToMember(event.getMember(), role).queue(
                 ignored -> {}, error -> platform.error("Failed to assign unlinked role to " + event.getUser().getId(), error));
+    }
+
+    @Override public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent event) {
+        if(event.getUser().isBot()||event.getGuild().getIdLong()!=guildId||event.getChannel().getIdLong()!=HALL_CHANNEL_ID||event.getMessageIdLong()!=HALL_MESSAGE_ID)return;
+        String emoji=event.getReactionEmote().getEmoji();Long selectedId=HALL_ROLES.get(emoji);if(selectedId==null)return;
+        Role selected=event.getGuild().getRoleById(selectedId);if(selected==null){platform.error("Residence hall role is unavailable: "+selectedId);return;}
+        List<Role> remove=event.getMember().getRoles().stream().filter(role->HALL_ROLES.containsValue(role.getIdLong())&&role.getIdLong()!=selectedId).toList();
+        event.getGuild().modifyMemberRoles(event.getMember(),List.of(selected),remove).reason("Residence hall reaction role").queue(
+                ignored->event.getChannel().retrieveMessageById(HALL_MESSAGE_ID).queue(message->{for(String other:HALL_ROLES.keySet())if(!other.equals(emoji))message.removeReaction(other,event.getUser()).queue();}),
+                error->platform.error("Failed to update residence hall role for "+event.getUserId(),error));
+    }
+
+    @Override public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent event) {
+        if(event.getUser()==null||event.getUser().isBot()||event.getGuild().getIdLong()!=guildId||event.getChannel().getIdLong()!=HALL_CHANNEL_ID||event.getMessageIdLong()!=HALL_MESSAGE_ID)return;
+        Long roleId=HALL_ROLES.get(event.getReactionEmote().getEmoji());Role role=roleId==null?null:event.getGuild().getRoleById(roleId);if(role==null||!event.getMember().getRoles().contains(role))return;
+        event.getGuild().removeRoleFromMember(event.getMember(),role).reason("Residence hall reaction removed").queue();
     }
 
     private void removeUnlinkedRole(String discordId) {

@@ -39,6 +39,12 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - A successful map code passes every Minecraft identity linked to that Discord member, including each account's role and team context.
 - GenevaWaypoints presents those identities in its browser account selector.
 
+## Residence hall reaction roles (`geneva.37`)
+
+- The GCMC bot manages the residence selector in `#info` for Memorial, Pearce, Young, Kerr, Schoolhouse, McKee, Clarke, Richie, and Arms.
+- Selecting a hall atomically removes every other hall role and clears the member's previous hall reactions, enforcing one residence per member.
+- Removing the selected reaction also removes its role. Hall membership roles remain separate from future Hall Delegate roles.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
