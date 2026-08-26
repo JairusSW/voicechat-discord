@@ -139,6 +139,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                     Component.text("Join the Discord", NamedTextColor.GOLD),
                     Component.text("Then link your account to play", NamedTextColor.GRAY),
                     Title.Times.times(Duration.ZERO, Duration.ofSeconds(16), Duration.ZERO)));
+            player.sendMessage("§6§lWelcome to GenevaMC! §fFollow these instructions to get verified:");
             if (code == null) {
                 player.sendMessage("§fComplete the linking process in §b#linking§f.");
                 return;

@@ -4,6 +4,7 @@ import github.scarsz.discordsrv.DiscordSRV;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,6 +33,7 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Locale;
@@ -323,8 +325,9 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
             player.getScheduler().run(PaperPlugin.get(), task -> {
                 leaveOnboarding(player);
                 player.showTitle(Title.title(
-                        Component.text("You're linked!", NamedTextColor.GREEN),
-                        Component.text("Welcome to GenevaMC, " + realName, NamedTextColor.GRAY)));
+                        Component.text("You're in!", NamedTextColor.GOLD, TextDecoration.BOLD),
+                        Component.text("Welcome to GenevaMC, " + realName, NamedTextColor.GRAY),
+                        Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(7), Duration.ofSeconds(1))));
                 player.sendMessage(Component.text("Discord setup complete. You can now play!", NamedTextColor.GREEN));
             }, null);
         }
