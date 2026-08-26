@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -96,6 +97,18 @@ public final class IdentityRegistry implements Listener, CommandExecutor {
         String stored = data.getString("players." + playerId + ".discord_id");
         if (stored != null) return stored;
         return DiscordSRV.getPlugin().getAccountLinkManager().getDiscordId(playerId);
+    }
+
+    public List<UUID> linkedPlayersForDiscord(String discordId) {
+        java.util.LinkedHashSet<UUID> result = new java.util.LinkedHashSet<>();
+        ConfigurationSection players = data.getConfigurationSection("players");
+        if (players != null) for (String id : players.getKeys(false)) {
+            if (!discordId.equals(data.getString("players." + id + ".discord_id"))) continue;
+            try { result.add(UUID.fromString(id)); } catch (IllegalArgumentException ignored) {}
+        }
+        UUID primary = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(discordId);
+        if (primary != null) result.add(primary);
+        return List.copyOf(result);
     }
 
     public void revokeDiscordLink(Player player) {

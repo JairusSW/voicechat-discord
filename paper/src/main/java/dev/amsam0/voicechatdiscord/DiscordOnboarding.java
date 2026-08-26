@@ -384,17 +384,22 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     }
 
     private boolean completeWaypointEditorLogin(GuildMessageReceivedEvent event, String code) {
-        UUID playerId = DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId());
-        if (playerId == null) return false;
+        java.util.List<UUID> playerIds = identities.linkedPlayersForDiscord(event.getAuthor().getId());
+        if (playerIds.isEmpty()) return false;
         Plugin waypointPlugin = Bukkit.getPluginManager().getPlugin("GenevaWaypoints");
         if (waypointPlugin == null || !waypointPlugin.isEnabled()) return false;
         try {
-            String[] team = genevaRoles.waypointTeam(playerId);
+            String[] ids = new String[playerIds.size()], names = new String[playerIds.size()], teamKeys = new String[playerIds.size()], teamNames = new String[playerIds.size()];
+            boolean[] admins = new boolean[playerIds.size()], teamLeaders = new boolean[playerIds.size()];
+            for (int i = 0; i < playerIds.size(); i++) {
+                UUID playerId = playerIds.get(i); String[] team = genevaRoles.waypointTeam(playerId);
+                ids[i] = playerId.toString(); names[i] = identities.knownIgn(playerId); admins[i] = genevaRoles.canManageWaypoints(playerId);
+                teamKeys[i] = team[0]; teamNames[i] = team[1]; teamLeaders[i] = Boolean.parseBoolean(team[2]);
+            }
             boolean completed = (boolean) waypointPlugin.getClass()
-                    .getMethod("completeDiscordLogin", String.class, UUID.class, String.class, boolean.class,
-                            String.class, String.class, boolean.class)
-                    .invoke(waypointPlugin, code, playerId, identities.knownIgn(playerId),
-                            genevaRoles.canManageWaypoints(playerId), team[0], team[1], Boolean.parseBoolean(team[2]));
+                    .getMethod("completeDiscordLogin", String.class, String[].class, String[].class, boolean[].class,
+                            String[].class, String[].class, boolean[].class)
+                    .invoke(waypointPlugin, code, ids, names, admins, teamKeys, teamNames, teamLeaders);
             if (!completed) return false;
             event.getMessage().delete().queue(null, ignored -> {});
             event.getChannel().sendMessage(event.getAuthor().getAsMention()

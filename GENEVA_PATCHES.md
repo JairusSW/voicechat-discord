@@ -34,6 +34,11 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - Minecraft onboarding codes take precedence if a three-digit value collides with an active onboarding code.
 - Successful map authentication receives current owner/staff status and team membership/leadership for moderation and team-base access.
 
+## Multi-account map sessions (`geneva.36`)
+
+- A successful map code passes every Minecraft identity linked to that Discord member, including each account's role and team context.
+- GenevaWaypoints presents those identities in its browser account selector.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
