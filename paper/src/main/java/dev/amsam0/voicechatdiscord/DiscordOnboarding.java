@@ -134,7 +134,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             player.kick(Component.text("Discord verification is temporarily unavailable. Please reconnect shortly.", NamedTextColor.RED));
             return;
         }
-        if (discordId != null && guild.getMemberById(discordId) != null) return;
+        Member linkedMember=discordId==null?null:guild.getMemberById(discordId);
+        if(linkedMember!=null){addMemberRole(linkedMember);removeUnlinkedRole(discordId);return;}
 
         identities.revokeDiscordLink(player);
         DiscordSRV.getPlugin().getAccountLinkManager().unlink(player.getUniqueId());

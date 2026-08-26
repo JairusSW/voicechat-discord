@@ -57,6 +57,11 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 
 - Failed reaction-user or guild-member retrievals are logged instead of being silently discarded, making Discord permission and API failures actionable.
 
+## Linked member role repair (`geneva.41`)
+
+- Completing rules and real-name onboarding grants the configured Discord `member` role and removes `new`.
+- Every later Minecraft join also repairs those roles for an already-linked Discord member, covering older links and previously failed Discord role requests.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.
