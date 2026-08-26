@@ -28,6 +28,12 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - The request is deleted and the bot response self-deletes after 60 seconds; the one-time code itself expires after five minutes.
 - Owner/staff status is passed to GenevaWaypoints so their map sessions can manage every public waypoint.
 
+## Map-originated waypoint login (`geneva.35`)
+
+- The map now generates the three-digit code; linked members send that code by itself in `#linking`.
+- Minecraft onboarding codes take precedence if a three-digit value collides with an active onboarding code.
+- Successful map authentication receives current owner/staff status and team membership/leadership for moderation and team-base access.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.

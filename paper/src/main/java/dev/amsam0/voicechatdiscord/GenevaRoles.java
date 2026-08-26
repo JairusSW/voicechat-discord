@@ -57,6 +57,17 @@ public final class GenevaRoles implements Listener, CommandExecutor {
         return effectiveRole(playerId) != Role.MEMBER;
     }
 
+    /** team key, display name, and whether this player is the leader */
+    public String[] waypointTeam(UUID playerId) {
+        for (Map.Entry<String, Team> entry : teams.entrySet()) {
+            Team team = entry.getValue();
+            if (team.members.contains(playerId)) {
+                return new String[]{entry.getKey(), team.name, Boolean.toString(team.leader.equals(playerId))};
+            }
+        }
+        return new String[]{null, null, "false"};
+    }
+
     private void load() {
         ConfigurationSection roleSection = data.getConfigurationSection("roles");
         if (roleSection != null) {
