@@ -11,6 +11,11 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - `/voicechat` and `/dvc` remain functional for compatibility with upstream tutorials. Invite/join/leave aliases continue to enter GenevaMC's shared SVC/Discord group flow.
 - Unlinked-player command access uses `/vc` instead of advertising `/dvc`.
 
+## Discord mute controls (`geneva.32`)
+
+- `/vc mute` and `/vc unmute` server-mute or server-unmute the invoking player's linked Discord member while they are connected to voice.
+- These control the Discord microphone path. Players using the native SVC client still use their client mute key.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.

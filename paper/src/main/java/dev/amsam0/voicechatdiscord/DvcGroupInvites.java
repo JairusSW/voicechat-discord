@@ -2,6 +2,8 @@ package dev.amsam0.voicechatdiscord;
 
 import de.maxhenkel.voicechat.api.Group;
 import de.maxhenkel.voicechat.api.VoicechatConnection;
+import github.scarsz.discordsrv.DiscordSRV;
+import github.scarsz.discordsrv.dependencies.jda.api.entities.Member;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -24,11 +26,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static dev.amsam0.voicechatdiscord.Core.api;
 import static dev.amsam0.voicechatdiscord.Core.getBotForPlayer;
+import static dev.amsam0.voicechatdiscord.Core.platform;
 
 /** Makes SVC's familiar invite/join commands usable by Discord-bridge players. */
 public final class DvcGroupInvites implements Listener, CommandExecutor, TabCompleter {
     private static final long INVITE_LIFETIME_MS = 5 * 60 * 1000L;
     private final Map<UUID, Invite> invites = new ConcurrentHashMap<>();
+    private final IdentityRegistry identities;
+
+    public DvcGroupInvites(IdentityRegistry identities) {
+        this.identities = identities;
+    }
 
     private record Invite(UUID groupId, UUID inviterId, long expiresAt) {}
 
@@ -73,6 +81,8 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
             case "setup" -> setup(player);
             case "start", "stop", "restart" -> player.performCommand("dvc " + (subcommand.equals("restart") ? "start" : subcommand));
             case "whisper", "togglewhisper" -> player.performCommand("dvc togglewhisper");
+            case "mute" -> setDiscordMute(player, true);
+            case "unmute" -> setDiscordMute(player, false);
             case "test" -> {
                 if (!player.isOp()) player.sendMessage(Component.text("Only operators can run the voice connectivity test.", NamedTextColor.RED));
                 else if (args.length < 2) player.sendMessage(Component.text("Usage: /vc test <player>", NamedTextColor.RED));
@@ -105,6 +115,7 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
         player.sendMessage(Component.text("/vc invite <player> • /vc accept • /vc leave", NamedTextColor.WHITE));
         player.sendMessage(Component.text("/vc groups • /vc group <create|join|info|leave|remove>", NamedTextColor.WHITE));
         player.sendMessage(Component.text("/vc whisper • /vc players", NamedTextColor.WHITE));
+        player.sendMessage(Component.text("/vc mute • /vc unmute", NamedTextColor.WHITE).append(Component.text(" — mute your Discord microphone", NamedTextColor.YELLOW)));
         player.sendMessage(Component.text("/vc test <player>", NamedTextColor.WHITE).append(Component.text(" — operator connectivity test", NamedTextColor.YELLOW)));
     }
 
@@ -139,7 +150,7 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) return List.of("help", "status", "setup", "start", "stop", "restart", "invite", "accept", "leave", "groups", "group", "whisper", "players", "test").stream()
+        if (args.length == 1) return List.of("help", "status", "setup", "start", "stop", "restart", "invite", "accept", "leave", "groups", "group", "whisper", "players", "mute", "unmute", "test").stream()
                 .filter(option -> option.startsWith(args[0].toLowerCase(Locale.ROOT))).toList();
         if (args.length == 2 && args[0].equalsIgnoreCase("invite")) return Bukkit.getOnlinePlayers().stream().map(Player::getName)
                 .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT))).toList();
@@ -152,6 +163,29 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
 
     private VoicechatConnection connection(Player player) {
         return api.getConnectionOf(api.fromServerPlayer(player));
+    }
+
+    private void setDiscordMute(Player player, boolean muted) {
+        String discordId = identities.discordId(player.getUniqueId());
+        if (discordId == null || !DiscordSRV.isReady || DiscordSRV.getPlugin().getJda() == null) {
+            player.sendMessage(Component.text("Your linked Discord account is not available.", NamedTextColor.RED));
+            return;
+        }
+        Member member = DiscordSRV.getPlugin().getJda().getGuilds().stream()
+                .map(guild -> guild.getMemberById(discordId))
+                .filter(java.util.Objects::nonNull)
+                .findFirst().orElse(null);
+        if (member == null || member.getVoiceState() == null || !member.getVoiceState().inVoiceChannel()) {
+            player.sendMessage(Component.text("Join Discord voice before using /vc " + (muted ? "mute" : "unmute") + ".", NamedTextColor.RED));
+            return;
+        }
+        player.sendMessage(Component.text((muted ? "Muting" : "Unmuting") + " your Discord microphone…", NamedTextColor.YELLOW));
+        member.getGuild().mute(member, muted).queue(
+                ignored -> player.sendMessage(Component.text("Discord microphone " + (muted ? "muted." : "unmuted."), NamedTextColor.GREEN)),
+                error -> {
+                    platform.error("Failed to change Discord mute state for " + discordId, error);
+                    player.sendMessage(Component.text("Could not change your Discord mute state. Check the bot's permissions.", NamedTextColor.RED));
+                });
     }
 
     private void invite(Player inviter, String targetName) {

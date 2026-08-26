@@ -148,7 +148,7 @@ public final class PaperPlugin extends JavaPlugin {
 
         discordOnboarding = DiscordOnboarding.start(this, identityRegistry, genevaRoles);
 
-        dvcGroupInvites = new DvcGroupInvites();
+        dvcGroupInvites = new DvcGroupInvites(identityRegistry);
         Bukkit.getPluginManager().registerEvents(dvcGroupInvites, this);
         getCommand("vc").setExecutor(dvcGroupInvites);
         getCommand("vc").setTabCompleter(dvcGroupInvites);
