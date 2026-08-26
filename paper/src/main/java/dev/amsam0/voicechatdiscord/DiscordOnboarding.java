@@ -300,7 +300,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         }
         removeUnlinkedRole(event.getAuthor().getId());
         event.getChannel().sendMessage(event.getAuthor().getAsMention()
-                + " You're all set! **" + ign + "** can now play on GenevaMC.").queue();
+                + " Thanks! Now return to Minecraft. **" + ign + "** should be good to go!").queue();
         event.getMessage().delete().queue(null, ignored -> {});
     }
 
