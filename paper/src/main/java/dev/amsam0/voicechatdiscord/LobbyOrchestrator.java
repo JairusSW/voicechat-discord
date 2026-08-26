@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.Map;
 import java.util.EnumSet;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -67,7 +69,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
 
         LobbyOrchestrator orchestrator = new LobbyOrchestrator(
                 lobbyId, categoryId,
-                config.getString("automatic_lobby.channel_prefix", "prox-"), identities
+                config.getString("automatic_lobby.channel_prefix", "🔊 voice "), identities
         );
         Thread initializer = new Thread(orchestrator::waitForDiscordSrv, "voicechat-discord: Lobby Initializer");
         initializer.setDaemon(true);
@@ -142,7 +144,7 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
                 return;
             }
 
-            VoiceChannel channel = category.createVoiceChannel(channelPrefix + safeName(bukkitPlayer.getName()))
+            VoiceChannel channel = category.createVoiceChannel(nextChannelName(category))
                     .setUserlimit(2)
                     .complete();
             sessions.put(discordId, new Session(bot, channel, bukkitPlayer.getUniqueId()));
@@ -189,8 +191,12 @@ public final class LobbyOrchestrator extends ListenerAdapter implements AutoClos
         }
     }
 
-    private static String safeName(String name) {
-        return name.toLowerCase().replaceAll("[^a-z0-9_-]", "-");
+    private String nextChannelName(Category category) {
+        Set<String> names = new HashSet<>();
+        category.getVoiceChannels().forEach(channel -> names.add(channel.getName()));
+        int index = 0;
+        while (names.contains(channelPrefix + index)) index++;
+        return channelPrefix + index;
     }
 
     private void setServerMuted(Member member, boolean muted) {
