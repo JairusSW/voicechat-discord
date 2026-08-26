@@ -215,9 +215,9 @@ public final class DiscordBot {
             platform.sendMessage(
                     player,
                     Component.green("Started a voice chat! To stop it, use "),
-                    Component.white("/dvc stop"),
+                    Component.white("/vc stop"),
                     Component.green(". If you are having issues, try restarting the session with "),
-                    Component.white("/dvc start"),
+                    Component.white("/vc start"),
                     Component.green(". Please join the following voice channel in discord: "),
                     Component.white(vcName)
             );

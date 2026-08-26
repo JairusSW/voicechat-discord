@@ -22,7 +22,7 @@ import static dev.amsam0.voicechatdiscord.Core.*;
 import static dev.amsam0.voicechatdiscord.GroupManager.*;
 
 /**
- * Subcommands for /dvc
+ * Native DVC subcommands. GenevaMC recommends the /vc wrapper.
  */
 public final class SubCommands {
     private static @Nullable <V> V getArgumentOr(CommandContext<?> context, final String name, final Class<V> clazz, @Nullable V or) {
@@ -169,7 +169,7 @@ public final class SubCommands {
                     platform.sendMessage(
                             bot.player(),
                             Component.red("The config is being reloaded which stops all bots. Please use "),
-                            Component.white("/dvc start"),
+                            Component.white("/vc start"),
                             Component.red(" to restart your session.")
                     );
 
@@ -224,12 +224,12 @@ public final class SubCommands {
             platform.sendMessage(
                     sender,
                     Component.red("Available subcommands:\n"),
-                    Component.red("- `"), Component.white("/dvc group list"), Component.red("`: List groups\n"),
-                    Component.red("- `"), Component.white("/dvc group create <name> [password] [type] [persistent]"), Component.red("`: Create a group\n"),
-                    Component.red("- `"), Component.white("/dvc group join <ID>"), Component.red("`: Join a group\n"),
-                    Component.red("- `"), Component.white("/dvc group info"), Component.red("`: Get info about your current group\n"),
-                    Component.red("- `"), Component.white("/dvc group leave"), Component.red("`: Leave your current group\n"),
-                    Component.red("- `"), Component.white("/dvc group remove <ID>"), Component.red("`: Removes a persistent group if there is no one in it\n"),
+                    Component.red("- `"), Component.white("/vc groups"), Component.red("`: List groups\n"),
+                    Component.red("- `"), Component.white("/vc group create <name> [password] [type] [persistent]"), Component.red("`: Create a group\n"),
+                    Component.red("- `"), Component.white("/vc group join <ID>"), Component.red("`: Join a group\n"),
+                    Component.red("- `"), Component.white("/vc group info"), Component.red("`: Get info about your current group\n"),
+                    Component.red("- `"), Component.white("/vc group leave"), Component.red("`: Leave your current group\n"),
+                    Component.red("- `"), Component.white("/vc group remove <ID>"), Component.red("`: Removes a persistent group if there is no one in it\n"),
                     Component.red("See "), Component.white("https://gitlab.com/amsam0/voicechat-discord#dvc-group"), Component.red(" for more info on how to use these commands.")
             );
             return 1;
@@ -333,7 +333,7 @@ public final class SubCommands {
             Integer friendlyId = sender.getArgument("id", Integer.class);
             UUID groupId = groupFriendlyIds.getKey(friendlyId);
             if (groupId == null) {
-                platform.sendMessage(sender, Component.red("Invalid group ID. Please use "), Component.white("/dvc group list"), Component.red(" to see all groups."));
+                platform.sendMessage(sender, Component.red("Invalid group ID. Please use "), Component.white("/vc groups"), Component.red(" to see all groups."));
                 return;
             }
 
@@ -363,21 +363,21 @@ public final class SubCommands {
 
             VoicechatConnection connection = Objects.requireNonNull(api.getConnectionOf(platform.commandContextToPlayer(sender)));
             if (connection.getGroup() != null) {
-                platform.sendMessage(sender, Component.red("You are already in a group! Leave it using "), Component.white("/dvc group leave"), Component.red(", then join this group."));
+                platform.sendMessage(sender, Component.red("You are already in a group! Leave it using "), Component.white("/vc group leave"), Component.red(", then join this group."));
                 return;
             }
             var botForPlayer = getBotForPlayer(platform.commandContextToPlayer(sender).getUuid());
             if (!connection.isInstalled() && (botForPlayer == null || !botForPlayer.isStarted())) {
                 platform.sendMessage(sender,
                         Component.red("You must have the Simple Voice Chat mod installed on your client or use "),
-                        Component.white("/dvc start"),
+                        Component.white("/vc start"),
                         Component.red(" before you can use this command!")
                 );
                 return;
             }
             connection.setGroup(group);
 
-            platform.sendMessage(sender, Component.green("Successfully joined group \"" + group.getName() + "\". Use "), Component.white("/dvc group info"), Component.green(" to see info on the group, and "), Component.white("/dvc group leave"), Component.green(" to leave the group."));
+            platform.sendMessage(sender, Component.green("Successfully joined group \"" + group.getName() + "\". Use "), Component.white("/vc group info"), Component.green(" to see info on the group, and "), Component.white("/vc group leave"), Component.green(" to leave the group."));
         }
 
         private static void info(CommandContext<?> sender) {
@@ -455,7 +455,7 @@ public final class SubCommands {
             Integer friendlyId = sender.getArgument("id", Integer.class);
             UUID groupId = groupFriendlyIds.getKey(friendlyId);
             if (groupId == null) {
-                platform.sendMessage(sender, Component.red("Invalid group ID. Please use "), Component.white("/dvc group list"), Component.red(" to see all groups."));
+                platform.sendMessage(sender, Component.red("Invalid group ID. Please use "), Component.white("/vc groups"), Component.red(" to see all groups."));
                 return;
             }
 

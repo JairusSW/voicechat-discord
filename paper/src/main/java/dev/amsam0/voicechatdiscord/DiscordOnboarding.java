@@ -367,7 +367,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                     + " Join GenevaMC with a linked account before running Minecraft commands here.").queue();
             return;
         }
-        java.util.Set<String> publicCommands = java.util.Set.of("ping", "team", "whois", "discord", "dvc");
+        java.util.Set<String> publicCommands = java.util.Set.of("ping", "team", "whois", "discord", "vc");
         if (!player.isOp() && !publicCommands.contains(root)) {
             event.getChannel().sendMessage(event.getAuthor().getAsMention()
                     + " You may use `/ping`, `/team`, `/whois`, and `/discord` here. Other commands require Minecraft OP.").queue();

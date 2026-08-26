@@ -73,6 +73,11 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
             case "setup" -> setup(player);
             case "start", "stop", "restart" -> player.performCommand("dvc " + (subcommand.equals("restart") ? "start" : subcommand));
             case "whisper", "togglewhisper" -> player.performCommand("dvc togglewhisper");
+            case "test" -> {
+                if (!player.isOp()) player.sendMessage(Component.text("Only operators can run the voice connectivity test.", NamedTextColor.RED));
+                else if (args.length < 2) player.sendMessage(Component.text("Usage: /vc test <player>", NamedTextColor.RED));
+                else player.performCommand("voicechat test " + args[1]);
+            }
             case "invite" -> {
                 if (args.length < 2) player.sendMessage(Component.text("Usage: /vc invite <player>", NamedTextColor.RED));
                 else invite(player, args[1]);
@@ -100,6 +105,7 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
         player.sendMessage(Component.text("/vc invite <player> • /vc accept • /vc leave", NamedTextColor.WHITE));
         player.sendMessage(Component.text("/vc groups • /vc group <create|join|info|leave|remove>", NamedTextColor.WHITE));
         player.sendMessage(Component.text("/vc whisper • /vc players", NamedTextColor.WHITE));
+        player.sendMessage(Component.text("/vc test <player>", NamedTextColor.WHITE).append(Component.text(" — operator connectivity test", NamedTextColor.YELLOW)));
     }
 
     private void setup(Player player) {
@@ -133,9 +139,11 @@ public final class DvcGroupInvites implements Listener, CommandExecutor, TabComp
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) return List.of("help", "status", "setup", "start", "stop", "restart", "invite", "accept", "leave", "groups", "group", "whisper", "players").stream()
+        if (args.length == 1) return List.of("help", "status", "setup", "start", "stop", "restart", "invite", "accept", "leave", "groups", "group", "whisper", "players", "test").stream()
                 .filter(option -> option.startsWith(args[0].toLowerCase(Locale.ROOT))).toList();
         if (args.length == 2 && args[0].equalsIgnoreCase("invite")) return Bukkit.getOnlinePlayers().stream().map(Player::getName)
+                .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT))).toList();
+        if (args.length == 2 && args[0].equalsIgnoreCase("test") && sender.isOp()) return Bukkit.getOnlinePlayers().stream().map(Player::getName)
                 .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT))).toList();
         if (args.length == 2 && args[0].equalsIgnoreCase("group")) return List.of("list", "create", "join", "info", "leave", "remove").stream()
                 .filter(option -> option.startsWith(args[1].toLowerCase(Locale.ROOT))).toList();
