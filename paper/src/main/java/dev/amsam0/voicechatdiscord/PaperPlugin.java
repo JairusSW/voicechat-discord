@@ -21,6 +21,7 @@ public final class PaperPlugin extends JavaPlugin {
     private final EventListener eventListener = new EventListener();
     private PaperVoicechatPlugin voicechatPlugin;
     private LobbyOrchestrator lobbyOrchestrator;
+    private TemporaryVoiceLobby temporaryVoiceLobby;
     private IdentityRegistry identityRegistry;
     private GenevaRoles genevaRoles;
     private DiscordOnboarding discordOnboarding;
@@ -137,6 +138,7 @@ public final class PaperPlugin extends JavaPlugin {
         getCommand("whois").setExecutor(identityRegistry);
 
         lobbyOrchestrator = LobbyOrchestrator.start(this, identityRegistry);
+        temporaryVoiceLobby = TemporaryVoiceLobby.start(this);
 
         genevaRoles = new GenevaRoles(this, identityRegistry);
         Bukkit.getPluginManager().registerEvents(genevaRoles, this);
@@ -165,6 +167,9 @@ public final class PaperPlugin extends JavaPlugin {
         }
         if (lobbyOrchestrator != null) {
             lobbyOrchestrator.close();
+        }
+        if (temporaryVoiceLobby != null) {
+            temporaryVoiceLobby.close();
         }
         disable();
 
