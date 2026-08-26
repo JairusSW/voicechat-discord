@@ -158,6 +158,19 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                 ignored -> {}, error -> platform.error("Failed to remove unlinked role from " + discordId, error));
     }
 
+    private void setLinkedNickname(Member member, String ign, String realName) {
+        String nickname = member.getUser().getName() + " (" + ign + "/" + realName + ")";
+        int codePoints = nickname.codePointCount(0, nickname.length());
+        if (codePoints > 32) {
+            nickname = nickname.substring(0, nickname.offsetByCodePoints(0, 32));
+        }
+        member.getGuild().modifyNickname(member, nickname)
+                .reason("GenevaMC account linked")
+                .queue(
+                        ignored -> {},
+                        error -> platform.error("Failed to set linked nickname for " + member.getId(), error));
+    }
+
     private void promptForName(String discordId, String ign) {
         TextChannel channel = channel();
         if (channel == null) return;
@@ -233,6 +246,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         if (DiscordSRV.getPlugin().getAccountLinkManager().getUuid(event.getAuthor().getId()) == null) {
             DiscordSRV.getPlugin().getAccountLinkManager().link(event.getAuthor().getId(), pending.playerId());
         }
+        Member member = event.getMember();
+        if (member != null) setLinkedNickname(member, ign, name);
         removeUnlinkedRole(event.getAuthor().getId());
         event.getChannel().sendMessage(event.getAuthor().getAsMention()
                 + " You're all set! **" + ign + "** can now play on GenevaMC.").queue();
