@@ -43,6 +43,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private final long minecraftChatChannelId;
     private final long guildId;
     private final long unlinkedRoleId;
+    private final long memberRoleId;
     private final Map<String, PendingName> awaitingNames = new ConcurrentHashMap<>();
     private final Map<String, PendingName> awaitingRuleAcceptance = new ConcurrentHashMap<>();
     private final Map<String, PendingName> linkingCodes = new ConcurrentHashMap<>();
@@ -51,7 +52,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     private volatile JDA jda;
     private volatile boolean closed;
 
-    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles, long guildId, long linkingChannelId, long minecraftChatChannelId, long unlinkedRoleId) {
+    private DiscordOnboarding(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles, long guildId, long linkingChannelId, long minecraftChatChannelId, long unlinkedRoleId, long memberRoleId) {
         this.plugin = plugin;
         this.identities = identities;
         this.genevaRoles = genevaRoles;
@@ -59,6 +60,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         this.linkingChannelId = linkingChannelId;
         this.minecraftChatChannelId = minecraftChatChannelId;
         this.unlinkedRoleId = unlinkedRoleId;
+        this.memberRoleId = memberRoleId;
     }
 
     public static @Nullable DiscordOnboarding start(PaperPlugin plugin, IdentityRegistry identities, GenevaRoles genevaRoles) {
@@ -68,8 +70,9 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         long minecraftChatChannelId = config.getLong("discord_onboarding.minecraft_chat_channel_id", 0L);
         long guildId = config.getLong("discord_onboarding.guild_id", 0L);
         long roleId = config.getLong("discord_onboarding.unlinked_role_id", 0L);
-        if (channelId == 0L || minecraftChatChannelId == 0L || guildId == 0L || roleId == 0L) {
-            platform.error("discord_onboarding requires guild_id, linking_channel_id, minecraft_chat_channel_id, and unlinked_role_id");
+        long memberRoleId = config.getLong("discord_onboarding.member_role_id", 0L);
+        if (channelId == 0L || minecraftChatChannelId == 0L || guildId == 0L || roleId == 0L || memberRoleId == 0L) {
+            platform.error("discord_onboarding requires guild_id, linking_channel_id, minecraft_chat_channel_id, unlinked_role_id, and member_role_id");
             return null;
         }
         Plugin discordSrv = Bukkit.getPluginManager().getPlugin("DiscordSRV");
@@ -77,7 +80,7 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             platform.error("discord_onboarding is enabled, but DiscordSRV is unavailable");
             return null;
         }
-        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, genevaRoles, guildId, channelId, minecraftChatChannelId, roleId);
+        DiscordOnboarding onboarding = new DiscordOnboarding(plugin, identities, genevaRoles, guildId, channelId, minecraftChatChannelId, roleId, memberRoleId);
         DiscordSRV.api.subscribe(onboarding);
         Bukkit.getPluginManager().registerEvents(onboarding, plugin);
         Thread initializer = new Thread(onboarding::waitForDiscordSrv, "voicechat-discord: Onboarding Initializer");
@@ -139,7 +142,8 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                     Component.text("Join the Discord", NamedTextColor.GOLD),
                     Component.text("Then link your account to play", NamedTextColor.GRAY),
                     Title.Times.times(Duration.ZERO, Duration.ofSeconds(16), Duration.ZERO)));
-            player.sendMessage("§6§lWelcome to GenevaMC! §fFollow these instructions to get verified:");
+            player.sendMessage("§6§lWelcome to GenevaMC!");
+            player.sendMessage("§fFollow these instructions to get verified:");
             if (code == null) {
                 player.sendMessage("§fComplete the linking process in §b#linking§f.");
                 return;
@@ -185,6 +189,18 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
         if (guild == null || role == null || member == null || !member.getRoles().contains(role)) return;
         guild.removeRoleFromMember(member, role).queue(
                 ignored -> {}, error -> platform.error("Failed to remove unlinked role from " + discordId, error));
+    }
+
+    private void addMemberRole(Member member) {
+        Role role = member.getGuild().getRoleById(memberRoleId);
+        if (role == null) {
+            platform.error("Configured member Discord role is unavailable");
+            return;
+        }
+        if (member.getRoles().contains(role)) return;
+        member.getGuild().addRoleToMember(member, role).queue(
+                ignored -> {},
+                error -> platform.error("Failed to assign member role to " + member.getId(), error));
     }
 
     private void setLinkedNickname(Member member, String ign, String realName) {
@@ -278,7 +294,10 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             DiscordSRV.getPlugin().getAccountLinkManager().link(event.getAuthor().getId(), pending.playerId());
         }
         Member member = event.getMember();
-        if (member != null) setLinkedNickname(member, ign, name);
+        if (member != null) {
+            setLinkedNickname(member, ign, name);
+            addMemberRole(member);
+        }
         removeUnlinkedRole(event.getAuthor().getId());
         event.getChannel().sendMessage(event.getAuthor().getAsMention()
                 + " You're all set! **" + ign + "** can now play on GenevaMC.").queue();
