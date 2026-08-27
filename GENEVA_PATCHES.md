@@ -62,6 +62,11 @@ Current Geneva base before this patch: `565296a47f70b1f27446af5273983bedf1d68b0d
 - Completing rules and real-name onboarding grants the configured Discord `member` role and removes `new`.
 - Every later Minecraft join also repairs those roles for an already-linked Discord member, covering older links and previously failed Discord role requests.
 
+## Linking completion cleanup (`geneva.42`)
+
+- Successful onboarding sets the member nickname to `IGN (First L.)`.
+- The bot tells the member to return to Minecraft, leaves the confirmation visible for eight seconds, then deletes that member's complete recent onboarding exchange from `#linking` without touching concurrent applicants.
+
 ## Updating Minecraft/DVC
 
 1. Merge the desired upstream DVC release into the Geneva branch.

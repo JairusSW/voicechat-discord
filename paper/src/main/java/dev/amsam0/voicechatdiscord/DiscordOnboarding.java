@@ -260,7 +260,13 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
     }
 
     private void setLinkedNickname(Member member, String ign, String realName) {
-        String nickname = member.getUser().getName() + " (" + ign + "/" + realName + ")";
+        String[] nameParts = realName.trim().split("\\s+");
+        String abbreviatedName = nameParts[0];
+        if (nameParts.length > 1 && !nameParts[nameParts.length - 1].isEmpty()) {
+            int initialEnd = nameParts[nameParts.length - 1].offsetByCodePoints(0, 1);
+            abbreviatedName += " " + nameParts[nameParts.length - 1].substring(0, initialEnd).toUpperCase(java.util.Locale.ROOT) + ".";
+        }
+        String nickname = ign + " (" + abbreviatedName + ")";
         int codePoints = nickname.codePointCount(0, nickname.length());
         if (codePoints > 32) {
             nickname = nickname.substring(0, nickname.offsetByCodePoints(0, 32));
@@ -270,6 +276,18 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
                 .queue(
                         ignored -> {},
                         error -> platform.error("Failed to set linked nickname for " + member.getId(), error));
+    }
+
+    private void clearLinkingConversation(TextChannel channel, String discordId) {
+        hallRoleSync.schedule(() -> channel.getHistory().retrievePast(100).queue(messages -> {
+            String mention = "<@" + discordId + ">";
+            messages.stream()
+                    .filter(message -> message.getAuthor().getId().equals(discordId)
+                            || (message.getAuthor().isBot() && message.getContentRaw().contains(mention)))
+                    .forEach(message -> message.delete().queue(
+                            ignored -> {},
+                            error -> platform.error("Failed to clear a completed linking message", error)));
+        }, error -> platform.error("Failed to retrieve completed linking messages", error)), 8, TimeUnit.SECONDS);
     }
 
     private void promptForName(String discordId, String ign) {
@@ -356,9 +374,12 @@ public final class DiscordOnboarding extends ListenerAdapter implements Listener
             addMemberRole(member);
         }
         removeUnlinkedRole(event.getAuthor().getId());
-        event.getChannel().sendMessage(event.getAuthor().getAsMention()
-                + " Thanks! Now return to Minecraft. **" + ign + "** should be good to go!").queue();
-        event.getMessage().delete().queue(null, ignored -> {});
+        TextChannel linkingChannel = event.getChannel();
+        String discordId = event.getAuthor().getId();
+        linkingChannel.sendMessage(event.getAuthor().getAsMention()
+                + " Thanks! Now, return to Minecraft. You should be good to go!").queue(
+                        ignored -> clearLinkingConversation(linkingChannel, discordId),
+                        error -> platform.error("Failed to send completed linking message", error));
     }
 
     private void handleMinecraftCommand(GuildMessageReceivedEvent event) {
